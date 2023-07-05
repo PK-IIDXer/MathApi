@@ -1,5 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace MathApi.Models;
 
+[Index(nameof(Character), nameof(SymbolTypeId), IsUnique = true)]
 public class Symbol
 {
   public long Id { get; set; }
@@ -9,4 +12,5 @@ public class Symbol
   public int? Arity { get; set; }
   public FormulaType? ArityFormulaType { get; set; }
   public long? ArityFormulaTypeId { get; set; }
+  public string? Meaning { get; set; }
 }
