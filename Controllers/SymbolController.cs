@@ -54,9 +54,16 @@ namespace MathApi.Controllers
     [HttpPut("{id}")]
     public async Task<IActionResult> PutSymbol(long id, Symbol symbol)
     {
+      // TODO: 論理式に使用されているかチェックし、使用されていればCharacterとMeaningのみ変更可能とする
       if (id != symbol.Id)
       {
         return BadRequest();
+      }
+
+      // □は編集不可
+      if (symbol.SymbolTypeId == (long)Const.SymbolType.BoundVariable)
+      {
+        return BadRequest("Cannot modify the bound variable");
       }
 
       _context.Entry(symbol).State = EntityState.Modified;
@@ -89,6 +96,14 @@ namespace MathApi.Controllers
       {
         return Problem("Entity set 'MathDbContext.Symbols'  is null.");
       }
+
+      // 束縛変数は一種類のみ登録可能
+      var boundVarCnt = _context.Symbols.Count(x => x.SymbolTypeId == (long)Const.SymbolType.BoundVariable);
+      if (boundVarCnt > 0 && symbol.SymbolTypeId == (long)Const.SymbolType.BoundVariable)
+      {
+        return BadRequest("Cannot register bound variables more than 2");
+      }
+
       _context.Symbols.Add(symbol);
       await _context.SaveChangesAsync();
 
@@ -99,6 +114,7 @@ namespace MathApi.Controllers
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteSymbol(long id)
     {
+      // TODO: 論理式に使用されているかチェックし、使用されていればエラーとする
       if (_context.Symbols == null)
       {
         return NotFound();

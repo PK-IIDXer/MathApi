@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using MathApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
