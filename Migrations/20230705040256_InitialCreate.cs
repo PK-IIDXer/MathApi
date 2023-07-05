@@ -91,6 +91,22 @@ namespace MathApi.Migrations
                     { 2L, "Proposition" }
                 });
 
+            migrationBuilder.InsertData(
+                table: "SymbolTypes",
+                columns: new[] { "Id", "FormulaTypeId", "Name" },
+                values: new object[,]
+                {
+                    { 1L, 1L, "free variable" },
+                    { 2L, 1L, "bound variable" },
+                    { 3L, 2L, "proposition variable" },
+                    { 4L, 1L, "constant" },
+                    { 5L, 1L, "function" },
+                    { 6L, 2L, "predicate" },
+                    { 7L, 2L, "logic" },
+                    { 8L, 1L, "term quantifier" },
+                    { 9L, 2L, "proposition quantifier" }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Symbols_ArityFormulaTypeId",
                 table: "Symbols",
