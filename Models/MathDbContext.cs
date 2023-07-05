@@ -1,5 +1,3 @@
-// 参考：https://hirahira.blog/efcore-mysql/
-
 using Microsoft.EntityFrameworkCore;
 
 namespace MathApi.Models;
