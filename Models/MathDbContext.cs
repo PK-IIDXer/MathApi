@@ -15,6 +15,9 @@ public class MathDbContext : DbContext
   public DbSet<FormulaType>? FormulaTypes { get; set; }
   public DbSet<SymbolType>? SymbolTypes { get; set; }
   public DbSet<Symbol>? Symbols { get; set; }
+  public DbSet<Formula>? Formulas { get; set; }
+  public DbSet<FormulaString>? FormulaStrings { get; set; }
+  public DbSet<FormulaChain>? FormulasChain { get; set;}
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
