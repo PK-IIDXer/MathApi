@@ -37,5 +37,15 @@ public class MathDbContext : DbContext
       new { Id = (long)8, Name = "term quantifier", FormulaTypeId = (long)1 },
       new { Id = (long)9, Name = "proposition quantifier", FormulaTypeId = (long)2 }
     );
+
+    modelBuilder.Entity<FormulaChain>()
+      .HasOne<FormulaString>()
+      .WithMany()
+      .HasForeignKey(chain => new { chain.FormulaId, chain.FromFormulaStringSerialNo });
+
+    modelBuilder.Entity<FormulaChain>()
+      .HasOne<FormulaString>()
+      .WithMany()
+      .HasForeignKey(chain => new { chain.FormulaId, chain.ToFormulaStringSerialNo });
   }
 }
