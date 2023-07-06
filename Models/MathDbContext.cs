@@ -10,7 +10,10 @@ public class MathDbContext : DbContext
   readonly MySqlServerVersion serverVersion = new (new Version(8, 0, 32));
   // DBコンテキストの設定
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    => optionsBuilder.UseMySql(connectionString, serverVersion);
+  {
+    optionsBuilder.UseMySql(connectionString, serverVersion);
+    optionsBuilder.LogTo(Console.WriteLine).EnableSensitiveDataLogging();
+  }
 
   public DbSet<FormulaType>? FormulaTypes { get; set; }
   public DbSet<SymbolType>? SymbolTypes { get; set; }

@@ -7,12 +7,11 @@ namespace MathApi.Models;
 [PrimaryKey(nameof(FormulaId), nameof(SerialNo))]
 public class FormulaString
 {
-  public Formula? Formula { get; set; }
   [Required]
   public long FormulaId { get; set; }
   [Required]
   public long SerialNo { get; set; }
-  public Symbol? Symbol { get; set; }
+  public Symbol Symbol { get; set; } = new Symbol();
   [Required]
   public long SymbolId { get; set; }
 }

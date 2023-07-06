@@ -54,7 +54,6 @@ namespace MathApi.Controllers
     [HttpPut("{id}")]
     public async Task<IActionResult> PutSymbol(long id, Symbol symbol)
     {
-      // TODO: 論理式に使用されているかチェックし、使用されていればCharacterとMeaningのみ変更可能とする
       if (id != symbol.Id)
       {
         return BadRequest();
@@ -64,6 +63,19 @@ namespace MathApi.Controllers
       if (symbol.SymbolTypeId == (long)Const.SymbolType.BoundVariable)
       {
         return BadRequest("Cannot modify the bound variable");
+      }
+
+      // 論理式に使用されているかチェックし、使用されていればCharacterとMeaningのみ変更可能とする
+      if (_context.FormulaStrings?.Count(fs => fs.SymbolId == id) > 0)
+      {
+        var oldSymbol = _context.Symbols?.FirstOrDefault(s => s.Id == id);
+        if (oldSymbol != null && (
+          oldSymbol.SymbolTypeId != symbol.SymbolTypeId
+          || oldSymbol.Arity != symbol.Arity
+          || oldSymbol.ArityFormulaTypeId != symbol.ArityFormulaTypeId))
+        {
+          return BadRequest("Cannot modify SymbolType, Arity, and ArityFormulaType if the symbol is contained in some Formulas");
+        }
       }
 
       _context.Entry(symbol).State = EntityState.Modified;
@@ -92,9 +104,15 @@ namespace MathApi.Controllers
     [HttpPost]
     public async Task<ActionResult<Symbol>> PostSymbol(Symbol symbol)
     {
-      if (_context.Symbols == null)
+      if (_context.Symbols == null || _context.Formulas == null)
       {
-        return Problem("Entity set 'MathDbContext.Symbols'  is null.");
+        return Problem("Entity set 'MathDbContext.Symbols' 'MathDbContext.Formulas' are null.");
+      }
+
+      var valid = Validate(symbol);
+      if (valid != null)
+      {
+        return BadRequest(valid);
       }
 
       // 束縛変数は一種類のみ登録可能
@@ -105,6 +123,21 @@ namespace MathApi.Controllers
       }
 
       _context.Symbols.Add(symbol);
+      if (SaveToFormula(symbol))
+      {
+        _context.Formulas.Add(new Formula
+        {
+          Meaning = symbol.Meaning,
+          FormulaStrings = new List<FormulaString>
+          {
+            new FormulaString
+            {
+              SerialNo = 0,
+              Symbol = symbol
+            }
+          }
+        });
+      }
       await _context.SaveChangesAsync();
 
       return CreatedAtAction("GetSymbol", new { id = symbol.Id }, symbol);
@@ -114,7 +147,6 @@ namespace MathApi.Controllers
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteSymbol(long id)
     {
-      // TODO: 論理式に使用されているかチェックし、使用されていればエラーとする
       if (_context.Symbols == null)
       {
         return NotFound();
@@ -123,6 +155,12 @@ namespace MathApi.Controllers
       if (symbol == null)
       {
         return NotFound();
+      }
+
+      // 理式に使用されているかチェックし、使用されていればエラーとする
+      if (_context.FormulaStrings?.Count(fs => fs.SymbolId == id) > 0)
+      {
+        return BadRequest("Cannot delete if the symbol is contained in some Formulas");
       }
 
       _context.Symbols.Remove(symbol);
@@ -134,6 +172,39 @@ namespace MathApi.Controllers
     private bool SymbolExists(long id)
     {
       return (_context.Symbols?.Any(e => e.Id == id)).GetValueOrDefault();
+    }
+
+    public static string? Validate(Symbol symbol)
+    {
+      if (symbol.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
+        || symbol.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier)
+      {
+        if (symbol.Arity == 0)
+        {
+          return "Cannot set Arity = 0 if it is Quantifier";
+        }
+      }
+      return null;
+    }
+
+    private static bool SaveToFormula(Symbol symbol)
+    {
+      if (symbol.SymbolTypeId == (long)Const.SymbolType.FreeVariable
+        || symbol.SymbolTypeId == (long)Const.SymbolType.BoundVariable
+        || symbol.SymbolTypeId == (long)Const.SymbolType.PropositionVariable
+        || symbol.SymbolTypeId == (long)Const.SymbolType.Constant)
+      {
+        return true;
+      }
+
+      if (symbol.SymbolTypeId != (long)Const.SymbolType.TermQuantifier
+        && symbol.SymbolTypeId != (long)Const.SymbolType.PropositionQuantifier
+        && symbol.Arity == 0)
+      {
+        return true;
+      }
+
+      return false;
     }
   }
 }
