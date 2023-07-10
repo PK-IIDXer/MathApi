@@ -24,10 +24,6 @@ namespace MathApi.Controllers
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Formula>>> GetFormulas()
     {
-      if (_context.Formulas == null)
-      {
-        return NotFound();
-      }
       return await _context.Formulas.ToListAsync();
     }
 
@@ -35,10 +31,6 @@ namespace MathApi.Controllers
     [HttpGet("{id}")]
     public async Task<ActionResult<Formula>> GetFormula(long id)
     {
-      if (_context.Formulas == null)
-      {
-        return NotFound();
-      }
       var formula = await _context.Formulas.FindAsync(id);
 
       if (formula == null)
@@ -87,11 +79,6 @@ namespace MathApi.Controllers
     [HttpPost]
     public async Task<ActionResult<Formula>> PostFormula(PostParameter postParam)
     {
-      if (_context.Formulas == null)
-      {
-        return Problem("Entity set 'MathDbContext.Formulas'  is null.");
-      }
-
       try
       {
         var formula = await CreateFormulaFromPostParam(postParam);
@@ -111,10 +98,6 @@ namespace MathApi.Controllers
     public async Task<IActionResult> DeleteFormula(long id)
     {
       // TODO: 推論規則、公理、定理に使用されている場合、削除不可
-      if (_context.Formulas == null)
-      {
-        return NotFound();
-      }
       var formula = await _context.Formulas.FindAsync(id);
       if (formula == null)
       {
@@ -271,13 +254,6 @@ namespace MathApi.Controllers
     /// <exception cref="InvalidDataException"></exception>
     private async Task<Formula> CreateFormulaFromPostParam(PostParameter postParam)
     {
-      // _contextバリデーション
-      if (_context.Symbols == null
-        || _context.Formulas == null)
-      {
-        throw new InvalidDataException("_context.Symbols and _context.Formulas are null");
-      }
-
       // 一文字目を取得
       var firstSymbol = await _context.Symbols.FindAsync(postParam.FirstSymbolId)
                         ?? throw new InvalidDataException("_context.Symbols and _context.Formulas are null");
@@ -297,10 +273,6 @@ namespace MathApi.Controllers
       var argFormulas = new List<Formula>();
       if (postParam.ArgumentedFormulaIds.Any())
       {
-        if (_context.FormulaStrings == null || _context.FormulasChain == null)
-        {
-          throw new InvalidDataException("_context.FormulaStrings == null || _context.FormulasChain == null");
-        }
         argFormulas = await _context.Formulas
           .Where(f => postParam.ArgumentedFormulaIds.Contains(f.Id))
           .ToListAsync();
@@ -332,8 +304,6 @@ namespace MathApi.Controllers
             _context.Entry(fs).State = EntityState.Unchanged;
             fs.Symbol.SymbolType = symbolTypes.First(st => st.Id == fs.Symbol.SymbolTypeId);
             _context.Entry(fs.Symbol).State = EntityState.Unchanged;
-            //_context.Entry(fs.Symbol.SymbolType).State = EntityState.Unchanged;
-            //_context.Entry(fs.Symbol.SymbolType.FormulaType).State = EntityState.Unchanged;
           }
           formula.FormulaChains = argChains.Where(s => s.FormulaId == formula.Id).OrderBy(s => s.SerialNo).ToList();
           foreach (var fc in formula.FormulaChains)
@@ -411,9 +381,6 @@ namespace MathApi.Controllers
       foreach (var argFormula in argFormulas)
       {
         argCnt++;
-        Console.WriteLine("AaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAa");
-        Console.WriteLine($"{argFormula.Id}, {firstSymbol.Id}");
-        Console.WriteLine($"{argFormula.FormulaTypeId}, {firstSymbol.ArityFormulaTypeId}");
         if (argFormula.FormulaTypeId != firstSymbol.ArityFormulaTypeId)
         {
           return $"Invalid Argument Formula Type on #{argCnt}";

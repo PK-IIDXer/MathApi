@@ -4,6 +4,8 @@ public class SymbolType
 {
   public long Id { get; set; }
   public string Name { get; set; } = "";
-  public FormulaType FormulaType { get; set; } = new FormulaType();
+  public FormulaType FormulaType { get; } = new();
   public long FormulaTypeId { get; set; }
+
+  public List<Symbol>? Symbols { get; }
 }

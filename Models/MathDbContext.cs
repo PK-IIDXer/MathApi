@@ -15,30 +15,32 @@ public class MathDbContext : DbContext
     optionsBuilder.LogTo(Console.WriteLine).EnableSensitiveDataLogging();
   }
 
-  public DbSet<FormulaType>? FormulaTypes { get; set; }
-  public DbSet<SymbolType>? SymbolTypes { get; set; }
-  public DbSet<Symbol>? Symbols { get; set; }
-  public DbSet<Formula>? Formulas { get; set; }
-  public DbSet<FormulaString>? FormulaStrings { get; set; }
-  public DbSet<FormulaChain>? FormulasChain { get; set;}
+  public DbSet<FormulaType> FormulaTypes { get; set; } = null!;
+  public DbSet<SymbolType> SymbolTypes { get; set; } = null!;
+  public DbSet<Symbol> Symbols { get; set; } = null!;
+  public DbSet<Formula> Formulas { get; set; } = null!;
+  public DbSet<FormulaString> FormulaStrings { get; set; } = null!;
+  public DbSet<FormulaChain> FormulasChain { get; set;} = null!;
+  public DbSet<Inference> Inferences { get; set; } = null!;
+  public DbSet<InferenceAssumption> InferenceAssumptions { get; set; } = null!;
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
     modelBuilder.Entity<FormulaType>().HasData(
-      new FormulaType { Id = 1, Name = "Term" },
-      new FormulaType { Id = 2, Name = "Proposition" }
+      new { Id = 1L, Name = "Term" },
+      new { Id = 2L, Name = "Proposition" }
     );
 
     modelBuilder.Entity<SymbolType>().HasData(
-      new { Id = (long)1, Name = "free variable", FormulaTypeId = (long)1 },
-      new { Id = (long)2, Name = "bound variable", FormulaTypeId = (long)1 },
-      new { Id = (long)3, Name = "proposition variable", FormulaTypeId = (long)2 },
-      new { Id = (long)4, Name = "constant", FormulaTypeId = (long)1 },
-      new { Id = (long)5, Name = "function", FormulaTypeId = (long)1 },
-      new { Id = (long)6, Name = "predicate", FormulaTypeId = (long)2 },
-      new { Id = (long)7, Name = "logic", FormulaTypeId = (long)2 },
-      new { Id = (long)8, Name = "term quantifier", FormulaTypeId = (long)1 },
-      new { Id = (long)9, Name = "proposition quantifier", FormulaTypeId = (long)2 }
+      new { Id = 1L, Name = "free variable", FormulaTypeId = 1L },
+      new { Id = 2L, Name = "bound variable", FormulaTypeId = 1L },
+      new { Id = 3L, Name = "proposition variable", FormulaTypeId = 2L },
+      new { Id = 4L, Name = "constant", FormulaTypeId = 1L },
+      new { Id = 5L, Name = "function", FormulaTypeId = 1L },
+      new { Id = 6L, Name = "predicate", FormulaTypeId = 2L },
+      new { Id = 7L, Name = "logic", FormulaTypeId = 2L },
+      new { Id = 8L, Name = "term quantifier", FormulaTypeId = 1L },
+      new { Id = 9L, Name = "proposition quantifier", FormulaTypeId = 2L }
     );
 
     modelBuilder.Entity<FormulaChain>()

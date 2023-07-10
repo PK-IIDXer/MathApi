@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace MathApi.Models;
@@ -7,11 +5,11 @@ namespace MathApi.Models;
 [PrimaryKey(nameof(FormulaId), nameof(SerialNo))]
 public class FormulaString
 {
-  [Required]
+  public Formula Formula { get; } = new();
   public long FormulaId { get; set; }
-  [Required]
   public long SerialNo { get; set; }
-  public Symbol Symbol { get; set; } = new Symbol();
-  [Required]
+  public Symbol Symbol { get; } = new();
   public long SymbolId { get; set; }
+
+  public List<FormulaChain>? FormulaChains { get; }
 }

@@ -3,6 +3,7 @@ using System;
 using MathApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MathApi.Migrations
 {
     [DbContext(typeof(MathDbContext))]
-    partial class MathDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230707012729_AddInferences")]
+    partial class AddInferences
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -135,7 +138,7 @@ namespace MathApi.Migrations
                     b.Property<int>("SerialNo")
                         .HasColumnType("int");
 
-                    b.Property<long?>("DissolutionAssumptionFormulaId")
+                    b.Property<long>("DissolutionAssumptionFormulaId")
                         .HasColumnType("bigint");
 
                     b.Property<long>("FormulaId")
