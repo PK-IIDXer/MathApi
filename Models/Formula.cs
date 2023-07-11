@@ -10,4 +10,10 @@ public class Formula
 
   public long Length => FormulaStrings.Count;
   public long? FormulaTypeId => FormulaStrings.Count == 0 ? null : FormulaStrings[0].Symbol.SymbolType?.FormulaType.Id;
+
+  public List<TheoremConclusion>? TheoremConclusions { get; }
+  public List<TheoremAssumption>? TheoremAssumptions { get; }
+  public List<Proof>? Proofs { get; }
+  public List<ProofArgument>? ProofArguments { get; }
+  public List<ProofAssumption>? ProofAssumptions { get; }
 }

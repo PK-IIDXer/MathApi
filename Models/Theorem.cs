@@ -9,5 +9,5 @@ public class Theorem
   public List<TheoremAssumption>? TheoremAssumptions { get; }
   public List<TheoremConclusion> TheoremConclusions { get; } = new();
 
-  public List<Proof>? Proofs { get; } = new();
+  public List<ProofHead>? ProofHeads { get; } = new();
 }

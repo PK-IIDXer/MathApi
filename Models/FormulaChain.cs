@@ -5,6 +5,7 @@ namespace MathApi.Models;
 [PrimaryKey(nameof(FormulaId), nameof(SerialNo))]
 public class FormulaChain
 {
+  public Formula Formula { get; } = new();
   public long FormulaId { get; set; }
   public long SerialNo { get; set; }
   public FormulaString FromFormulaString { get; } = new();

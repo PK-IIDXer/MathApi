@@ -1,7 +1,8 @@
 namespace MathApi.Models;
 
 public class InferenceAssumptionDissolutableAssumptionFormula
-{  public InferenceAssumption InferenceAssumption { get; } = new();
+{
+  public InferenceAssumption InferenceAssumption { get; } = new();
   public long InferenceId { get; set; }
   public int InferenceAssumptionSerialNo { get; set; }
   public int SerialNo { get; set; }

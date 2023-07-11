@@ -11,4 +11,6 @@ public class AxiomProposition
   public Formula Formula { get; } = new();
   public long FormulaId { get; set; }
   public string? Remarks { get; set; }
+
+  public List<ProofArgument>? ProofArguments { get; }
 }

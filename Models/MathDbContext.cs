@@ -22,7 +22,23 @@ public class MathDbContext : DbContext
   public DbSet<FormulaString> FormulaStrings { get; set; } = null!;
   public DbSet<FormulaChain> FormulasChain { get; set;} = null!;
   public DbSet<Inference> Inferences { get; set; } = null!;
+  public DbSet<InferenceArgumentType> InferenceArgumentTypes { get; set; } = null!;
+  public DbSet<InferenceArgument> InferenceArguments { get; set; } = null!;
+  public DbSet<InferenceArgumentConstraint> InferenceArgumentConstraints{ get; set; } = null!;
   public DbSet<InferenceAssumption> InferenceAssumptions { get; set; } = null!;
+  public DbSet<InferenceAssumptionDissolutionType> InferenceAssumptionDissolutionTypes { get; set; } = null!;
+  public DbSet<InferenceAssumptionFormula> InferenceAssumptionFormulas { get; set; } = null!;
+  public DbSet<InferenceAssumptionDissolutableAssumptionFormula> InferenceAssumptionDissolutableAssumptionFormula { get; set; } = null!;
+  public DbSet<InferenceConclusionFormula> InferenceConclusionFormulas { get; set; } = null!;
+  public DbSet<Axiom> Axioms { get; set; } = null!;
+  public DbSet<AxiomProposition> AxiomPropositions { get; set; } = null!;
+  public DbSet<Theorem> Theorems { get; set; } = null!;
+  public DbSet<TheoremAssumption> TheoremAssumption { get; set; } = null!;
+  public DbSet<TheoremConclusion> TheoremConclusions { get; set; } = null!;
+  public DbSet<ProofHead> ProofHeads { get; set; } = null!;
+  public DbSet<Proof> Proofs { get; set; } = null!;
+  public DbSet<ProofArgument> ProofArguments { get; set; } = null!;
+  public DbSet<ProofAssumption> ProofAssumptions { get; set; } = null!;
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {

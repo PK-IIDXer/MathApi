@@ -11,4 +11,6 @@ public class ProofAssumption
   public Formula Formula { get; } = new();
   public long FormulaId { get; set; }
   public long? DissolutedProofSerialNo { get; set; }
+
+  public List<ProofArgument>? ProofArguments { get; }
 }
