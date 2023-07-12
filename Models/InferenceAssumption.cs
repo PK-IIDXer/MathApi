@@ -11,6 +11,6 @@ public class InferenceAssumption
   public InferenceAssumptionDissolutionType InferenceAssumptionDissolutionType { get; set; } = new();
   public int InferenceAssumptionDissolutionTypeId { get; set; }
 
-  public List<InferenceArgumentConstraint>? InferenceArgumentConstraints { get; }
-  public List<InferenceAssumptionFormula> InferenceAssumptionFormulas { get; } = new();
+  public List<InferenceAssumptionFormula> InferenceAssumptionFormulas { get; set; } = new();
+  public List<InferenceAssumptionDissolutableAssumptionFormula>? InferenceAssumptionDissolutableAssumptionFormulas { get; set; }
 }

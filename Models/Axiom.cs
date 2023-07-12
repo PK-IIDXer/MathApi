@@ -6,5 +6,5 @@ public class Axiom
   public string Name { get; set; } = null!;
   public string? Remarks { get; set; }
 
-  public List<AxiomProposition> AxiomPropositions { get; } = new();
+  public List<AxiomProposition> AxiomPropositions { get; set; } = new();
 }

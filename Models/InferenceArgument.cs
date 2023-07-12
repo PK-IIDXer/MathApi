@@ -11,8 +11,20 @@ public class InferenceArgument
   public InferenceArgumentType InferenceArgumentType { get; } = new();
   public int InferenceArgumentTypeId { get; set; }
 
+  public InferenceAssumptionDissolutableAssumptionFormula? InferenceAssumptionDissolutableAssumptionFormulaToBound { get; }
+  public InferenceAssumptionDissolutableAssumptionFormula? InferenceAssumptionDissolutableAssumptionFormula { get; }
+  public InferenceAssumptionDissolutableAssumptionFormula? InferenceAssumptionDissolutableAssumptionFormulaToSubstitutionInferenceArgumentFrom { get; }
+  public InferenceAssumptionDissolutableAssumptionFormula? InferenceAssumptionDissolutableAssumptionFormulaToSubstitutionInferenceArgumentTo { get; }
+
+  public InferenceConclusionFormula? InferenceConclusionFormulaToBound { get; }
+  public InferenceConclusionFormula? InferenceConclusionFormula { get; }
+  public InferenceConclusionFormula? InferenceConclusionFormulaToSubstitutionInferenceArgumentFrom { get; }
+  public InferenceConclusionFormula? InferenceConclusionFormulaToSubstitutionInferenceArgumentTo { get; }
+
+  public InferenceAssumptionFormula? InferenceAssumptionFormulaToBound { get; }
+  public InferenceAssumptionFormula? InferenceAssumptionFormula { get; }
+  public InferenceAssumptionFormula? InferenceAssumptionFormulaToSubstitutionInferenceArgumentFrom { get; }
+  public InferenceAssumptionFormula? InferenceAssumptionFormulaToSubstitutionInferenceArgumentTo { get; }
+
   public List<InferenceArgumentConstraint>? InferenceArgumentConstraints { get; }
-  public List<InferenceConclusionFormula>? InferenceConclusionFormulas { get; }
-  public List<InferenceAssumptionFormula>? InferenceAssumptionFormulas { get; }
-  public List<InferenceAssumptionDissolutableAssumptionFormula>? InferenceAssumptionDissolutableAssumptionFormulas { get; }
 }

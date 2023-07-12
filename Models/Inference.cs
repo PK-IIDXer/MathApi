@@ -6,7 +6,9 @@ public class Inference
   public string Name { get; set;} = "";
   public bool IsAssumptionAdd { get; set; }
 
-  public List<InferenceArgument>? InferenceArguments { get; }
-  public List<InferenceAssumption>? InferenceAssumptions { get; }
-  public List<InferenceConclusionFormula> InferenceConclusionFormulas { get; } = new();
+  public List<InferenceArgument>? InferenceArguments { get; set; }
+  public List<InferenceAssumption>? InferenceAssumptions { get; set; }
+  public List<InferenceConclusionFormula> InferenceConclusionFormulas { get; set; } = new();
+
+  public Proof? Proof { get; }
 }

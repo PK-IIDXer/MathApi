@@ -11,9 +11,6 @@ public class FormulaString
   public Symbol Symbol { get; } = new();
   public long SymbolId { get; set; }
 
-  public List<FormulaChain>? FormulaChains { get; }
-
-  public List<InferenceAssumptionFormula>? InferenceAssumptionFormulas { get; }
-  public List<InferenceConclusionFormula>? InferenceConclusionFormulas { get; }
-  public List<InferenceAssumptionDissolutableAssumptionFormula>? InferenceAssumptionDissolutableAssumptionFormulas { get; }
+  public FormulaChain? FormulaChainAtFrom { get; }
+  public FormulaChain? FormulaChainAtTo { get; }
 }

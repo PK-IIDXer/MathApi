@@ -6,8 +6,8 @@ public class Theorem
   public string Name { get; set; } = null!;
   public bool IsProved { get; set; } = false;
 
-  public List<TheoremAssumption>? TheoremAssumptions { get; }
-  public List<TheoremConclusion> TheoremConclusions { get; } = new();
+  public List<TheoremAssumption>? TheoremAssumptions { get; set; }
+  public List<TheoremConclusion> TheoremConclusions { get; set; } = new();
 
   public List<ProofHead>? ProofHeads { get; } = new();
 }
