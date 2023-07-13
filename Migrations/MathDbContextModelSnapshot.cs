@@ -94,7 +94,7 @@ namespace MathApi.Migrations
                     b.HasIndex("FormulaId", "ToFormulaStringSerialNo")
                         .IsUnique();
 
-                    b.ToTable("FormulasChain");
+                    b.ToTable("FormulaChains");
                 });
 
             modelBuilder.Entity("MathApi.Models.FormulaString", b =>
@@ -183,7 +183,7 @@ namespace MathApi.Migrations
                     b.Property<long>("InferenceId")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("InferenceAssumptionSerialNo")
+                    b.Property<int>("InferenceArgumentSerialNo")
                         .HasColumnType("int");
 
                     b.Property<int>("SerialNo")
@@ -195,7 +195,7 @@ namespace MathApi.Migrations
                     b.Property<bool>("IsConstraintPredissolvedAssumption")
                         .HasColumnType("tinyint(1)");
 
-                    b.HasKey("InferenceId", "InferenceAssumptionSerialNo", "SerialNo");
+                    b.HasKey("InferenceId", "InferenceArgumentSerialNo", "SerialNo");
 
                     b.HasIndex("InferenceId", "ConstraintDestinationInferenceArgumentSerialNo");
 
@@ -780,12 +780,21 @@ namespace MathApi.Migrations
             modelBuilder.Entity("MathApi.Models.InferenceArgumentConstraint", b =>
                 {
                     b.HasOne("MathApi.Models.InferenceArgument", "ConstraintDestinationInferenceArgument")
-                        .WithMany("InferenceArgumentConstraints")
+                        .WithMany("InferenceArgumentConstraintDistinations")
                         .HasForeignKey("InferenceId", "ConstraintDestinationInferenceArgumentSerialNo")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("MathApi.Models.InferenceArgument", "InferenceArgument")
+                        .WithMany("InferenceArgumentConstraints")
+                        .HasForeignKey("InferenceId", "InferenceArgumentSerialNo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_InferenceArgumentConstraints_InferenceArguments_InferenceId~1");
+
                     b.Navigation("ConstraintDestinationInferenceArgument");
+
+                    b.Navigation("InferenceArgument");
                 });
 
             modelBuilder.Entity("MathApi.Models.InferenceAssumption", b =>
@@ -1111,6 +1120,8 @@ namespace MathApi.Migrations
 
             modelBuilder.Entity("MathApi.Models.InferenceArgument", b =>
                 {
+                    b.Navigation("InferenceArgumentConstraintDistinations");
+
                     b.Navigation("InferenceArgumentConstraints");
 
                     b.Navigation("InferenceAssumptionDissolutableAssumptionFormula");

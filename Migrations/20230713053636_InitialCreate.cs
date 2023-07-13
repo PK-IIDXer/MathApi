@@ -335,17 +335,23 @@ namespace MathApi.Migrations
                 columns: table => new
                 {
                     InferenceId = table.Column<long>(type: "bigint", nullable: false),
-                    InferenceAssumptionSerialNo = table.Column<int>(type: "int", nullable: false),
+                    InferenceArgumentSerialNo = table.Column<int>(type: "int", nullable: false),
                     SerialNo = table.Column<int>(type: "int", nullable: false),
                     ConstraintDestinationInferenceArgumentSerialNo = table.Column<int>(type: "int", nullable: false),
                     IsConstraintPredissolvedAssumption = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_InferenceArgumentConstraints", x => new { x.InferenceId, x.InferenceAssumptionSerialNo, x.SerialNo });
+                    table.PrimaryKey("PK_InferenceArgumentConstraints", x => new { x.InferenceId, x.InferenceArgumentSerialNo, x.SerialNo });
                     table.ForeignKey(
                         name: "FK_InferenceArgumentConstraints_InferenceArguments_InferenceId_~",
                         columns: x => new { x.InferenceId, x.ConstraintDestinationInferenceArgumentSerialNo },
+                        principalTable: "InferenceArguments",
+                        principalColumns: new[] { "InferenceId", "SerialNo" },
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_InferenceArgumentConstraints_InferenceArguments_InferenceId~1",
+                        columns: x => new { x.InferenceId, x.InferenceArgumentSerialNo },
                         principalTable: "InferenceArguments",
                         principalColumns: new[] { "InferenceId", "SerialNo" },
                         onDelete: ReferentialAction.Cascade);
@@ -634,7 +640,7 @@ namespace MathApi.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "FormulasChain",
+                name: "FormulaChains",
                 columns: table => new
                 {
                     FormulaId = table.Column<long>(type: "bigint", nullable: false),
@@ -644,21 +650,21 @@ namespace MathApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FormulasChain", x => new { x.FormulaId, x.SerialNo });
+                    table.PrimaryKey("PK_FormulaChains", x => new { x.FormulaId, x.SerialNo });
                     table.ForeignKey(
-                        name: "FK_FormulasChain_FormulaStrings_FormulaId_FromFormulaStringSeri~",
+                        name: "FK_FormulaChains_FormulaStrings_FormulaId_FromFormulaStringSeri~",
                         columns: x => new { x.FormulaId, x.FromFormulaStringSerialNo },
                         principalTable: "FormulaStrings",
                         principalColumns: new[] { "FormulaId", "SerialNo" },
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_FormulasChain_FormulaStrings_FormulaId_ToFormulaStringSerial~",
+                        name: "FK_FormulaChains_FormulaStrings_FormulaId_ToFormulaStringSerial~",
                         columns: x => new { x.FormulaId, x.ToFormulaStringSerialNo },
                         principalTable: "FormulaStrings",
                         principalColumns: new[] { "FormulaId", "SerialNo" },
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_FormulasChain_Formulas_FormulaId",
+                        name: "FK_FormulaChains_Formulas_FormulaId",
                         column: x => x.FormulaId,
                         principalTable: "Formulas",
                         principalColumn: "Id",
@@ -717,14 +723,14 @@ namespace MathApi.Migrations
                 column: "FormulaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FormulasChain_FormulaId_FromFormulaStringSerialNo",
-                table: "FormulasChain",
+                name: "IX_FormulaChains_FormulaId_FromFormulaStringSerialNo",
+                table: "FormulaChains",
                 columns: new[] { "FormulaId", "FromFormulaStringSerialNo" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_FormulasChain_FormulaId_ToFormulaStringSerialNo",
-                table: "FormulasChain",
+                name: "IX_FormulaChains_FormulaId_ToFormulaStringSerialNo",
+                table: "FormulaChains",
                 columns: new[] { "FormulaId", "ToFormulaStringSerialNo" },
                 unique: true);
 
@@ -918,7 +924,7 @@ namespace MathApi.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "FormulasChain");
+                name: "FormulaChains");
 
             migrationBuilder.DropTable(
                 name: "InferenceArgumentConstraints");

@@ -27,4 +27,5 @@ public class InferenceArgument
   public InferenceAssumptionFormula? InferenceAssumptionFormulaToSubstitutionInferenceArgumentTo { get; }
 
   public List<InferenceArgumentConstraint>? InferenceArgumentConstraints { get; }
+  public List<InferenceArgumentConstraint>? InferenceArgumentConstraintDistinations { get; }
 }

@@ -20,7 +20,7 @@ public class MathDbContext : DbContext
   public DbSet<Symbol> Symbols { get; set; } = null!;
   public DbSet<Formula> Formulas { get; set; } = null!;
   public DbSet<FormulaString> FormulaStrings { get; set; } = null!;
-  public DbSet<FormulaChain> FormulasChain { get; set;} = null!;
+  public DbSet<FormulaChain> FormulaChains { get; set;} = null!;
   public DbSet<Inference> Inferences { get; set; } = null!;
   public DbSet<InferenceArgumentType> InferenceArgumentTypes { get; set; } = null!;
   public DbSet<InferenceArgument> InferenceArguments { get; set; } = null!;
@@ -69,9 +69,13 @@ public class MathDbContext : DbContext
       .HasKey(ia => new { ia.InferenceId, ia.SerialNo });
     modelBuilder.Entity<InferenceArgumentConstraint>(
       nestedBuilder => {
-        nestedBuilder.HasKey(iac => new { iac.InferenceId, iac.InferenceAssumptionSerialNo, iac.SerialNo });
-        nestedBuilder.HasOne(iac => iac.ConstraintDestinationInferenceArgument)
+        nestedBuilder.HasKey(iac => new { iac.InferenceId, iac.InferenceArgumentSerialNo, iac.SerialNo });
+        nestedBuilder.HasOne(iac => iac.InferenceArgument)
                      .WithMany(ia => ia.InferenceArgumentConstraints)
+                     .HasPrincipalKey(ia => new { ia.InferenceId, ia.SerialNo })
+                     .HasForeignKey(iac => new { iac.InferenceId, iac.InferenceArgumentSerialNo });
+        nestedBuilder.HasOne(iac => iac.ConstraintDestinationInferenceArgument)
+                     .WithMany(ia => ia.InferenceArgumentConstraintDistinations)
                      .HasPrincipalKey(ia => new { ia.InferenceId, ia.SerialNo })
                      .HasForeignKey(iac => new { iac.InferenceId, iac.ConstraintDestinationInferenceArgumentSerialNo });
       }
