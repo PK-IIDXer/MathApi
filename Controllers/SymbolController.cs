@@ -24,10 +24,6 @@ namespace MathApi.Controllers
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Symbol>>> GetSymbols()
     {
-      if (_context.Symbols == null)
-      {
-        return NotFound();
-      }
       return await _context.Symbols.ToListAsync();
     }
 
@@ -35,10 +31,6 @@ namespace MathApi.Controllers
     [HttpGet("{id}")]
     public async Task<ActionResult<Symbol>> GetSymbol(long id)
     {
-      if (_context.Symbols == null)
-      {
-        return NotFound();
-      }
       var symbol = await _context.Symbols.FindAsync(id);
 
       if (symbol == null)
@@ -104,11 +96,6 @@ namespace MathApi.Controllers
     [HttpPost]
     public async Task<ActionResult<Symbol>> PostSymbol(Symbol symbol)
     {
-      if (_context.Symbols == null || _context.Formulas == null)
-      {
-        return Problem("Entity set 'MathDbContext.Symbols' 'MathDbContext.Formulas' are null.");
-      }
-
       var valid = Validate(symbol);
       if (valid != null)
       {
@@ -157,7 +144,7 @@ namespace MathApi.Controllers
         return NotFound();
       }
 
-      // 理式に使用されているかチェックし、使用されていればエラーとする
+      // 論理式に使用されているかチェックし、使用されていればエラーとする
       if (_context.FormulaStrings?.Count(fs => fs.SymbolId == id) > 0)
       {
         return BadRequest("Cannot delete if the symbol is contained in some Formulas");
@@ -174,7 +161,7 @@ namespace MathApi.Controllers
       return (_context.Symbols?.Any(e => e.Id == id)).GetValueOrDefault();
     }
 
-    public static string? Validate(Symbol symbol)
+    private static string? Validate(Symbol symbol)
     {
       if (symbol.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
         || symbol.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier)
