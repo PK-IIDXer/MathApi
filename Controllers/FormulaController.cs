@@ -231,7 +231,7 @@ namespace MathApi.Controllers
         }
 
         // 引数の論理式のChainは、From/Toをそれぞれ直前までの文字列の長さを足して作成する
-        foreach (var argFormulaChain in argFormula.FormulaChains)
+        foreach (var argFormulaChain in argFormula.FormulaChains ?? new List<FormulaChain>())
         {
           ret.Add(new FormulaChain
           {
@@ -256,7 +256,7 @@ namespace MathApi.Controllers
     {
       // 一文字目を取得
       var firstSymbol = await _context.Symbols.FindAsync(postParam.FirstSymbolId)
-                        ?? throw new InvalidDataException("_context.Symbols and _context.Formulas are null");
+                        ?? throw new InvalidDataException("first symbol is not found");
 
       // 一文字目が量化記号かどうかを取得
       var isQuant = firstSymbol.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
@@ -266,7 +266,8 @@ namespace MathApi.Controllers
       Symbol? boundVariable = null;
       if (isQuant)
       {
-        boundVariable = await _context.Symbols.FirstAsync(s => s.SymbolTypeId == (long)Const.SymbolType.BoundVariable);
+        boundVariable = await _context.Symbols.FirstAsync(s => s.SymbolTypeId == (long)Const.SymbolType.BoundVariable)
+                        ?? throw new InvalidDataException("bound variable is not found");
       }
 
       // 引数の論理式を取得
@@ -278,31 +279,17 @@ namespace MathApi.Controllers
           .ToListAsync();
         var argStrings = await _context.FormulaStrings
           .Where(f => postParam.ArgumentedFormulaIds.Contains(f.FormulaId))
-          .Select(f => new FormulaString
-            {
-              FormulaId = f.FormulaId,
-              SerialNo = f.SerialNo,
-              SymbolId = f.SymbolId,
-              Symbol = _context.Symbols.First(s => s.Id == f.SymbolId)
-            })
           .ToListAsync();
-        var argChains = await _context.FormulasChain
+        var argChains = await _context.FormulaChains
           .Where(f => postParam.ArgumentedFormulaIds.Contains(f.FormulaId))
           .ToListAsync();
-        var symbolTypes = await _context.SymbolTypes.Select(st => new SymbolType
-          {
-            Id = st.Id,
-            Name = st.Name,
-            FormulaTypeId = st.FormulaTypeId,
-            FormulaType = _context.FormulaTypes.First(ft => ft.Id == st.FormulaTypeId)
-          }).ToListAsync();
+        var symbolTypes = await _context.SymbolTypes.ToListAsync();
         foreach (var formula in argFormulas)
         {
           formula.FormulaStrings = argStrings.Where(s => s.FormulaId == formula.Id).OrderBy(s => s.SerialNo).ToList();
           foreach (var fs in formula.FormulaStrings)
           {
             _context.Entry(fs).State = EntityState.Unchanged;
-            fs.Symbol.SymbolType = symbolTypes.First(st => st.Id == fs.Symbol.SymbolTypeId);
             _context.Entry(fs.Symbol).State = EntityState.Unchanged;
           }
           formula.FormulaChains = argChains.Where(s => s.FormulaId == formula.Id).OrderBy(s => s.SerialNo).ToList();

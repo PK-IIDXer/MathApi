@@ -134,10 +134,6 @@ namespace MathApi.Controllers
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteSymbol(long id)
     {
-      if (_context.Symbols == null)
-      {
-        return NotFound();
-      }
       var symbol = await _context.Symbols.FindAsync(id);
       if (symbol == null)
       {

@@ -24,10 +24,6 @@ namespace MathApi.Controllers
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Inference>>> GetInferences()
     {
-      if (_context.Inferences == null)
-      {
-        return NotFound();
-      }
       return await _context.Inferences.ToListAsync();
     }
 
@@ -35,10 +31,6 @@ namespace MathApi.Controllers
     [HttpGet("{id}")]
     public async Task<ActionResult<Inference>> GetInference(long id)
     {
-      if (_context.Inferences == null)
-      {
-        return NotFound();
-      }
       var inference = await _context.Inferences.FindAsync(id);
 
       if (inference == null)
@@ -85,15 +77,6 @@ namespace MathApi.Controllers
     [HttpPost]
     public async Task<ActionResult<Inference>> PostInference(Inference inference)
     {
-      if (_context.Inferences == null)
-      {
-        return Problem("Entity set 'MathDbContext.Inferences'  is null.");
-      }
-      _context.Entry(inference.ConclusionFormula).State = EntityState.Unchanged;
-      foreach (var ia in inference.InferenceAssumptions)
-      {
-        _context.Entry(ia.Formula).State = EntityState.Unchanged;
-      }
       _context.Inferences.Add(inference);
       await _context.SaveChangesAsync();
 

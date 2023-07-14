@@ -8,7 +8,7 @@ public class InferenceAssumption
   public Inference Inference { get; set; } = new();
   public long InferenceId { get; set; }
   public int SerialNo { get; set; }
-  public InferenceAssumptionDissolutionType InferenceAssumptionDissolutionType { get; set; } = new();
+  public InferenceAssumptionDissolutionType InferenceAssumptionDissolutionType { get; } = new();
   public int InferenceAssumptionDissolutionTypeId { get; set; }
 
   public List<InferenceAssumptionFormula> InferenceAssumptionFormulas { get; set; } = new();
