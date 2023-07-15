@@ -90,35 +90,35 @@ public class MathDbContext : DbContext
                      .HasPrincipalKey(e => new { e.InferenceId, e.SerialNo })
                      .HasForeignKey(e => new { e.InferenceId, e.InferenceAssumptionSerialNo });
         nestedBuilder.HasOne(iadaf => iadaf.BoundInferenceArgument)
-                     .WithOne(iag => iag.InferenceAssumptionDissolutableAssumptionFormulaToBound)
-                     .HasPrincipalKey<InferenceArgument>(
+                     .WithMany(iag => iag.InferenceAssumptionDissolutableAssumptionFormulasToBound)
+                     .HasPrincipalKey(
                        iag => new { iag.InferenceId, iag.SerialNo }
                      )
-                     .HasForeignKey<InferenceAssumptionDissolutableAssumptionFormula>(
+                     .HasForeignKey(
                        iadaf => new { iadaf.InferenceId, iadaf.BoundInferenceArgumentSerialNo }
                      );
         nestedBuilder.HasOne(iadaf => iadaf.InferenceArgument)
-                     .WithOne(iag => iag.InferenceAssumptionDissolutableAssumptionFormula)
-                     .HasPrincipalKey<InferenceArgument>(
+                     .WithMany(iag => iag.InferenceAssumptionDissolutableAssumptionFormulas)
+                     .HasPrincipalKey(
                        iag => new { iag.InferenceId, iag.SerialNo }
                      )
-                     .HasForeignKey<InferenceAssumptionDissolutableAssumptionFormula>(
+                     .HasForeignKey(
                        iadaf => new { iadaf.InferenceId, iadaf.InferenceArgumentSerialNo }
                      );
         nestedBuilder.HasOne(iadaf => iadaf.SubstitutionInferenceArgumentFrom)
-                     .WithOne(iag => iag.InferenceAssumptionDissolutableAssumptionFormulaToSubstitutionInferenceArgumentFrom)
-                     .HasPrincipalKey<InferenceArgument>(
+                     .WithMany(iag => iag.InferenceAssumptionDissolutableAssumptionFormulasToSubstitutionInferenceArgumentFrom)
+                     .HasPrincipalKey(
                        iag => new { iag.InferenceId, iag.SerialNo }
                      )
-                     .HasForeignKey<InferenceAssumptionDissolutableAssumptionFormula>(
+                     .HasForeignKey(
                        iadaf => new { iadaf.InferenceId, iadaf.SubstitutionInferenceArgumentFromSerialNo }
                      );
         nestedBuilder.HasOne(iadaf => iadaf.SubstitutionInferenceArgumentTo)
-                     .WithOne(iag => iag.InferenceAssumptionDissolutableAssumptionFormulaToSubstitutionInferenceArgumentTo)
-                     .HasPrincipalKey<InferenceArgument>(
+                     .WithMany(iag => iag.InferenceAssumptionDissolutableAssumptionFormulasToSubstitutionInferenceArgumentTo)
+                     .HasPrincipalKey(
                        iag => new { iag.InferenceId, iag.SerialNo }
                      )
-                     .HasForeignKey<InferenceAssumptionDissolutableAssumptionFormula>(
+                     .HasForeignKey(
                        iadaf => new { iadaf.InferenceId, iadaf.SubstitutionInferenceArgumentToSerialNo }
                      );
       }
@@ -131,35 +131,35 @@ public class MathDbContext : DbContext
                      .HasPrincipalKey(e => new { e.InferenceId, e.SerialNo })
                      .HasForeignKey(e => new { e.InferenceId, e.InferenceAssumptionSerialNo });
         nestedBuilder.HasOne(iaf => iaf.BoundInferenceArgument)
-                     .WithOne(iag => iag.InferenceAssumptionFormulaToBound)
-                     .HasPrincipalKey<InferenceArgument>(
+                     .WithMany(iag => iag.InferenceAssumptionFormulasToBound)
+                     .HasPrincipalKey(
                        iag => new { iag.InferenceId, iag.SerialNo }
                      )
-                     .HasForeignKey<InferenceAssumptionFormula>(
+                     .HasForeignKey(
                        iaf => new { iaf.InferenceId, iaf.BoundInferenceArgumentSerialNo }
                      );
         nestedBuilder.HasOne(iaf => iaf.InferenceArgument)
-                     .WithOne(iag => iag.InferenceAssumptionFormula)
-                     .HasPrincipalKey<InferenceArgument>(
+                     .WithMany(iag => iag.InferenceAssumptionFormulas)
+                     .HasPrincipalKey(
                        iag => new { iag.InferenceId, iag.SerialNo }
                      )
-                     .HasForeignKey<InferenceAssumptionFormula>(
+                     .HasForeignKey(
                        iaf => new { iaf.InferenceId, iaf.InferenceArgumentSerialNo }
                      );
         nestedBuilder.HasOne(iaf => iaf.SubstitutionInferenceArgumentFrom)
-                     .WithOne(iag => iag.InferenceAssumptionFormulaToSubstitutionInferenceArgumentFrom)
-                     .HasPrincipalKey<InferenceArgument>(
+                     .WithMany(iag => iag.InferenceAssumptionFormulasToSubstitutionInferenceArgumentFrom)
+                     .HasPrincipalKey(
                        iag => new { iag.InferenceId, iag.SerialNo }
                      )
-                     .HasForeignKey<InferenceAssumptionFormula>(
+                     .HasForeignKey(
                        iag => new { iag.InferenceId, iag.SubstitutionInferenceArgumentFromSerialNo }
                      );
         nestedBuilder.HasOne(iaf => iaf.SubstitutionInferenceArgumentTo)
-                     .WithOne(iag => iag.InferenceAssumptionFormulaToSubstitutionInferenceArgumentTo)
-                     .HasPrincipalKey<InferenceArgument>(
+                     .WithMany(iag => iag.InferenceAssumptionFormulasToSubstitutionInferenceArgumentTo)
+                     .HasPrincipalKey(
                        iag => new { iag.InferenceId, iag.SerialNo }
                      )
-                     .HasForeignKey<InferenceAssumptionFormula>(
+                     .HasForeignKey(
                        iaf => new { iaf.InferenceId, iaf.SubstitutionInferenceArgumentToSerialNo }
                      );
       }
@@ -168,35 +168,35 @@ public class MathDbContext : DbContext
       nestedBuilder => {
         nestedBuilder.HasKey(icf => new { icf.InferenceId, icf.SerialNo });
         nestedBuilder.HasOne(icf => icf.BoundInferenceArgument)
-                     .WithOne(iag => iag.InferenceConclusionFormulaToBound)
-                     .HasPrincipalKey<InferenceArgument>(
+                     .WithMany(iag => iag.InferenceConclusionFormulasToBound)
+                     .HasPrincipalKey(
                        iag => new { iag.InferenceId, iag.SerialNo }
                      )
-                     .HasForeignKey<InferenceConclusionFormula>(
+                     .HasForeignKey(
                        icf => new { icf.InferenceId, icf.BoundInferenceArgumentSerialNo }
                      );
         nestedBuilder.HasOne(icf => icf.InferenceArgument)
-                     .WithOne(iag => iag.InferenceConclusionFormula)
-                     .HasPrincipalKey<InferenceArgument>(
+                     .WithMany(iag => iag.InferenceConclusionFormulas)
+                     .HasPrincipalKey(
                        icf => new { icf.InferenceId, icf.SerialNo }
                      )
-                     .HasForeignKey<InferenceConclusionFormula>(
+                     .HasForeignKey(
                        iag => new { iag.InferenceId, iag.InferenceArgumentSerialNo }
                      );
         nestedBuilder.HasOne(icf => icf.SubstitutionInferenceArgumentFrom)
-                     .WithOne(iag => iag.InferenceConclusionFormulaToSubstitutionInferenceArgumentFrom)
-                     .HasPrincipalKey<InferenceArgument>(
+                     .WithMany(iag => iag.InferenceConclusionFormulasToSubstitutionInferenceArgumentFrom)
+                     .HasPrincipalKey(
                        iag => new { iag.InferenceId, iag.SerialNo }
                      )
-                     .HasForeignKey<InferenceConclusionFormula>(
+                     .HasForeignKey(
                        icf => new { icf.InferenceId, icf.SubstitutionInferenceArgumentFromSerialNo }
                      );
         nestedBuilder.HasOne(icf => icf.SubstitutionInferenceArgumentTo)
-                     .WithOne(iag => iag.InferenceConclusionFormulaToSubstitutionInferenceArgumentTo)
-                     .HasPrincipalKey<InferenceArgument>(
+                     .WithMany(iag => iag.InferenceConclusionFormulasToSubstitutionInferenceArgumentTo)
+                     .HasPrincipalKey(
                        iag => new { iag.InferenceId, iag.SerialNo }
                      )
-                     .HasForeignKey<InferenceConclusionFormula>(
+                     .HasForeignKey(
                        icf => new { icf.InferenceId, icf.SubstitutionInferenceArgumentToSerialNo }
                      );
       }

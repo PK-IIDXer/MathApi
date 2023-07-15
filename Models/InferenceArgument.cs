@@ -11,20 +11,20 @@ public class InferenceArgument
   public InferenceArgumentType InferenceArgumentType { get; } = new();
   public int InferenceArgumentTypeId { get; set; }
 
-  public InferenceAssumptionDissolutableAssumptionFormula? InferenceAssumptionDissolutableAssumptionFormulaToBound { get; }
-  public InferenceAssumptionDissolutableAssumptionFormula? InferenceAssumptionDissolutableAssumptionFormula { get; }
-  public InferenceAssumptionDissolutableAssumptionFormula? InferenceAssumptionDissolutableAssumptionFormulaToSubstitutionInferenceArgumentFrom { get; }
-  public InferenceAssumptionDissolutableAssumptionFormula? InferenceAssumptionDissolutableAssumptionFormulaToSubstitutionInferenceArgumentTo { get; }
+  public List<InferenceAssumptionDissolutableAssumptionFormula>? InferenceAssumptionDissolutableAssumptionFormulasToBound { get; }
+  public List<InferenceAssumptionDissolutableAssumptionFormula>? InferenceAssumptionDissolutableAssumptionFormulas { get; }
+  public List<InferenceAssumptionDissolutableAssumptionFormula>? InferenceAssumptionDissolutableAssumptionFormulasToSubstitutionInferenceArgumentFrom { get; }
+  public List<InferenceAssumptionDissolutableAssumptionFormula>? InferenceAssumptionDissolutableAssumptionFormulasToSubstitutionInferenceArgumentTo { get; }
 
-  public InferenceConclusionFormula? InferenceConclusionFormulaToBound { get; }
-  public InferenceConclusionFormula? InferenceConclusionFormula { get; }
-  public InferenceConclusionFormula? InferenceConclusionFormulaToSubstitutionInferenceArgumentFrom { get; }
-  public InferenceConclusionFormula? InferenceConclusionFormulaToSubstitutionInferenceArgumentTo { get; }
+  public List<InferenceConclusionFormula>? InferenceConclusionFormulasToBound { get; }
+  public List<InferenceConclusionFormula>? InferenceConclusionFormulas { get; }
+  public List<InferenceConclusionFormula>? InferenceConclusionFormulasToSubstitutionInferenceArgumentFrom { get; }
+  public List<InferenceConclusionFormula>? InferenceConclusionFormulasToSubstitutionInferenceArgumentTo { get; }
 
-  public InferenceAssumptionFormula? InferenceAssumptionFormulaToBound { get; }
-  public InferenceAssumptionFormula? InferenceAssumptionFormula { get; }
-  public InferenceAssumptionFormula? InferenceAssumptionFormulaToSubstitutionInferenceArgumentFrom { get; }
-  public InferenceAssumptionFormula? InferenceAssumptionFormulaToSubstitutionInferenceArgumentTo { get; }
+  public List<InferenceAssumptionFormula>? InferenceAssumptionFormulasToBound { get; }
+  public List<InferenceAssumptionFormula>? InferenceAssumptionFormulas { get; }
+  public List<InferenceAssumptionFormula>? InferenceAssumptionFormulasToSubstitutionInferenceArgumentFrom { get; }
+  public List<InferenceAssumptionFormula>? InferenceAssumptionFormulasToSubstitutionInferenceArgumentTo { get; }
 
   public List<InferenceArgumentConstraint>? InferenceArgumentConstraints { get; }
   public List<InferenceArgumentConstraint>? InferenceArgumentConstraintDistinations { get; }

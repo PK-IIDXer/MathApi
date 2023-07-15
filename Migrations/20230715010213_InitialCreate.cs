@@ -213,12 +213,6 @@ namespace MathApi.Migrations
                 {
                     table.PrimaryKey("PK_InferenceAssumptions", x => new { x.InferenceId, x.SerialNo });
                     table.ForeignKey(
-                        name: "FK_InferenceAssumptions_InferenceAssumptionDissolutionTypes_Inf~",
-                        column: x => x.InferenceAssumptionDissolutionTypeId,
-                        principalTable: "InferenceAssumptionDissolutionTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_InferenceAssumptions_Inferences_InferenceId",
                         column: x => x.InferenceId,
                         principalTable: "Inferences",
@@ -752,26 +746,22 @@ namespace MathApi.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_InferenceAssumptionDissolutableAssumptionFormula_InferenceI~1",
                 table: "InferenceAssumptionDissolutableAssumptionFormula",
-                columns: new[] { "InferenceId", "InferenceArgumentSerialNo" },
-                unique: true);
+                columns: new[] { "InferenceId", "InferenceArgumentSerialNo" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_InferenceAssumptionDissolutableAssumptionFormula_InferenceI~2",
                 table: "InferenceAssumptionDissolutableAssumptionFormula",
-                columns: new[] { "InferenceId", "SubstitutionInferenceArgumentFromSerialNo" },
-                unique: true);
+                columns: new[] { "InferenceId", "SubstitutionInferenceArgumentFromSerialNo" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_InferenceAssumptionDissolutableAssumptionFormula_InferenceI~3",
                 table: "InferenceAssumptionDissolutableAssumptionFormula",
-                columns: new[] { "InferenceId", "SubstitutionInferenceArgumentToSerialNo" },
-                unique: true);
+                columns: new[] { "InferenceId", "SubstitutionInferenceArgumentToSerialNo" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_InferenceAssumptionDissolutableAssumptionFormula_InferenceId~",
                 table: "InferenceAssumptionDissolutableAssumptionFormula",
-                columns: new[] { "InferenceId", "BoundInferenceArgumentSerialNo" },
-                unique: true);
+                columns: new[] { "InferenceId", "BoundInferenceArgumentSerialNo" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_InferenceAssumptionDissolutableAssumptionFormula_SymbolId",
@@ -781,26 +771,22 @@ namespace MathApi.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_InferenceAssumptionFormulas_InferenceId_BoundInferenceArgume~",
                 table: "InferenceAssumptionFormulas",
-                columns: new[] { "InferenceId", "BoundInferenceArgumentSerialNo" },
-                unique: true);
+                columns: new[] { "InferenceId", "BoundInferenceArgumentSerialNo" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_InferenceAssumptionFormulas_InferenceId_InferenceArgumentSer~",
                 table: "InferenceAssumptionFormulas",
-                columns: new[] { "InferenceId", "InferenceArgumentSerialNo" },
-                unique: true);
+                columns: new[] { "InferenceId", "InferenceArgumentSerialNo" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_InferenceAssumptionFormulas_InferenceId_SubstitutionInferen~1",
                 table: "InferenceAssumptionFormulas",
-                columns: new[] { "InferenceId", "SubstitutionInferenceArgumentToSerialNo" },
-                unique: true);
+                columns: new[] { "InferenceId", "SubstitutionInferenceArgumentToSerialNo" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_InferenceAssumptionFormulas_InferenceId_SubstitutionInferenc~",
                 table: "InferenceAssumptionFormulas",
-                columns: new[] { "InferenceId", "SubstitutionInferenceArgumentFromSerialNo" },
-                unique: true);
+                columns: new[] { "InferenceId", "SubstitutionInferenceArgumentFromSerialNo" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_InferenceAssumptionFormulas_SymbolId",
@@ -808,33 +794,24 @@ namespace MathApi.Migrations
                 column: "SymbolId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_InferenceAssumptions_InferenceAssumptionDissolutionTypeId",
-                table: "InferenceAssumptions",
-                column: "InferenceAssumptionDissolutionTypeId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_InferenceConclusionFormulas_InferenceId_BoundInferenceArgume~",
                 table: "InferenceConclusionFormulas",
-                columns: new[] { "InferenceId", "BoundInferenceArgumentSerialNo" },
-                unique: true);
+                columns: new[] { "InferenceId", "BoundInferenceArgumentSerialNo" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_InferenceConclusionFormulas_InferenceId_InferenceArgumentSer~",
                 table: "InferenceConclusionFormulas",
-                columns: new[] { "InferenceId", "InferenceArgumentSerialNo" },
-                unique: true);
+                columns: new[] { "InferenceId", "InferenceArgumentSerialNo" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_InferenceConclusionFormulas_InferenceId_SubstitutionInferen~1",
                 table: "InferenceConclusionFormulas",
-                columns: new[] { "InferenceId", "SubstitutionInferenceArgumentToSerialNo" },
-                unique: true);
+                columns: new[] { "InferenceId", "SubstitutionInferenceArgumentToSerialNo" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_InferenceConclusionFormulas_InferenceId_SubstitutionInferenc~",
                 table: "InferenceConclusionFormulas",
-                columns: new[] { "InferenceId", "SubstitutionInferenceArgumentFromSerialNo" },
-                unique: true);
+                columns: new[] { "InferenceId", "SubstitutionInferenceArgumentFromSerialNo" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_InferenceConclusionFormulas_SymbolId",
@@ -933,6 +910,9 @@ namespace MathApi.Migrations
                 name: "InferenceAssumptionDissolutableAssumptionFormula");
 
             migrationBuilder.DropTable(
+                name: "InferenceAssumptionDissolutionTypes");
+
+            migrationBuilder.DropTable(
                 name: "InferenceAssumptionFormulas");
 
             migrationBuilder.DropTable(
@@ -967,9 +947,6 @@ namespace MathApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "Symbols");
-
-            migrationBuilder.DropTable(
-                name: "InferenceAssumptionDissolutionTypes");
 
             migrationBuilder.DropTable(
                 name: "InferenceArgumentTypes");
