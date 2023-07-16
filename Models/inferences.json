@@ -2,23 +2,23 @@
   {
     "name": "仮定",
     "isAssumptionAdd": true,
-    "inferenceArguments": [
+    "arguments": [
       {
         "serialNo": 0,
         "inferenceArgumentTypeId": 2
       }
     ],
-    "inferenceConclusionFormulas": [
+    "conclusions": [
       {
         "serialNo": 0,
-        "inferenceArgumentSerialNo": 0
+        "argumentSerialNo": 0
       }
     ]
   },
   {
     "name": "∧導入",
     "isAssumptionAdd": false,
-    "inferenceArguments": [
+    "arguments": [
       {
         "serialNo": 0,
         "inferenceArgumentTypeId": 2
@@ -28,49 +28,47 @@
         "inferenceArgumentTypeId": 2
       }
     ],
-    "inferenceAssumptions": [
+    "assumptions": [
       {
         "serialNo": 0,
-        "inferenceAssumptionDissolutionTypeId": 1,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 1,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 0,
-            "inferenceArgumentSerialNo": 0
+            "argumentSerialNo": 0
           }
         ]
       },
       {
         "serialNo": 1,
-        "inferenceAssumptionDissolutionTypeId": 1,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 1,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 1,
             "serialNo": 0,
-            "inferenceArgumentSerialNo": 1
+            "argumentSerialNo": 1
           }
         ]
       }
     ],
-    "inferenceConclusionFormulas": [
+    "conclusions": [
       {
         "serialNo": 0,
         "symbolId": 5
       },
       {
         "serialNo": 1,
-        "inferenceArgumentSerialNo": 0
+        "argumentSerialNo": 0
       },
       {
         "serialNo": 2,
-        "inferenceArgumentSerialNo": 1
+        "argumentSerialNo": 1
       }
     ]
   },
   {
     "name": "∧除去(左)",
     "isAssumptionAdd": false,
-    "inferenceArguments": [
+    "arguments": [
       {
         "serialNo": 0,
         "inferenceArgumentTypeId": 2
@@ -80,40 +78,37 @@
         "inferenceArgumentTypeId": 2
       }
     ],
-    "inferenceAssumptions": [
+    "assumptions": [
       {
         "serialNo": 0,
-        "inferenceAssumptionDissolutionTypeId": 1,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 1,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 0,
             "symbolId": 5
           },
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 1,
-            "inferenceArgumentSerialNo": 0
+            "argumentSerialNo": 0
           },
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 2,
-            "inferenceArgumentSerialNo": 1
+            "argumentSerialNo": 1
           }
         ]
       }
     ],
-    "inferenceConclusionFormulas": [
+    "conclusions": [
       {
         "serialNo": 0,
-        "inferenceArgumentSerialNo": 0
+        "argumentSerialNo": 0
       }
     ]
   },
   {
     "name": "∧除去(右)",
     "isAssumptionAdd": false,
-    "inferenceArguments": [
+    "arguments": [
       {
         "serialNo": 0,
         "inferenceArgumentTypeId": 2
@@ -123,40 +118,37 @@
         "inferenceArgumentTypeId": 2
       }
     ],
-    "inferenceAssumptions": [
+    "assumptions": [
       {
         "serialNo": 0,
-        "inferenceAssumptionDissolutionTypeId": 1,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 1,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 0,
             "symbolId": 5
           },
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 1,
-            "inferenceArgumentSerialNo": 0
+            "argumentSerialNo": 0
           },
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 2,
-            "inferenceArgumentSerialNo": 1
+            "argumentSerialNo": 1
           }
         ]
       }
     ],
-    "inferenceConclusionFormulas": [
+    "conclusions": [
       {
         "serialNo": 0,
-        "inferenceArgumentSerialNo": 1
+        "argumentSerialNo": 1
       }
     ]
   },
   {
     "name": "∨導入(左)",
     "isAssumptionAdd": false,
-    "inferenceArguments": [
+    "arguments": [
       {
         "serialNo": 0,
         "inferenceArgumentTypeId": 2
@@ -166,38 +158,37 @@
         "inferenceArgumentTypeId": 2
       }
     ],
-    "inferenceAssumptions": [
+    "assumptions": [
       {
         "serialNo": 0,
-        "inferenceAssumptionDissolutionTypeId": 1,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 1,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 0,
-            "inferenceArgumentSerialNo": 0
+            "argumentSerialNo": 0
           }
         ]
       }
     ],
-    "inferenceConclusionFormulas": [
+    "conclusions": [
       {
         "serialNo": 0,
         "symbolId": 6
       },
       {
         "serialNo": 1,
-        "inferenceArgumentSerialNo": 0
+        "argumentSerialNo": 0
       },
       {
         "serialNo": 2,
-        "inferenceArgumentSerialNo": 1
+        "argumentSerialNo": 1
       }
     ]
   },
   {
     "name": "∨導入(右)",
     "isAssumptionAdd": false,
-    "inferenceArguments": [
+    "arguments": [
       {
         "serialNo": 0,
         "inferenceArgumentTypeId": 2
@@ -207,38 +198,37 @@
         "inferenceArgumentTypeId": 2
       }
     ],
-    "inferenceAssumptions": [
+    "assumptions": [
       {
         "serialNo": 0,
-        "inferenceAssumptionDissolutionTypeId": 1,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 1,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 0,
-            "inferenceArgumentSerialNo": 0
+            "argumentSerialNo": 0
           }
         ]
       }
     ],
-    "inferenceConclusionFormulas": [
+    "conclusions": [
       {
         "serialNo": 0,
         "symbolId": 6
       },
       {
         "serialNo": 1,
-        "inferenceArgumentSerialNo": 1
+        "argumentSerialNo": 1
       },
       {
         "serialNo": 2,
-        "inferenceArgumentSerialNo": 0
+        "argumentSerialNo": 0
       }
     ]
   },
   {
     "name": "∨除去",
     "isAssumptionAdd": false,
-    "inferenceArguments": [
+    "arguments": [
       {
         "serialNo": 0,
         "inferenceArgumentTypeId": 2
@@ -252,76 +242,69 @@
         "inferenceArgumentTypeId": 2
       }
     ],
-    "inferenceAssumptions": [
+    "assumptions": [
       {
         "serialNo": 0,
-        "inferenceAssumptionDissolutionTypeId": 0,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 0,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 0,
             "symbolId": 6
           },
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 1,
-            "inferenceArgumentSerialNo": 0
+            "argumentSerialNo": 0
           },
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 2,
-            "inferenceArgumentSerialNo": 1
+            "argumentSerialNo": 1
           }
         ]
       },
       {
         "serialNo": 1,
-        "inferenceAssumptionDissolutionTypeId": 3,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 3,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 1,
             "serialNo": 0,
-            "inferenceArgumentSerialNo": 2
+            "argumentSerialNo": 2
           }
         ],
-        "inferenceAssumptionDissolutableAssumptionFormulas": [
+        "dissolutableAssumptionFormulas": [
           {
-            "inferenceAssumptionSerialNo": 1,
             "serialNo": 0,
-            "inferenceArgumentSerialNo": 0
+            "argumentSerialNo": 0
           }
         ]
       },
       {
         "serialNo": 2,
-        "inferenceAssumptionDissolutionTypeId": 3,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 3,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 2,
             "serialNo": 0,
-            "inferenceArgumentSerialNo": 2
+            "argumentSerialNo": 2
           }
         ],
-        "inferenceAssumptionDissolutableAssumptionFormulas": [
+        "dissolutableAssumptionFormulas": [
           {
-            "inferenceAssumptionSerialNo": 2,
             "serialNo": 0,
-            "inferenceArgumentSerialNo": 1
+            "argumentSerialNo": 1
           }
         ]
       }
     ],
-    "inferenceConclusionFormulas": [
+    "conclusions": [
       {
         "serialNo": 0,
-        "inferenceArgumentSerialNo": 2
+        "argumentSerialNo": 2
       }
     ]
   },
   {
     "name": "→導入",
     "isAssumptionAdd": false,
-    "inferenceArguments": [
+    "arguments": [
       {
         "serialNo": 0,
         "inferenceArgumentTypeId": 2
@@ -331,45 +314,43 @@
         "inferenceArgumentTypeId": 2
       }
     ],
-    "inferenceAssumptions": [
+    "assumptions": [
       {
         "serialNo": 0,
-        "inferenceAssumptionDissolutionTypeId": 3,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 3,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 0,
-            "inferenceArgumentSerialNo": 1
+            "argumentSerialNo": 1
           }
         ],
-        "inferenceAssumptionDissolutableAssumptionFormulas": [
+        "dissolutableAssumptionFormulas": [
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 0,
-            "inferenceArgumentSerialNo": 0
+            "argumentSerialNo": 0
           }
         ]
       }
     ],
-    "inferenceConclusionFormulas": [
+    "conclusions": [
       {
         "serialNo": 0,
         "symbolId": 7
       },
       {
         "serialNo": 1,
-        "inferenceArgumentSerialNo": 0
+        "argumentSerialNo": 0
       },
       {
         "serialNo": 2,
-        "inferenceArgumentSerialNo": 0
+        "argumentSerialNo": 0
       }
     ]
   },
   {
     "name": "→除去",
     "isAssumptionAdd": false,
-    "inferenceArguments": [
+    "arguments": [
       {
         "serialNo": 0,
         "inferenceArgumentTypeId": 2
@@ -379,126 +360,117 @@
         "inferenceArgumentTypeId": 2
       }
     ],
-    "inferenceAssumptions": [
+    "assumptions": [
       {
         "serialNo": 0,
-        "inferenceAssumptionDissolutionTypeId": 1,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 1,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 0,
             "symbolId": 7
           },
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 1,
-            "inferenceArgumentSerialNo": 0
+            "argumentSerialNo": 0
           },
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 2,
-            "inferenceArgumentSerialNo": 1
+            "argumentSerialNo": 1
           }
         ]
       },
       {
         "serialNo": 1,
-        "inferenceAssumptionDissolutionTypeId": 1,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 1,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 1,
             "serialNo": 0,
-            "inferenceArgumentSerialNo": 0
+            "argumentSerialNo": 0
           }
         ]
       }
     ],
-    "inferenceConclusionFormulas": [
+    "conclusions": [
       {
         "serialNo": 0,
-        "inferenceArgumentSerialNo": 1
+        "argumentSerialNo": 1
       }
     ]
   },
   {
     "name": "￢導入",
     "isAssumptionAdd": false,
-    "inferenceArguments": [
+    "arguments": [
       {
         "serialNo": 0,
         "inferenceArgumentTypeId": 2
       }
     ],
-    "inferenceAssumptions": [
+    "assumptions": [
       {
         "serialNo": 0,
-        "inferenceAssumptionDissolutionTypeId": 2,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 2,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 0,
             "symbolId": 3
           }
         ],
-        "inferenceAssumptionDissolutableAssumptionFormulas": [
+        "dissolutableAssumptionFormulas": [
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 0,
-            "inferenceArgumentSerialNo": 0
+            "argumentSerialNo": 0
           }
         ]
       }
     ],
-    "inferenceConclusionFormulas": [
+    "conclusions": [
       {
         "serialNo": 0,
         "symbolId": 4
       },
       {
         "serialNo": 1,
-        "inferenceArgumentSerialNo": 0
+        "argumentSerialNo": 0
       }
     ]
   },
   {
     "name": "￢除去",
     "isAssumptionAdd": false,
-    "inferenceArguments": [
+    "arguments": [
       {
         "serialNo": 0,
         "inferenceArgumentTypeId": 2
       }
     ],
-    "inferenceAssumptions": [
+    "assumptions": [
       {
         "serialNo": 0,
-        "inferenceAssumptionDissolutionTypeId": 1,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 1,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 0,
             "symbolId": 4
           },
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 1,
-            "inferenceArgumentSerialNo": 0
+            "argumentSerialNo": 0
           }
         ]
       },
       {
         "serialNo": 1,
-        "inferenceAssumptionDissolutionTypeId": 1,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 1,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 1,
             "serialNo": 0,
-            "inferenceArgumentSerialNo": 0
+            "argumentSerialNo": 0
           }
         ]
       }
     ],
-    "inferenceConclusionFormulas": [
+    "conclusions": [
       {
         "serialNo": 0,
         "symbolId": 3
@@ -508,77 +480,73 @@
   {
     "name": "背理法",
     "isAssumptionAdd": false,
-    "inferenceArguments": [
+    "arguments": [
       {
         "serialNo": 0,
         "inferenceArgumentTypeId": 2
       }
     ],
-    "inferenceAssumptions": [
+    "assumptions": [
       {
         "serialNo": 0,
-        "inferenceAssumptionDissolutionTypeId": 2,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 2,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 0,
             "symbolId": 3
           }
         ],
-        "inferenceAssumptionDissolutableAssumptionFormulas": [
+        "dissolutableAssumptionFormulas": [
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 0,
             "symbolId": 4
           },
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 1,
-            "inferenceArgumentSerialNo": 0
+            "argumentSerialNo": 0
           }
         ]
       }
     ],
-    "inferenceConclusionFormulas": [
+    "conclusions": [
       {
         "serialNo": 0,
-        "inferenceArgumentSerialNo": 0
+        "argumentSerialNo": 0
       }
     ]
   },
   {
     "name": "矛盾",
     "isAssumptionAdd": false,
-    "inferenceArguments": [
+    "arguments": [
       {
         "serialNo": 0,
         "inferenceArgumentTypeId": 2
       }
     ],
-    "inferenceAssumptions": [
+    "assumptions": [
       {
         "serialNo": 0,
-        "inferenceAssumptionDissolutionTypeId": 1,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 1,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 0,
             "symbolId": 3
           }
         ]
       }
     ],
-    "inferenceConclusionFormulas": [
+    "conclusions": [
       {
         "serialNo": 0,
-        "inferenceArgumentSerialNo": 0
+        "argumentSerialNo": 0
       }
     ]
   },
   {
     "name": "∀導入",
     "isAssumptionAdd": false,
-    "inferenceArguments": [
+    "arguments": [
       {
         "serialNo": 0,
         "inferenceArgumentTypeId": 2
@@ -590,50 +558,48 @@
       {
         "serialNo": 2,
         "inferenceArgumentTypeId": 3,
-        "inferenceArgumentConstraints": [
+        "constraints": [
           {
-            "inferenceArgumentSerialNo": 2,
             "serialNo": 0,
-            "constraintDestinationInferenceArgumentSerialNo": 0,
+            "destinationArgumentSerialNo": 0,
             "isConstraintPredissolvedAssumption": true
           }
         ]
       }
     ],
-    "inferenceAssumptions": [
+    "assumptions": [
       {
         "serialNo": 0,
-        "inferenceAssumptionDissolutionTypeId": 1,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 1,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 0,
-            "inferenceArgumentSerialNo": 0,
-            "substitutionInferenceArgumentFromSerialNo": 1,
-            "substitutionInferenceArgumentToSerialNo": 2
+            "argumentSerialNo": 0,
+            "substitutionArgumentFromSerialNo": 1,
+            "substitutionArgumentToSerialNo": 2
           }
         ]
       }
     ],
-    "inferenceConclusionFormulas": [
+    "conclusions": [
       {
         "serialNo": 0,
         "symbolId": 8
       },
       {
         "serialNo": 1,
-        "boundInferenceArgumentSerialNo": 1
+        "boundArgumentSerialNo": 1
       },
       {
         "serialNo": 2,
-        "inferenceArgumentSerialNo": 0
+        "argumentSerialNo": 0
       }
     ]
   },
   {
     "name": "∀除去",
     "isAssumptionAdd": false,
-    "inferenceArguments": [
+    "arguments": [
       {
         "serialNo": 0,
         "inferenceArgumentTypeId": 2
@@ -647,42 +613,39 @@
         "inferenceArgumentTypeId": 1
       }
     ],
-    "inferenceAssumptions": [
+    "assumptions": [
       {
         "serialNo": 0,
-        "inferenceAssumptionDissolutionTypeId": 1,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 1,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 0,
             "symbolId": 8
           },
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 1,
-            "boundInferenceArgumentSerialNo": 1
+            "boundArgumentSerialNo": 1
           },
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 2,
-            "inferenceArgumentSerialNo": 0
+            "argumentSerialNo": 0
           }
         ]
       }
     ],
-    "inferenceConclusionFormulas": [
+    "conclusions": [
       {
         "serialNo": 0,
-        "inferenceArgumentSerialNo": 0,
-        "substitutionInferenceArgumentFromSerialNo": 1,
-        "substitutionInferenceArgumentToSerialNo": 2
+        "argumentSerialNo": 0,
+        "substitutionArgumentFromSerialNo": 1,
+        "substitutionArgumentToSerialNo": 2
       }
     ]
   },
   {
     "name": "∃導入",
     "isAssumptionAdd": false,
-    "inferenceArguments": [
+    "arguments": [
       {
         "serialNo": 0,
         "inferenceArgumentTypeId": 2
@@ -696,40 +659,39 @@
         "inferenceArgumentTypeId": 1
       }
     ],
-    "inferenceAssumptions": [
+    "assumptions": [
       {
         "serialNo": 0,
-        "inferenceAssumptionDissolutionTypeId": 1,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 1,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 0,
-            "inferenceArgumentSerialNo": 0,
-            "substitutionInferenceArgumentFromSerialNo": 1,
-            "substitutionInferenceArgumentToSerialNo": 2
+            "argumentSerialNo": 0,
+            "substitutionArgumentFromSerialNo": 1,
+            "substitutionArgumentToSerialNo": 2
           }
         ]
       }
     ],
-    "inferenceConclusionFormulas": [
+    "conclusions": [
       {
         "serialNo": 0,
         "symbolId": 9
       },
       {
         "serialNo": 1,
-        "boundInferenceArgumentSerialNo": 1
+        "boundArgumentSerialNo": 1
       },
       {
         "serialNo": 2,
-        "inferenceArgumentSerialNo": 0
+        "argumentSerialNo": 0
       }
     ]
   },
   {
     "name": "∃除去",
     "isAssumptionAdd": false,
-    "inferenceArguments": [
+    "arguments": [
       {
         "serialNo": 0,
         "inferenceArgumentTypeId": 2
@@ -745,100 +707,93 @@
       {
         "serialNo": 3,
         "inferenceArgumentTypeId": 3,
-        "inferenceArgumentConstraints": [
+        "constraints": [
           {
-            "inferenceArgumentSerialNo": 3,
             "serialNo": 0,
-            "constraintDestinationInferenceArgumentSerialNo": 0,
+            "destinationArgumentSerialNo": 0,
             "isConstraintPredissolvedAssumption": false
           },
           {
-            "inferenceArgumentSerialNo": 3,
             "serialNo": 1,
-            "constraintDestinationInferenceArgumentSerialNo": 1,
+            "destinationArgumentSerialNo": 1,
             "isConstraintPredissolvedAssumption": true
           }
         ]
       }
     ],
-    "inferenceAssumptions": [
+    "assumptions": [
       {
         "serialNo": 0,
-        "inferenceAssumptionDissolutionTypeId": 1,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 1,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 0,
             "symbolId": 9
           },
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 1,
-            "boundInferenceArgumentSerialNo": 2
+            "boundArgumentSerialNo": 2
           },
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 2,
-            "inferenceArgumentSerialNo": 0
+            "argumentSerialNo": 0
           }
         ]
       },
       {
         "serialNo": 1,
-        "inferenceAssumptionDissolutionTypeId": 2,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 2,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 1,
             "serialNo": 0,
-            "inferenceArgumentSerialNo": 1
+            "argumentSerialNo": 1
           }
         ],
-        "inferenceAssumptionDissolutableAssumptionFormulas": [
+        "dissolutableAssumptionFormulas": [
           {
-            "inferenceAssumptionSerialNo": 1,
             "serialNo": 0,
-            "inferenceArgumentSerialNo": 0,
-            "substitutionInferenceArgumentFromSerialNo": 2,
-            "substitutionInferenceArgumentToSerialNo": 3
+            "argumentSerialNo": 0,
+            "substitutionArgumentFromSerialNo": 2,
+            "substitutionArgumentToSerialNo": 3
           }
         ]
       }
     ],
-    "inferenceConclusionFormulas": [
+    "conclusions": [
       {
         "serialNo": 0,
-        "inferenceArgumentSerialNo": 1
+        "argumentSerialNo": 1
       }
     ]
   },
   {
     "name": "等号公理",
     "isAssumptionAdd": false,
-    "inferenceArguments": [
+    "arguments": [
       {
         "serialNo": 0,
         "inferenceArgumentTypeId": 1
       }
     ],
-    "inferenceConclusionFormulas": [
+    "conclusions": [
       {
         "serialNo": 0,
         "symbolId": 2
       },
       {
         "serialNo": 1,
-        "inferenceArgumentSerialNo": 0
+        "argumentSerialNo": 0
       },
       {
         "serialNo": 2,
-        "inferenceArgumentSerialNo": 0
+        "argumentSerialNo": 0
       }
     ]
   },
   {
     "name": "等号規則",
     "isAssumptionAdd": false,
-    "inferenceArguments": [
+    "arguments": [
       {
         "serialNo": 0,
         "inferenceArgumentTypeId": 2
@@ -856,48 +811,44 @@
         "inferenceArgumentTypeId": 1
       }
     ],
-    "inferenceAssumptions": [
+    "assumptions": [
       {
         "serialNo": 0,
-        "inferenceAssumptionDissolutionTypeId": 1,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 1,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 0,
             "serialNo": 0,
-            "inferenceArgumentSerialNo": 0,
-            "substitutionInferenceArgumentFromSerialNo": 1,
-            "substitutionInferenceArgumentToSerialNo": 2
+            "argumentSerialNo": 0,
+            "substitutionArgumentFromSerialNo": 1,
+            "substitutionArgumentToSerialNo": 2
           }
         ]
       },
       {
         "serialNo": 1,
-        "inferenceAssumptionDissolutionTypeId": 1,
-        "inferenceAssumptionFormulas": [
+        "dissolutionTypeId": 1,
+        "formulas": [
           {
-            "inferenceAssumptionSerialNo": 1,
             "serialNo": 0,
             "symbolId": 2
           },
           {
-            "inferenceAssumptionSerialNo": 1,
             "serialNo": 1,
-            "inferenceArgumentSerialNo": 2
+            "argumentSerialNo": 2
           },
           {
-            "inferenceAssumptionSerialNo": 1,
             "serialNo": 2,
-            "inferenceArgumentSerialNo": 3
+            "argumentSerialNo": 3
           }
         ]
       }
     ],
-    "inferenceConclusionFormulas": [
+    "conclusions": [
       {
         "serialNo": 0,
-        "inferenceArgumentSerialNo": 0,
-        "substitutionInferenceArgumentFromSerialNo": 1,
-        "substitutionInferenceArgumentToSerialNo": 3
+        "argumentSerialNo": 0,
+        "substitutionArgumentFromSerialNo": 1,
+        "substitutionArgumentToSerialNo": 3
       }
     ]
   }
