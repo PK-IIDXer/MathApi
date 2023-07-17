@@ -14,7 +14,7 @@ public class Formula
   public List<AxiomProposition>? AxiomPropositions { get; }
   public List<TheoremConclusion>? TheoremConclusions { get; }
   public List<TheoremAssumption>? TheoremAssumptions { get; }
-  public Proof? Proof { get; }
-  public List<ProofArgument>? ProofArguments { get; }
+  public List<ProofInference>? ProofInferences { get; }
+  public List<ProofInferenceArgument>? ProofInferenceArguments { get; }
   public List<ProofAssumption>? ProofAssumptions { get; }
 }

@@ -108,5 +108,24 @@ namespace MathApi.Controllers
     {
       return (_context.Inferences?.Any(e => e.Id == id)).GetValueOrDefault();
     }
+
+    // private string? ValidateParam(InferenceDto dto)
+    // {
+    //   if (dto.Conclusions.Count == 0)
+    //   {
+    //     return "Conclusion is null";
+    //   }
+
+    //   var usedSymbols = new List<Symbol>();
+    //   for (var i = 0; i < dto.Conclusions.Count; i ++)
+    //   {
+    //     var conclusion = dto.Conclusions.Find(c => c.SerialNo == i);
+    //     if (!usedSymbols.Any(u => u.Id == conclusion.SymbolId))
+    //     {
+    //       usedSymbols.Add(_context.Symbols.Find(conclusion.SymbolId));
+    //     }
+    //     if (conclusion.)
+    //   }
+    // }
   }
 }

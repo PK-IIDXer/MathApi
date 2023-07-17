@@ -2,13 +2,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MathApi.Models;
 
-[PrimaryKey(nameof(ProofHeadId), nameof(ProofHeadSerialNo), nameof(ProofSerialNo), nameof(SerialNo))]
-public class ProofArgument
+[PrimaryKey(nameof(ProofId), nameof(ProofSerialNo), nameof(ProofInferenceSerialNo), nameof(SerialNo))]
+public class ProofInferenceArgument
 {
-  public Proof Proof { get; } = new();
-  public long ProofHeadId { get; set; }
-  public long ProofHeadSerialNo { get; set; }
+  public ProofInference ProofInference { get; } = new();
+  public long ProofId { get; set; }
   public long ProofSerialNo { get; set; }
+  public long ProofInferenceSerialNo { get; set; }
   public long SerialNo { get; set; }
   public AxiomProposition? AxiomProposition { get; }
   public long? AxiomId { get; set; }

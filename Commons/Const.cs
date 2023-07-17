@@ -22,3 +22,21 @@ public enum FormulaType : long {
   Term = 1,
   Proposition = 2
 }
+
+/// <summary>
+/// 推論規則引数タイプ
+/// </summary>
+public enum InferenceArgumentType : int {
+  Term = 1,
+  Proposition = 2,
+  FreeVariable = 3
+}
+
+/// <summary>
+/// 推論規則仮定解消タイプ
+/// </summary>
+public enum InferenceAssumptionDissolutionType : int {
+  None = 1,
+  Required = 2,
+  Necessary = 3
+}

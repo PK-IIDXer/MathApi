@@ -10,5 +10,5 @@ public class Inference
   public List<InferenceAssumption>? InferenceAssumptions { get; set; }
   public List<InferenceConclusionFormula> InferenceConclusionFormulas { get; set; } = new();
 
-  public Proof? Proof { get; }
+  public List<ProofInference>? ProofInferences { get; }
 }

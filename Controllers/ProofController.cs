@@ -22,16 +22,16 @@ namespace MathApi.Controllers
 
     // GET: api/Proof
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ProofHead>>> GetProofHeads()
+    public async Task<ActionResult<IEnumerable<Proof>>> GetProofHeads()
     {
-      return await _context.ProofHeads.ToListAsync();
+      return await _context.Proofs.ToListAsync();
     }
 
     // GET: api/Proof/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<ProofHead>> GetProofHead(long id)
+    public async Task<ActionResult<Proof>> GetProofHead(long id)
     {
-      var proofHead = await _context.ProofHeads.FindAsync(id);
+      var proofHead = await _context.Proofs.FindAsync(id);
 
       if (proofHead == null)
       {
@@ -44,9 +44,9 @@ namespace MathApi.Controllers
     // PUT: api/Proof/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutProofHead(long id, ProofHead proofHead)
+    public async Task<IActionResult> PutProofHead(long id, Proof proofHead)
     {
-      if (id != proofHead.Id)
+      if (id != proofHead.TheoremId)
       {
         return BadRequest();
       }
@@ -75,16 +75,16 @@ namespace MathApi.Controllers
     // POST: api/Proof
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<ProofHead>> PostProofHead(ProofHead proofHead)
+    public async Task<ActionResult<Proof>> PostProofHead(Proof proofHead)
     {
-      _context.ProofHeads.Add(proofHead);
+      _context.Proofs.Add(proofHead);
       try
       {
         await _context.SaveChangesAsync();
       }
       catch (DbUpdateException)
       {
-        if (ProofHeadExists(proofHead.Id))
+        if (ProofHeadExists(proofHead.TheoremId))
         {
           return Conflict();
         }
@@ -94,20 +94,20 @@ namespace MathApi.Controllers
         }
       }
 
-      return CreatedAtAction("GetProofHead", new { id = proofHead.Id }, proofHead);
+      return CreatedAtAction("GetProofHead", new { id = proofHead.TheoremId }, proofHead);
     }
 
     // DELETE: api/Proof/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteProofHead(long id)
     {
-      var proofHead = await _context.ProofHeads.FindAsync(id);
+      var proofHead = await _context.Proofs.FindAsync(id);
       if (proofHead == null)
       {
         return NotFound();
       }
 
-      _context.ProofHeads.Remove(proofHead);
+      _context.Proofs.Remove(proofHead);
       await _context.SaveChangesAsync();
 
       return NoContent();
@@ -115,7 +115,7 @@ namespace MathApi.Controllers
 
     private bool ProofHeadExists(long id)
     {
-      return (_context.ProofHeads?.Any(e => e.Id == id)).GetValueOrDefault();
+      return (_context.Proofs?.Any(e => e.TheoremId == id)).GetValueOrDefault();
     }
   }
 }

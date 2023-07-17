@@ -11,5 +11,5 @@ public class TheoremAssumption
   public Formula Formula { get; } = new();
   public long FormulaId { get; set; }
 
-  public List<ProofArgument>? ProofArguments { get; }
+  public List<ProofInferenceArgument>? ProofInferenceArguments { get; }
 }

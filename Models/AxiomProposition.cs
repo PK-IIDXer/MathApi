@@ -12,5 +12,5 @@ public class AxiomProposition
   public long FormulaId { get; set; }
   public string? Remarks { get; set; }
 
-  public List<ProofArgument>? ProofArguments { get; }
+  public List<ProofInferenceArgument>? ProofArguments { get; }
 }
