@@ -1,0 +1,62 @@
+[
+  {
+    "character": "□",
+    "symbolTypeId": 2,
+    "meaning": "束縛変数"
+  },
+  {
+    "character": "=",
+    "symbolTypeId": 6,
+    "arity": 2,
+    "arityFormulaTypeId": 1,
+    "meaning": "等号"
+  },
+  {
+    "character": "⊥",
+    "symbolTypeId": 7,
+    "arity": 0,
+    "meaning": "矛盾"
+  },
+  {
+    "character": "￢",
+    "symbolTypeId": 7,
+    "arity": 1,
+    "arityFormulaTypeId": 2,
+    "meaning": "否定"
+  },
+  {
+    "character": "∧",
+    "symbolTypeId": 7,
+    "arity": 2,
+    "arityFormulaTypeId": 2,
+    "meaning": "かつ"
+  },
+  {
+    "character": "∨",
+    "symbolTypeId": 7,
+    "arity": 2,
+    "arityFormulaTypeId": 2,
+    "meaning": "または"
+  },
+  {
+    "character": "→",
+    "symbolTypeId": 7,
+    "arity": 2,
+    "arityFormulaTypeId": 2,
+    "meaning": "ならば"
+  },
+  {
+    "character": "∀",
+    "symbolTypeId": 9,
+    "arity": 1,
+    "arityFormulaTypeId": 2,
+    "meaning": "任意の"
+  },
+  {
+    "character": "∃",
+    "symbolTypeId": 9,
+    "arity": 1,
+    "arityFormulaTypeId": 2,
+    "meaning": "存在する"
+  }
+]

@@ -22,36 +22,36 @@ namespace MathApi.Controllers
 
     // GET: api/Proof
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Proof>>> GetProofHeads()
+    public async Task<ActionResult<IEnumerable<Proof>>> GetProofs()
     {
       return await _context.Proofs.ToListAsync();
     }
 
     // GET: api/Proof/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Proof>> GetProofHead(long id)
+    public async Task<ActionResult<Proof>> GetProof(long id)
     {
-      var proofHead = await _context.Proofs.FindAsync(id);
+      var proof = await _context.Proofs.FindAsync(id);
 
-      if (proofHead == null)
+      if (proof == null)
       {
         return NotFound();
       }
 
-      return proofHead;
+      return proof;
     }
 
     // PUT: api/Proof/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutProofHead(long id, Proof proofHead)
+    public async Task<IActionResult> PutProof(long id, Proof proof)
     {
-      if (id != proofHead.TheoremId)
+      if (id != proof.TheoremId)
       {
         return BadRequest();
       }
 
-      _context.Entry(proofHead).State = EntityState.Modified;
+      _context.Entry(proof).State = EntityState.Modified;
 
       try
       {
@@ -59,7 +59,7 @@ namespace MathApi.Controllers
       }
       catch (DbUpdateConcurrencyException)
       {
-        if (!ProofHeadExists(id))
+        if (!ProofExists(id))
         {
           return NotFound();
         }
@@ -75,16 +75,16 @@ namespace MathApi.Controllers
     // POST: api/Proof
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<Proof>> PostProofHead(Proof proofHead)
+    public async Task<ActionResult<Proof>> PostProof(Proof proof)
     {
-      _context.Proofs.Add(proofHead);
+      _context.Proofs.Add(proof);
       try
       {
         await _context.SaveChangesAsync();
       }
       catch (DbUpdateException)
       {
-        if (ProofHeadExists(proofHead.TheoremId))
+        if (ProofExists(proof.TheoremId))
         {
           return Conflict();
         }
@@ -94,26 +94,26 @@ namespace MathApi.Controllers
         }
       }
 
-      return CreatedAtAction("GetProofHead", new { id = proofHead.TheoremId }, proofHead);
+      return CreatedAtAction("GetProof", new { id = proof.TheoremId }, proof);
     }
 
     // DELETE: api/Proof/5
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteProofHead(long id)
+    public async Task<IActionResult> DeleteProof(long id)
     {
-      var proofHead = await _context.Proofs.FindAsync(id);
-      if (proofHead == null)
+      var proof = await _context.Proofs.FindAsync(id);
+      if (proof == null)
       {
         return NotFound();
       }
 
-      _context.Proofs.Remove(proofHead);
+      _context.Proofs.Remove(proof);
       await _context.SaveChangesAsync();
 
       return NoContent();
     }
 
-    private bool ProofHeadExists(long id)
+    private bool ProofExists(long id)
     {
       return (_context.Proofs?.Any(e => e.TheoremId == id)).GetValueOrDefault();
     }

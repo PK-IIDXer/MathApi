@@ -255,7 +255,10 @@ namespace MathApi.Controllers
     private async Task<Formula> CreateFormulaFromPostParam(PostParameter postParam)
     {
       // 一文字目を取得
-      var firstSymbol = await _context.Symbols.FindAsync(postParam.FirstSymbolId)
+      var firstSymbol = await _context.Symbols
+                                      .Include(s => s.SymbolType)
+                                      .Include(s => s.ArityFormulaType)
+                                      .FirstAsync(s => s.Id == postParam.FirstSymbolId)
                         ?? throw new InvalidDataException("first symbol is not found");
 
       // 一文字目が量化記号かどうかを取得
@@ -266,7 +269,10 @@ namespace MathApi.Controllers
       Symbol? boundVariable = null;
       if (isQuant)
       {
-        boundVariable = await _context.Symbols.FirstAsync(s => s.SymbolTypeId == (long)Const.SymbolType.BoundVariable)
+        boundVariable = await _context.Symbols
+                                      .Include(s => s.SymbolType)
+                                      .Include(s => s.ArityFormulaType)
+                                      .FirstAsync(s => s.SymbolTypeId == (long)Const.SymbolType.BoundVariable)
                         ?? throw new InvalidDataException("bound variable is not found");
       }
 
@@ -275,29 +281,12 @@ namespace MathApi.Controllers
       if (postParam.ArgumentedFormulaIds.Any())
       {
         argFormulas = await _context.Formulas
+          .Include(f => f.FormulaStrings.OrderBy(fs => fs.SerialNo))
+          .ThenInclude(fs => fs.Symbol)
+          .ThenInclude(s => s.SymbolType)
+          .Include(f => f.FormulaChains)
           .Where(f => postParam.ArgumentedFormulaIds.Contains(f.Id))
           .ToListAsync();
-        var argStrings = await _context.FormulaStrings
-          .Where(f => postParam.ArgumentedFormulaIds.Contains(f.FormulaId))
-          .ToListAsync();
-        var argChains = await _context.FormulaChains
-          .Where(f => postParam.ArgumentedFormulaIds.Contains(f.FormulaId))
-          .ToListAsync();
-        var symbolTypes = await _context.SymbolTypes.ToListAsync();
-        foreach (var formula in argFormulas)
-        {
-          formula.FormulaStrings = argStrings.Where(s => s.FormulaId == formula.Id).OrderBy(s => s.SerialNo).ToList();
-          foreach (var fs in formula.FormulaStrings)
-          {
-            _context.Entry(fs).State = EntityState.Unchanged;
-            _context.Entry(fs.Symbol).State = EntityState.Unchanged;
-          }
-          formula.FormulaChains = argChains.Where(s => s.FormulaId == formula.Id).OrderBy(s => s.SerialNo).ToList();
-          foreach (var fc in formula.FormulaChains)
-          {
-            _context.Entry(fc).State = EntityState.Unchanged;
-          }
-        }
       }
 
       // 論理式文字列を構成
@@ -370,7 +359,7 @@ namespace MathApi.Controllers
         argCnt++;
         if (argFormula.FormulaTypeId != firstSymbol.ArityFormulaTypeId)
         {
-          return $"Invalid Argument Formula Type on #{argCnt}";
+          return $"Invalid Argument Formula Type on #{argCnt} {firstSymbol.Character}";
         }
       }
       return null;

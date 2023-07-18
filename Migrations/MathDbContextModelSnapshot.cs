@@ -34,7 +34,7 @@ namespace MathApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Axioms");
+                    b.ToTable("Axioms", (string)null);
                 });
 
             modelBuilder.Entity("MathApi.Models.AxiomProposition", b =>
@@ -55,7 +55,7 @@ namespace MathApi.Migrations
 
                     b.HasIndex("FormulaId");
 
-                    b.ToTable("AxiomPropositions");
+                    b.ToTable("AxiomPropositions", (string)null);
                 });
 
             modelBuilder.Entity("MathApi.Models.Formula", b =>
@@ -69,7 +69,7 @@ namespace MathApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Formulas");
+                    b.ToTable("Formulas", (string)null);
                 });
 
             modelBuilder.Entity("MathApi.Models.FormulaChain", b =>
@@ -94,7 +94,7 @@ namespace MathApi.Migrations
                     b.HasIndex("FormulaId", "ToFormulaStringSerialNo")
                         .IsUnique();
 
-                    b.ToTable("FormulaChains");
+                    b.ToTable("FormulaChains", (string)null);
                 });
 
             modelBuilder.Entity("MathApi.Models.FormulaString", b =>
@@ -112,7 +112,7 @@ namespace MathApi.Migrations
 
                     b.HasIndex("SymbolId");
 
-                    b.ToTable("FormulaStrings");
+                    b.ToTable("FormulaStrings", (string)null);
                 });
 
             modelBuilder.Entity("MathApi.Models.FormulaType", b =>
@@ -127,7 +127,7 @@ namespace MathApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FormulaTypes");
+                    b.ToTable("FormulaTypes", (string)null);
 
                     b.HasData(
                         new
@@ -157,7 +157,7 @@ namespace MathApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Inferences");
+                    b.ToTable("Inferences", (string)null);
                 });
 
             modelBuilder.Entity("MathApi.Models.InferenceArgument", b =>
@@ -175,7 +175,7 @@ namespace MathApi.Migrations
 
                     b.HasIndex("InferenceArgumentTypeId");
 
-                    b.ToTable("InferenceArguments");
+                    b.ToTable("InferenceArguments", (string)null);
                 });
 
             modelBuilder.Entity("MathApi.Models.InferenceArgumentConstraint", b =>
@@ -199,7 +199,7 @@ namespace MathApi.Migrations
 
                     b.HasIndex("InferenceId", "ConstraintDestinationInferenceArgumentSerialNo");
 
-                    b.ToTable("InferenceArgumentConstraints");
+                    b.ToTable("InferenceArgumentConstraints", (string)null);
                 });
 
             modelBuilder.Entity("MathApi.Models.InferenceArgumentType", b =>
@@ -214,7 +214,7 @@ namespace MathApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("InferenceArgumentTypes");
+                    b.ToTable("InferenceArgumentTypes", (string)null);
 
                     b.HasData(
                         new
@@ -249,7 +249,7 @@ namespace MathApi.Migrations
 
                     b.HasIndex("InferenceAssumptionDissolutionTypeId");
 
-                    b.ToTable("InferenceAssumptions");
+                    b.ToTable("InferenceAssumptions", (string)null);
                 });
 
             modelBuilder.Entity("MathApi.Models.InferenceAssumptionDissolutableAssumptionFormula", b =>
@@ -293,7 +293,7 @@ namespace MathApi.Migrations
                     b.HasIndex("InferenceId", "SubstitutionInferenceArgumentToSerialNo")
                         .HasDatabaseName("IX_InferenceAssumptionDissolutableAssumptionFormula_InferenceI~3");
 
-                    b.ToTable("InferenceAssumptionDissolutableAssumptionFormula");
+                    b.ToTable("InferenceAssumptionDissolutableAssumptionFormula", (string)null);
                 });
 
             modelBuilder.Entity("MathApi.Models.InferenceAssumptionDissolutionType", b =>
@@ -308,7 +308,7 @@ namespace MathApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("InferenceAssumptionDissolutionTypes");
+                    b.ToTable("InferenceAssumptionDissolutionTypes", (string)null);
 
                     b.HasData(
                         new
@@ -367,7 +367,7 @@ namespace MathApi.Migrations
                     b.HasIndex("InferenceId", "SubstitutionInferenceArgumentToSerialNo")
                         .HasDatabaseName("IX_InferenceAssumptionFormulas_InferenceId_SubstitutionInferen~1");
 
-                    b.ToTable("InferenceAssumptionFormulas");
+                    b.ToTable("InferenceAssumptionFormulas", (string)null);
                 });
 
             modelBuilder.Entity("MathApi.Models.InferenceConclusionFormula", b =>
@@ -406,7 +406,7 @@ namespace MathApi.Migrations
                     b.HasIndex("InferenceId", "SubstitutionInferenceArgumentToSerialNo")
                         .HasDatabaseName("IX_InferenceConclusionFormulas_InferenceId_SubstitutionInferen~1");
 
-                    b.ToTable("InferenceConclusionFormulas");
+                    b.ToTable("InferenceConclusionFormulas", (string)null);
                 });
 
             modelBuilder.Entity("MathApi.Models.Proof", b =>
@@ -419,7 +419,7 @@ namespace MathApi.Migrations
 
                     b.HasKey("TheoremId", "SerialNo");
 
-                    b.ToTable("Proofs");
+                    b.ToTable("Proofs", (string)null);
                 });
 
             modelBuilder.Entity("MathApi.Models.ProofAssumption", b =>
@@ -446,7 +446,7 @@ namespace MathApi.Migrations
                     b.HasIndex("ProofId", "ProofSerialNo", "DissolutedProofInferenceSerialNo")
                         .IsUnique();
 
-                    b.ToTable("ProofInferenceAssumptions");
+                    b.ToTable("ProofInferenceAssumptions", (string)null);
                 });
 
             modelBuilder.Entity("MathApi.Models.ProofInference", b =>
@@ -477,7 +477,7 @@ namespace MathApi.Migrations
 
                     b.HasIndex("ProofId", "ProofSerialNo", "NextProofInferenceSerialNo");
 
-                    b.ToTable("ProofInferences");
+                    b.ToTable("ProofInferences", (string)null);
                 });
 
             modelBuilder.Entity("MathApi.Models.ProofInferenceArgument", b =>
@@ -519,7 +519,7 @@ namespace MathApi.Migrations
 
                     b.HasIndex("ProofId", "ProofSerialNo", "ProofInferenceSerialNo");
 
-                    b.ToTable("ProofInferenceArguments");
+                    b.ToTable("ProofInferenceArguments", (string)null);
                 });
 
             modelBuilder.Entity("MathApi.Models.Symbol", b =>
@@ -553,7 +553,7 @@ namespace MathApi.Migrations
                     b.HasIndex("Character", "SymbolTypeId")
                         .IsUnique();
 
-                    b.ToTable("Symbols");
+                    b.ToTable("Symbols", (string)null);
                 });
 
             modelBuilder.Entity("MathApi.Models.SymbolType", b =>
@@ -573,7 +573,7 @@ namespace MathApi.Migrations
 
                     b.HasIndex("FormulaTypeId");
 
-                    b.ToTable("SymbolTypes");
+                    b.ToTable("SymbolTypes", (string)null);
 
                     b.HasData(
                         new
@@ -647,7 +647,7 @@ namespace MathApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Theorems");
+                    b.ToTable("Theorems", (string)null);
                 });
 
             modelBuilder.Entity("MathApi.Models.TheoremAssumption", b =>
@@ -665,7 +665,7 @@ namespace MathApi.Migrations
 
                     b.HasIndex("FormulaId");
 
-                    b.ToTable("TheoremAssumption");
+                    b.ToTable("TheoremAssumption", (string)null);
                 });
 
             modelBuilder.Entity("MathApi.Models.TheoremConclusion", b =>
@@ -683,7 +683,7 @@ namespace MathApi.Migrations
 
                     b.HasIndex("FormulaId");
 
-                    b.ToTable("TheoremConclusions");
+                    b.ToTable("TheoremConclusions", (string)null);
                 });
 
             modelBuilder.Entity("MathApi.Models.AxiomProposition", b =>

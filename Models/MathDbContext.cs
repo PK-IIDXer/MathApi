@@ -47,11 +47,12 @@ public class MathDbContext : DbContext
         nestedBuilder.HasKey(ap => new { ap.AxiomId, ap.SerialNo });
         nestedBuilder.HasOne(ap => ap.Axiom)
                      .WithMany(a => a.AxiomPropositions)
-                     .HasPrincipalKey(a => a.Id)
-                     .HasForeignKey(ap => ap.AxiomId);
+                     .HasPrincipalKey(a => new { a.Id })
+                     .HasForeignKey(ap => new { ap.AxiomId });
         nestedBuilder.HasOne(p => p.Formula)
                      .WithMany(f => f.AxiomPropositions)
-                     .HasForeignKey(p => p.FormulaId);
+                     .HasPrincipalKey(f => new { f.Id })
+                     .HasForeignKey(p => new { p.FormulaId });
       }
     );
     modelBuilder.Entity<FormulaString>(
@@ -59,12 +60,12 @@ public class MathDbContext : DbContext
         nestedBuilder.HasKey(fs => new { fs.FormulaId, fs.SerialNo });
         nestedBuilder.HasOne(fs => fs.Formula)
                      .WithMany(f => f.FormulaStrings)
-                     .HasPrincipalKey(f => f.Id)
-                     .HasForeignKey(fs => fs.FormulaId);
+                     .HasPrincipalKey(f => new { f.Id })
+                     .HasForeignKey(fs => new { fs.FormulaId });
         nestedBuilder.HasOne(fs => fs.Symbol)
                      .WithMany(f => f.FormulaStrings)
-                     .HasPrincipalKey(f => f.Id)
-                     .HasForeignKey(fs => fs.SymbolId);
+                     .HasPrincipalKey(f => new { f.Id })
+                     .HasForeignKey(fs => new { fs.SymbolId });
       }
     );
     modelBuilder.Entity<FormulaChain>(
@@ -72,8 +73,8 @@ public class MathDbContext : DbContext
         nestedBuilder.HasKey(fc => new { fc.FormulaId, fc.SerialNo});
         nestedBuilder.HasOne(fc => fc.Formula)
                      .WithMany(f => f.FormulaChains)
-                     .HasPrincipalKey(f => f.Id)
-                     .HasForeignKey(fc => fc.FormulaId);
+                     .HasPrincipalKey(f => new { f.Id })
+                     .HasForeignKey(fc => new { fc.FormulaId });
         nestedBuilder.HasOne(fc => fc.FromFormulaString)
                      .WithOne(fs => fs.FormulaChainAtFrom)
                      .HasPrincipalKey<FormulaString>(fs => new { fs.FormulaId, fs.SerialNo })
@@ -89,12 +90,12 @@ public class MathDbContext : DbContext
         nestedBuilder.HasKey(ia => new { ia.InferenceId, ia.SerialNo });
         nestedBuilder.HasOne(ia => ia.Inference)
                      .WithMany(i => i.InferenceArguments)
-                     .HasPrincipalKey(i => i.Id)
-                     .HasForeignKey(ia => ia.InferenceId);
+                     .HasPrincipalKey(i => new { i.Id })
+                     .HasForeignKey(ia => new { ia.InferenceId });
         nestedBuilder.HasOne(ia => ia.InferenceArgumentType)
                      .WithMany(iat => iat.InferenceArguments)
-                     .HasPrincipalKey(iat => iat.Id)
-                     .HasForeignKey(ia => ia.InferenceArgumentTypeId);
+                     .HasPrincipalKey(iat => new { iat.Id })
+                     .HasForeignKey(ia => new { ia.InferenceArgumentTypeId });
       }
     );
     modelBuilder.Entity<InferenceArgumentConstraint>(
@@ -115,12 +116,12 @@ public class MathDbContext : DbContext
         nestedBuilder.HasKey(ia => new { ia.InferenceId, ia.SerialNo });
         nestedBuilder.HasOne(ia => ia.Inference)
                      .WithMany(i => i.InferenceAssumptions)
-                     .HasPrincipalKey(i => i.Id)
-                     .HasForeignKey(ia => ia.InferenceId);
+                     .HasPrincipalKey(i => new { i.Id })
+                     .HasForeignKey(ia => new { ia.InferenceId });
         nestedBuilder.HasOne(ia => ia.InferenceAssumptionDissolutionType)
                      .WithMany(iadt => iadt.InferenceAssumptions)
-                     .HasPrincipalKey(iadt => iadt.Id)
-                     .HasForeignKey(ia => ia.InferenceAssumptionDissolutionTypeId);
+                     .HasPrincipalKey(iadt => new { iadt.Id })
+                     .HasForeignKey(ia => new { ia.InferenceAssumptionDissolutionTypeId });
       }
     );
     modelBuilder.Entity<InferenceAssumptionDissolutableAssumptionFormula>(
@@ -132,8 +133,8 @@ public class MathDbContext : DbContext
                      .HasForeignKey(iadaf => new { iadaf.InferenceId, iadaf.InferenceAssumptionSerialNo });
         nestedBuilder.HasOne(iadaf => iadaf.Symbol)
                      .WithMany(s => s.InferenceAssumptionDissolutableAssumptionFormulas)
-                     .HasPrincipalKey(s => s.Id)
-                     .HasForeignKey(iadaf => iadaf.SymbolId);
+                     .HasPrincipalKey(s => new { s.Id })
+                     .HasForeignKey(iadaf => new { iadaf.SymbolId });
         nestedBuilder.HasOne(iadaf => iadaf.BoundInferenceArgument)
                      .WithMany(iag => iag.InferenceAssumptionDissolutableAssumptionFormulasToBound)
                      .HasPrincipalKey(
@@ -177,8 +178,8 @@ public class MathDbContext : DbContext
                      .HasForeignKey(e => new { e.InferenceId, e.InferenceAssumptionSerialNo });
         nestedBuilder.HasOne(iaf => iaf.Symbol)
                      .WithMany(s => s.InferenceAssumptionFormulas)
-                     .HasPrincipalKey(s => s.Id)
-                     .HasForeignKey(iaf => iaf.SymbolId);
+                     .HasPrincipalKey(s => new { s.Id })
+                     .HasForeignKey(iaf => new { iaf.SymbolId });
         nestedBuilder.HasOne(iaf => iaf.BoundInferenceArgument)
                      .WithMany(iag => iag.InferenceAssumptionFormulasToBound)
                      .HasPrincipalKey(
@@ -218,12 +219,12 @@ public class MathDbContext : DbContext
         nestedBuilder.HasKey(icf => new { icf.InferenceId, icf.SerialNo });
         nestedBuilder.HasOne(icf => icf.Inference)
                      .WithMany(i => i.InferenceConclusionFormulas)
-                     .HasPrincipalKey(i => i.Id)
-                     .HasForeignKey(icf => icf.InferenceId);
+                     .HasPrincipalKey(i => new { i.Id })
+                     .HasForeignKey(icf => new { icf.InferenceId });
         nestedBuilder.HasOne(iac => iac.Symbol)
                      .WithMany(s => s.InferenceConclusionFormulas)
-                     .HasPrincipalKey(s => s.Id)
-                     .HasForeignKey(iac => iac.SymbolId);
+                     .HasPrincipalKey(s => new { s.Id })
+                     .HasForeignKey(iac => new { iac.SymbolId });
         nestedBuilder.HasOne(icf => icf.BoundInferenceArgument)
                      .WithMany(iag => iag.InferenceConclusionFormulasToBound)
                      .HasPrincipalKey(
@@ -263,8 +264,8 @@ public class MathDbContext : DbContext
         nestedBuilder.HasKey(p => new { p.TheoremId, p.SerialNo });
         nestedBuilder.HasOne(p => p.Theorem)
                      .WithMany(t => t.Proofs)
-                     .HasPrincipalKey(t => t.Id)
-                     .HasForeignKey(p => p.TheoremId);
+                     .HasPrincipalKey(t => new { t.Id })
+                     .HasForeignKey(p => new { p.TheoremId });
       }
     );
     modelBuilder.Entity<ProofInference>(
@@ -276,12 +277,12 @@ public class MathDbContext : DbContext
                      .HasForeignKey(pi => new { pi.ProofId, pi.ProofSerialNo });
         nestedBuilder.HasOne(pi => pi.Inference)
                      .WithMany(i => i.ProofInferences)
-                     .HasPrincipalKey(i => i.Id)
-                     .HasForeignKey(pi => pi.InferenceId);
+                     .HasPrincipalKey(i => new { i.Id })
+                     .HasForeignKey(pi => new { pi.InferenceId });
         nestedBuilder.HasOne(pi => pi.ConclusionFormula)
                      .WithMany(f => f.ProofInferences)
-                     .HasPrincipalKey(f => f.Id)
-                     .HasForeignKey(pi => pi.ConclusionFormulaId);
+                     .HasPrincipalKey(f => new { f.Id })
+                     .HasForeignKey(pi => new { pi.ConclusionFormulaId });
         nestedBuilder.HasMany(ppi => ppi.PreviousProofInferences)
                      .WithOne(npi => npi.NextProofInference)
                      .HasPrincipalKey(npi => new { npi.ProofId, npi.ProofSerialNo, npi.SerialNo })
@@ -305,8 +306,8 @@ public class MathDbContext : DbContext
                      .HasForeignKey(pia => new { pia.TheoremAssumptionTheoremId, pia.TheoremAssumptionSerialNo });
         nestedBuilder.HasOne(pia => pia.Formula)
                      .WithMany(f => f.ProofInferenceArguments)
-                     .HasPrincipalKey(f => f.Id)
-                     .HasForeignKey(pia => pia.FormulaId);
+                     .HasPrincipalKey(f => new { f.Id })
+                     .HasForeignKey(pia => new { pia.FormulaId });
       }
     );
     modelBuilder.Entity<ProofAssumption>(
@@ -318,8 +319,8 @@ public class MathDbContext : DbContext
                      .HasForeignKey(pa => new { pa.ProofId, pa.ProofSerialNo });
         nestedBuilder.HasOne(pa => pa.Formula)
                      .WithMany(f => f.ProofAssumptions)
-                     .HasPrincipalKey(f => f.Id)
-                     .HasForeignKey(pa => pa.FormulaId);
+                     .HasPrincipalKey(f => new { f.Id })
+                     .HasForeignKey(pa => new { pa.FormulaId });
         nestedBuilder.HasOne(pa => pa.DissolutedProofInference)
                      .WithOne(pi => pi.DissolutingAssumption)
                      .HasPrincipalKey<ProofInference>(pi => new { pi.ProofId, pi.ProofSerialNo, pi.SerialNo })
@@ -328,22 +329,26 @@ public class MathDbContext : DbContext
     );
     modelBuilder.Entity<Symbol>(
       nestedBuilder => {
+        nestedBuilder.HasOne(s => s.SymbolType)
+                     .WithMany(st => st.Symbols)
+                     .HasPrincipalKey(st => new { st.Id })
+                     .HasForeignKey(s => new { s.SymbolTypeId });
         nestedBuilder.HasOne(s => s.ArityFormulaType)
                      .WithMany(f => f.Symbols)
-                     .HasPrincipalKey(f => f.Id)
-                     .HasForeignKey(s => s.ArityFormulaTypeId);
+                     .HasPrincipalKey(f => new { f.Id })
+                     .HasForeignKey(s => new { s.ArityFormulaTypeId });
         nestedBuilder.HasOne(s => s.ArityFormulaType)
                      .WithMany(ft => ft.Symbols)
-                     .HasPrincipalKey(ft => ft.Id)
-                     .HasForeignKey(s => s.ArityFormulaTypeId);
+                     .HasPrincipalKey(ft => new { ft.Id })
+                     .HasForeignKey(s => new { s.ArityFormulaTypeId });
       }
     );
     modelBuilder.Entity<SymbolType>(
       nestedBuilder => {
         nestedBuilder.HasOne(st => st.FormulaType)
                      .WithMany(ft => ft.SymbolTypes)
-                     .HasPrincipalKey(ft => ft.Id)
-                     .HasForeignKey(st => st.FormulaTypeId);
+                     .HasPrincipalKey(ft => new { ft.Id })
+                     .HasForeignKey(st => new { st.FormulaTypeId });
       }
     );
     modelBuilder.Entity<TheoremAssumption>(
@@ -351,12 +356,12 @@ public class MathDbContext : DbContext
         nestedBuilder.HasKey(ta => new { ta.TheoremId, ta.SerialNo });
         nestedBuilder.HasOne(ta => ta.Theorem)
                      .WithMany(t => t.TheoremAssumptions)
-                     .HasPrincipalKey(t => t.Id)
-                     .HasForeignKey(ta => ta.TheoremId);
+                     .HasPrincipalKey(t => new { t.Id })
+                     .HasForeignKey(ta => new { ta.TheoremId });
         nestedBuilder.HasOne(ta => ta.Formula)
                      .WithMany(f => f.TheoremAssumptions)
-                     .HasPrincipalKey(f => f.Id)
-                     .HasForeignKey(ta => ta.FormulaId);
+                     .HasPrincipalKey(f => new { f.Id })
+                     .HasForeignKey(ta => new { ta.FormulaId });
       }
     );
     modelBuilder.Entity<TheoremConclusion>(
@@ -364,12 +369,12 @@ public class MathDbContext : DbContext
         nestedBuilder.HasKey(tc => new { tc.TheoremId, tc.SerialNo });
         nestedBuilder.HasOne(tc => tc.Theorem)
                      .WithMany(t => t.TheoremConclusions)
-                     .HasPrincipalKey(t => t.Id)
-                     .HasForeignKey(tc => tc.TheoremId);
+                     .HasPrincipalKey(t => new { t.Id })
+                     .HasForeignKey(tc => new { tc.TheoremId });
         nestedBuilder.HasOne(tc => tc.Formula)
                      .WithMany(f => f.TheoremConclusions)
-                     .HasPrincipalKey(f => f.Id)
-                     .HasForeignKey(tc => tc.FormulaId);
+                     .HasPrincipalKey(f => new { f.Id })
+                     .HasForeignKey(tc => new { tc.FormulaId });
       }
     );
 
