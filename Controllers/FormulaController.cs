@@ -77,7 +77,7 @@ namespace MathApi.Controllers
     // POST: api/Formula
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<Formula>> PostFormula(PostParameter postParam)
+    public async Task<ActionResult<Formula>> PostFormula(FormulaDto postParam)
     {
       try
       {
@@ -252,7 +252,7 @@ namespace MathApi.Controllers
     /// <param name="postParam">POSTパラメータ</param>
     /// <returns>Formulaオブジェクト</returns>
     /// <exception cref="InvalidDataException"></exception>
-    private async Task<Formula> CreateFormulaFromPostParam(PostParameter postParam)
+    private async Task<Formula> CreateFormulaFromPostParam(FormulaDto postParam)
     {
       // 一文字目を取得
       var firstSymbol = await _context.Symbols
@@ -359,21 +359,10 @@ namespace MathApi.Controllers
         argCnt++;
         if (argFormula.FormulaTypeId != firstSymbol.ArityFormulaTypeId)
         {
-          return $"Invalid Argument Formula Type on #{argCnt} {firstSymbol.Character}";
+          return $"Invalid Argument Formula Type on #{argCnt}";
         }
       }
       return null;
     }
-  }
-
-  /// <summary>
-  /// POSTパラメータ
-  /// </summary>
-  public class PostParameter
-  {
-    public long FirstSymbolId { get; set; }
-    public List<long> ArgumentedFormulaIds { get; set; } = new List<long>();
-    public long? BoundVariableId { get; set; }
-    public string? Meaning { get; set; }
   }
 }

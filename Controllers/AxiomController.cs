@@ -75,8 +75,9 @@ namespace MathApi.Controllers
     // POST: api/Axiom
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<Axiom>> PostAxiom(Axiom axiom)
+    public async Task<ActionResult<Axiom>> PostAxiom(AxiomDto axiomDto)
     {
+      var axiom = axiomDto.CreateModel();
       _context.Axioms.Add(axiom);
       await _context.SaveChangesAsync();
 

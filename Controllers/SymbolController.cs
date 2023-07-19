@@ -94,8 +94,9 @@ namespace MathApi.Controllers
     // POST: api/Symbol
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<Symbol>> PostSymbol(Symbol symbol)
+    public async Task<ActionResult<Symbol>> PostSymbol(SymbolDto symbolDto)
     {
+      var symbol = symbolDto.CreateModel();
       var valid = Validate(symbol);
       if (valid != null)
       {
