@@ -75,8 +75,9 @@ namespace MathApi.Controllers
     // POST: api/Theorem
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<Theorem>> PostTheorem(Theorem theorem)
+    public async Task<ActionResult<Theorem>> PostTheorem(TheoremDto theoremDto)
     {
+      var theorem = theoremDto.CreateModel();
       _context.Theorems.Add(theorem);
       await _context.SaveChangesAsync();
 
