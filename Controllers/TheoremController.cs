@@ -84,6 +84,87 @@ namespace MathApi.Controllers
       return CreatedAtAction("GetTheorem", new { id = theorem.Id }, theorem);
     }
 
+    [HttpPost("{id}/createInference")]
+    public async Task<ActionResult<Inference>> PostInference(long id)
+    {
+      if (await _context.Inferences.CountAsync(i => i.TheoremId == id) > 0)
+      {
+        return BadRequest();
+      }
+
+      var theorem = await _context.Theorems
+                                  .Include(t => t.TheoremAssumptions)
+                                  .ThenInclude(ta => ta.Formula)
+                                  .ThenInclude(f => f.FormulaStrings)
+                                  .ThenInclude(fs => fs.Symbol)
+                                  .Include(t => t.TheoremConclusions)
+                                  .ThenInclude(tc => tc.Formula)
+                                  .ThenInclude(f => f.FormulaStrings)
+                                  .ThenInclude(fs => fs.Symbol)
+                                  .FirstAsync(t => t.Id == id);
+      if (theorem == null) return NotFound();
+
+      // 推論規則引数の構築
+      var inferenceArguments = new List<InferenceArgument>();
+      for (var i = 0; i < theorem.FreeAndPropVariables.Count; i++)
+      {
+        var inferenceArgumentType = (int)Const.InferenceArgumentType.Term;
+        if (theorem.FreeAndPropVariables[i].SymbolTypeId == (int)Const.SymbolType.PropositionVariable)
+          inferenceArgumentType = (int)Const.InferenceArgumentType.Proposition;
+
+        inferenceArguments.Add(new InferenceArgument
+        {
+          SerialNo = i,
+          InferenceArgumentTypeId = inferenceArgumentType,
+          PropositionVariableSymbolId = theorem.FreeAndPropVariables[i].Id
+        });
+      }
+
+      // 推論規則仮定の構築
+      var inferenceAssumptions = new List<InferenceAssumption>();
+      for (var i = 0; i < theorem.TheoremAssumptions.Count; i++)
+      {
+        inferenceAssumptions.Add(new InferenceAssumption
+        {
+          SerialNo = i,
+          InferenceAssumptionDissolutionTypeId = (int)Const.InferenceAssumptionDissolutionType.None,
+          InferenceAssumptionFormulas = new List<InferenceAssumptionFormula>
+          {
+            new InferenceAssumptionFormula
+            {
+              InferenceAssumptionSerialNo = i,
+              SerialNo = 0,
+              FormulaId = theorem.TheoremAssumptions[i].FormulaId
+            }
+          }
+        });
+      }
+
+      // 推論規則結論の構築
+      var inferenceConclusions = new List<InferenceConclusionFormula>
+      {
+        new InferenceConclusionFormula
+        {
+          SerialNo = 0,
+          FormulaId = theorem.TheoremConclusions[0].FormulaId
+        }
+      };
+
+      var inference = new Inference {
+        Name = theorem.Name,
+        IsAssumptionAdd = false,
+        TheoremId = theorem.Id,
+        InferenceArguments = inferenceArguments,
+        InferenceAssumptions = inferenceAssumptions,
+        InferenceConclusionFormulas = inferenceConclusions
+      };
+
+      _context.Inferences.Add(inference);
+      await _context.SaveChangesAsync();
+
+      return CreatedAtAction("GetInference", new { id = inference.Id }, inference);
+    }
+
     // DELETE: api/Theorem/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteTheorem(long id)

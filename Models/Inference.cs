@@ -5,6 +5,8 @@ public class Inference
   public long Id { get; set; }
   public string Name { get; set;} = "";
   public bool IsAssumptionAdd { get; set; }
+  public Theorem? Theorem { get; set; }
+  public long? TheoremId { get; set; }
 
   public List<InferenceArgument>? InferenceArguments { get; set; }
   public List<InferenceAssumption>? InferenceAssumptions { get; set; }

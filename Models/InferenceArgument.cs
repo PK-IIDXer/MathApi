@@ -10,6 +10,8 @@ public class InferenceArgument
   public int SerialNo { get; set; }
   public InferenceArgumentType InferenceArgumentType { get; } = new();
   public int InferenceArgumentTypeId { get; set; }
+  public Symbol? PropositionVariableSymbol { get; set; }
+  public long? PropositionVariableSymbolId { get; set; }
 
   public List<InferenceAssumptionDissolutableAssumptionFormula>? InferenceAssumptionDissolutableAssumptionFormulasToBound { get; }
   public List<InferenceAssumptionDissolutableAssumptionFormula>? InferenceAssumptionDissolutableAssumptionFormulas { get; }

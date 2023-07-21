@@ -20,5 +20,6 @@ public class ProofInference
 
   public List<ProofInferenceArgument>? ProofInferenceArguments { get; set; }
 
-  public ProofAssumption? DissolutingAssumption { get; }
+  public ProofInferenceAssumption? DissolutingAssumption { get; }
+  public ProofInferenceAssumption? ProofInferenceAssumption { get; set; }
 }

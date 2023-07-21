@@ -10,5 +10,4 @@ public class Proof
   public long SerialNo { get; set; }
 
   public List<ProofInference>? ProofInferences { get; set; }
-  public List<ProofAssumption>? ProofAssumptions { get; set; }
 }

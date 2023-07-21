@@ -19,4 +19,5 @@ public class Symbol
   public List<InferenceConclusionFormula>? InferenceConclusionFormulas { get; }
   public List<InferenceAssumptionFormula>? InferenceAssumptionFormulas { get; }
   public List<InferenceAssumptionDissolutableAssumptionFormula>? InferenceAssumptionDissolutableAssumptionFormulas { get; }
+  public List<InferenceArgument>? InferenceArguments { get; }
 }

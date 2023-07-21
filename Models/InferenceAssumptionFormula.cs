@@ -19,4 +19,7 @@ public class InferenceAssumptionFormula
   public int? SubstitutionInferenceArgumentFromSerialNo { get; set; }
   public InferenceArgument? SubstitutionInferenceArgumentTo { get; }
   public int? SubstitutionInferenceArgumentToSerialNo { get; set; }
+
+  public Formula? Formula { get; }
+  public long? FormulaId { get; set; }
 }
