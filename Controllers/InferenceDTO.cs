@@ -9,7 +9,7 @@ public class InferenceDto
   public bool IsAssumptionAdd { get; set; } = false;
   public List<ArgumentDto>? Arguments { get; set; } = new();
   public List<AssumptionDto>? Assumptions { get; set; }
-  public List<FormulaDto> Conclusions { get; set; } = new(); 
+  public List<InferenceFormulaDto> Conclusions { get; set; } = new(); 
 
   public class ArgumentDto
   {
@@ -29,11 +29,11 @@ public class InferenceDto
   {
     public int SerialNo { get; set; }
     public int DissolutionTypeId { get; set; }
-    public List<FormulaDto> Formulas { get; set; } = new();
-    public List<FormulaDto>? DissolutableAssumptionFormulas { get; set; }
+    public List<InferenceFormulaDto> Formulas { get; set; } = new();
+    public List<InferenceFormulaDto>? DissolutableAssumptionFormulas { get; set; }
   }
 
-  public class FormulaDto
+  public class InferenceFormulaDto
   {
     public int SerialNo { get; set; }
     public long? SymbolId { get; set; }
@@ -104,4 +104,11 @@ public class InferenceDto
       }).ToList()
     };
   }
+}
+
+public class DefineSymbolDto
+{
+  public long SymbolId { get; set; }
+  public long FormulaId { get; set; }
+  public List<long>? ArgumentSymbolIds { get; set; }
 }

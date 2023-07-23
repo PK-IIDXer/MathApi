@@ -104,7 +104,7 @@ public class MathDbContext : DbContext
         nestedBuilder.HasOne(ia => ia.PropositionVariableSymbol)
                      .WithMany(s => s.InferenceArguments)
                      .HasPrincipalKey(s => new { s.Id })
-                     .HasForeignKey(ia => new { ia.PropositionVariableSymbolId });
+                     .HasForeignKey(ia => new { ia.VariableSymbolId });
       }
     );
     modelBuilder.Entity<InferenceArgumentConstraint>(

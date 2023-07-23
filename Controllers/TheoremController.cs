@@ -84,13 +84,11 @@ namespace MathApi.Controllers
       return CreatedAtAction("GetTheorem", new { id = theorem.Id }, theorem);
     }
 
-    [HttpPost("{id}/createInference")]
+    [HttpGet("{id}/createInference")]
     public async Task<ActionResult<Inference>> PostInference(long id)
     {
-      if (await _context.Inferences.CountAsync(i => i.TheoremId == id) > 0)
-      {
-        return BadRequest();
-      }
+      if (await _context.Inferences.AnyAsync(i => i.TheoremId == id))
+        return BadRequest($"Already exists inference induced by the theorem #{id}");
 
       var theorem = await _context.Theorems
                                   .Include(t => t.TheoremAssumptions)
@@ -104,6 +102,9 @@ namespace MathApi.Controllers
                                   .FirstAsync(t => t.Id == id);
       if (theorem == null) return NotFound();
 
+      if (!theorem.IsProved)
+        return BadRequest($"The theorem #{id} is not proved.");
+
       // 推論規則引数の構築
       var inferenceArguments = new List<InferenceArgument>();
       for (var i = 0; i < theorem.FreeAndPropVariables.Count; i++)
@@ -116,7 +117,7 @@ namespace MathApi.Controllers
         {
           SerialNo = i,
           InferenceArgumentTypeId = inferenceArgumentType,
-          PropositionVariableSymbolId = theorem.FreeAndPropVariables[i].Id
+          VariableSymbolId = theorem.FreeAndPropVariables[i].Id
         });
       }
 

@@ -11,7 +11,7 @@ public class InferenceArgument
   public InferenceArgumentType InferenceArgumentType { get; } = new();
   public int InferenceArgumentTypeId { get; set; }
   public Symbol? PropositionVariableSymbol { get; set; }
-  public long? PropositionVariableSymbolId { get; set; }
+  public long? VariableSymbolId { get; set; }
 
   public List<InferenceAssumptionDissolutableAssumptionFormula>? InferenceAssumptionDissolutableAssumptionFormulasToBound { get; }
   public List<InferenceAssumptionDissolutableAssumptionFormula>? InferenceAssumptionDissolutableAssumptionFormulas { get; }

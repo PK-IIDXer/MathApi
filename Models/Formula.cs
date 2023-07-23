@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace MathApi.Models;
 
 public class Formula
@@ -9,6 +11,10 @@ public class Formula
   public List<FormulaChain>? FormulaChains { get; set; }
 
   public long Length => FormulaStrings.Count;
+  /// <summary>
+  /// 論理式が項か命題か
+  /// ※FormulaStrings.Symbol.SymbolTypeのインクルードが必要
+  /// </summary>
   public long? FormulaTypeId => FormulaStrings.Count == 0 ? null : FormulaStrings[0].Symbol.SymbolType?.FormulaType.Id;
 
   private List<Symbol>? _FreeAndPropVariables = null;
@@ -16,6 +22,7 @@ public class Formula
   /// 論理式に含まれる相異なる自由・命題変数のリスト
   /// ※FormulaStringおよびFormulaString.Symbolのインクルードが必要
   /// </summary>
+  [NotMapped]
   public List<Symbol> FreeAndPropVariables
   {
     get

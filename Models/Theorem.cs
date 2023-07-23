@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace MathApi.Models;
 
 public class Theorem
@@ -12,6 +14,7 @@ public class Theorem
   /// ※TheoremAssumptions, TheoremConclusions、
   /// 　およびそれらのFormulaStringおよびFormulaString.Symbolのインクルードが必要
   /// </summary>
+  [NotMapped]
   public List<Symbol> FreeAndPropVariables
   {
     get

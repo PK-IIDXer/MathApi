@@ -104,6 +104,234 @@ namespace MathApi.Controllers
       return NoContent();
     }
 
+    [HttpPost("define/predicate")]
+    public async Task<ActionResult<Inference>> DefinePredicate(DefineSymbolDto dto)
+    {
+      var symbol = await _context.Symbols.FindAsync(dto.SymbolId);
+      if (symbol == null)
+        return NotFound($"Symbol #{dto.SymbolId} is not found");
+
+      if (symbol.SymbolTypeId != (long)Const.SymbolType.Predicate)
+        return BadRequest($"Selected symbol #{dto.SymbolId} is not predicate");
+
+      if ((symbol.Arity ?? 0) != (dto.ArgumentSymbolIds?.Count ?? 0))
+        return BadRequest($"Arity of Symbol #{dto.SymbolId} and ArgumentSymbolIds count are mismatch");
+
+      var formula = await _context.Formulas
+                                  .Include(f => f.FormulaStrings)
+                                  .ThenInclude(fs => fs.Symbol)
+                                  .ThenInclude(s => s.SymbolType)
+                                  .FirstAsync(f => f.Id == dto.FormulaId);
+      if (formula == null)
+        return NotFound($"Formula #{dto.FormulaId} is not found");
+
+      if (formula.FormulaTypeId != (long)Const.FormulaType.Proposition)
+        return BadRequest($"Selected formula #{dto.FormulaId} is not proposition");
+
+      var args = new List<InferenceArgument>();
+      var serialNo = 0;
+      foreach (var freeVar in formula.FreeAndPropVariables)
+      {
+        if (freeVar.SymbolTypeId != (long)Const.SymbolType.FreeVariable)
+          return BadRequest($"Selected formula #{dto.FormulaId} is invalid: proposition variables are contained.");
+
+        if (!dto.ArgumentSymbolIds?.Any(item => item == freeVar.Id) ?? true)
+          return BadRequest($"Free variables of formula #{dto.FormulaId} and arguments you select are mismatch");
+
+        args.Add(new InferenceArgument
+        {
+          SerialNo = serialNo++,
+          InferenceArgumentTypeId = (int)Const.InferenceArgumentType.Term,
+          VariableSymbolId = freeVar.Id
+        });
+      }
+
+      if (args.Count != symbol.Arity)
+        return BadRequest($"Arity of Symbol #{dto.SymbolId} and free variables count of selected formula are mismatch");
+
+      var assumptionFormula_intro = new List<InferenceAssumptionFormula>
+      {
+        new InferenceAssumptionFormula
+        {
+          InferenceAssumptionSerialNo = 0,
+          SerialNo = 0,
+          SymbolId = dto.SymbolId
+        }
+      };
+      for (var i = 0; i < dto.ArgumentSymbolIds?.Count; i++)
+      {
+        assumptionFormula_intro.Add(new InferenceAssumptionFormula
+        {
+          InferenceAssumptionSerialNo = 0,
+          SerialNo = i + 1,
+          InferenceArgumentSerialNo = args.First(a => a.VariableSymbolId == dto.ArgumentSymbolIds[i]).SerialNo
+        });
+      }
+
+      var assumption_intro = new InferenceAssumption
+      {
+        SerialNo = 0,
+        InferenceAssumptionDissolutionTypeId = (int)Const.InferenceAssumptionDissolutionType.None,
+        InferenceAssumptionFormulas = assumptionFormula_intro
+      };
+
+      var conclusion_intro = new InferenceConclusionFormula
+      {
+        SerialNo = 0,
+        FormulaId = dto.FormulaId
+      };
+
+      var inference_intro = new Inference
+      {
+        Name = $"{symbol.Character} Introduction",
+        IsAssumptionAdd = false,
+        InferenceArguments = args,
+        InferenceAssumptions = new List<InferenceAssumption>
+        {
+          assumption_intro
+        },
+        InferenceConclusionFormulas = new List<InferenceConclusionFormula>
+        {
+          conclusion_intro
+        }
+      };
+
+      var assumption_elim = new InferenceAssumption
+      {
+        SerialNo = 0,
+        InferenceAssumptionDissolutionTypeId = (int)Const.InferenceAssumptionDissolutionType.None,
+        InferenceAssumptionFormulas = new List<InferenceAssumptionFormula>
+        {
+          new InferenceAssumptionFormula
+          {
+            InferenceAssumptionSerialNo = 0,
+            SerialNo = 0,
+            FormulaId = dto.FormulaId
+          }
+        }
+      };
+
+      var conclusion_elim = new List<InferenceConclusionFormula>
+      {
+        new InferenceConclusionFormula
+        {
+          SerialNo = 0,
+          SymbolId = dto.SymbolId
+        }
+      };
+      for (var i = 0; i < dto.ArgumentSymbolIds?.Count; i++)
+      {
+        conclusion_elim.Add(new InferenceConclusionFormula
+        {
+          SerialNo = i + 1,
+          InferenceArgumentSerialNo = args.First(a => a.VariableSymbolId == dto.ArgumentSymbolIds[i]).SerialNo
+        });
+      }
+
+      var inference_elim = new Inference
+      {
+        Name = $"{symbol.Character} Elimination",
+        IsAssumptionAdd = false,
+        InferenceArguments = args,
+        InferenceAssumptions = new List<InferenceAssumption>
+        {
+          assumption_elim
+        },
+        InferenceConclusionFormulas = conclusion_elim
+      };
+
+      _context.Inferences.Add(inference_intro);
+      _context.Inferences.Add(inference_elim);
+
+      await _context.SaveChangesAsync();
+      return CreatedAtAction("GetInference", new { id = inference_intro.Id }, new List<Inference> { inference_intro, inference_elim });
+    }
+
+    [HttpPost("define/function")]
+    public async Task<ActionResult<Inference>> DefineFunction(DefineSymbolDto dto)
+    {
+      var symbol = await _context.Symbols.FindAsync(dto.SymbolId);
+      if (symbol == null)
+        return NotFound($"Symbol #{dto.SymbolId} is not found");
+
+      if (symbol.SymbolTypeId != (long)Const.SymbolType.Function)
+        return BadRequest($"Selected Symbol #{dto.SymbolId} is not function");
+
+      if ((symbol.Arity ?? 0) != (dto.ArgumentSymbolIds?.Count ?? 0))
+      {
+        return BadRequest($"Arity of Symbol #{dto.SymbolId} and ArgumentSymbolIds count are mismatch");
+      }
+
+      var formula = await _context.Formulas
+                            .Include(f => f.FormulaStrings)
+                            .ThenInclude(fs => fs.Symbol)
+                            .ThenInclude(s => s.SymbolType)
+                            .FirstAsync(f => f.Id == dto.FormulaId);
+
+      if (formula == null)
+        return NotFound($"Formula #{dto.FormulaId} is not found");
+
+      if (formula.FormulaTypeId != (long)Const.FormulaType.Term)
+        return BadRequest($"Selected formula #{dto.FormulaId} is not term");
+
+      var args = new List<InferenceArgument>();
+      var serialNo = 0;
+      foreach (var freeVar in formula.FreeAndPropVariables)
+      {
+        if (freeVar.SymbolTypeId != (long)Const.SymbolType.FreeVariable)
+          return BadRequest($"Selected formula #{dto.FormulaId} is invalid: proposition variables are contained.");
+
+        if (!dto.ArgumentSymbolIds?.Any(item => item == freeVar.Id) ?? true)
+          return BadRequest($"Free variables of formula #{dto.FormulaId} and arguments you select are mismatch");
+
+        args.Add(new InferenceArgument
+        {
+          SerialNo = serialNo++,
+          InferenceArgumentTypeId = (int)Const.InferenceArgumentType.Term,
+          VariableSymbolId = freeVar.Id
+        });
+      }
+
+      if (args.Count != symbol.Arity)
+        return BadRequest($"Arity of Symbol #{dto.SymbolId} and free variables count of selected formula are mismatch");
+
+      var conclusions = new List<InferenceConclusionFormula>
+      {
+        new InferenceConclusionFormula
+        {
+          SerialNo = 0,
+          SymbolId = 2 // ※「=」
+        },
+        new InferenceConclusionFormula
+        {
+          SerialNo= 1,
+          SymbolId = dto.SymbolId
+        }
+      };
+      for (var i = 0; i < args.Count; i++)
+      {
+        conclusions.Add(new InferenceConclusionFormula
+        {
+          SerialNo = i + 2,
+          InferenceArgumentSerialNo = args[i].SerialNo
+        });
+      }
+      conclusions.Add(new InferenceConclusionFormula
+      {
+        SerialNo = 2 + args.Count,
+        FormulaId = dto.FormulaId
+      });
+
+      var inference = new Inference
+      {
+        Name = $"Definition of ${symbol.Character}",
+        IsAssumptionAdd = false,
+        InferenceArguments = args,
+        InferenceConclusionFormulas = conclusions
+      };
+      return CreatedAtAction("GetInference", new { id = inference.Id }, new List<Inference> { inference });
+    }
+
     private bool InferenceExists(long id)
     {
       return (_context.Inferences?.Any(e => e.Id == id)).GetValueOrDefault();
