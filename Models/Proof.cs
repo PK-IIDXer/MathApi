@@ -9,5 +9,6 @@ public class Proof
   public long TheoremId { get; set; }
   public long SerialNo { get; set; }
 
-  public List<ProofInference>? ProofInferences { get; set; }
+  public List<ProofInference> ProofInferences { get; set; } = new();
+  public List<ProofAssumption> ProofAssumptions { get; set; } = new();
 }

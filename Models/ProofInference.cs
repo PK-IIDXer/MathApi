@@ -2,11 +2,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MathApi.Models;
 
-[PrimaryKey(nameof(ProofId), nameof(ProofSerialNo), nameof(SerialNo))]
+[PrimaryKey(nameof(TheoremId), nameof(ProofSerialNo), nameof(SerialNo))]
 public class ProofInference
 {
   public Proof Proof { get; } = new();
-  public long ProofId { get; set; }
+  public long TheoremId { get; set; }
   public long ProofSerialNo { get; set; }
   public long SerialNo { get; set; }
   public Inference Inference { get; } = new();
@@ -20,6 +20,7 @@ public class ProofInference
 
   public List<ProofInferenceArgument>? ProofInferenceArguments { get; set; }
 
-  public ProofInferenceAssumption? DissolutingAssumption { get; }
-  public ProofInferenceAssumption? ProofInferenceAssumption { get; set; }
+  public ProofAssumption? AddingProofInference { get; }
+  public ProofAssumption? LastUsingProofInference { get; }
+  public ProofAssumption? DissolutingAssumption { get; }
 }

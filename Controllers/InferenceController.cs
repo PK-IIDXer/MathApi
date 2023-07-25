@@ -183,7 +183,7 @@ namespace MathApi.Controllers
 
       var inference_intro = new Inference
       {
-        Name = $"{symbol.Character} Introduction",
+        Name = $"Definition of {symbol.Character} Introduction",
         IsAssumptionAdd = false,
         InferenceArguments = args,
         InferenceAssumptions = new List<InferenceAssumption>
@@ -230,7 +230,7 @@ namespace MathApi.Controllers
 
       var inference_elim = new Inference
       {
-        Name = $"{symbol.Character} Elimination",
+        Name = $"Definition of {symbol.Character} Elimination",
         IsAssumptionAdd = false,
         InferenceArguments = args,
         InferenceAssumptions = new List<InferenceAssumption>
@@ -329,6 +329,9 @@ namespace MathApi.Controllers
         InferenceArguments = args,
         InferenceConclusionFormulas = conclusions
       };
+
+      _context.Inferences.Add(inference);
+      await _context.SaveChangesAsync();
       return CreatedAtAction("GetInference", new { id = inference.Id }, new List<Inference> { inference });
     }
 
@@ -336,24 +339,5 @@ namespace MathApi.Controllers
     {
       return (_context.Inferences?.Any(e => e.Id == id)).GetValueOrDefault();
     }
-
-    // private string? ValidateParam(InferenceDto dto)
-    // {
-    //   if (dto.Conclusions.Count == 0)
-    //   {
-    //     return "Conclusion is null";
-    //   }
-
-    //   var usedSymbols = new List<Symbol>();
-    //   for (var i = 0; i < dto.Conclusions.Count; i ++)
-    //   {
-    //     var conclusion = dto.Conclusions.Find(c => c.SerialNo == i);
-    //     if (!usedSymbols.Any(u => u.Id == conclusion.SymbolId))
-    //     {
-    //       usedSymbols.Add(_context.Symbols.Find(conclusion.SymbolId));
-    //     }
-    //     if (conclusion.)
-    //   }
-    // }
   }
 }

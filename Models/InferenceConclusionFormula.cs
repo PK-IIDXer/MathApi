@@ -8,7 +8,7 @@ public class InferenceConclusionFormula
   public Inference Inference { get; } = new();
   public long InferenceId { get; set; }
   public int SerialNo { get; set; }
-  public Symbol? Symbol { get; }
+  public Symbol Symbol { get; } = new();
   public long? SymbolId { get; set; }
   public InferenceArgument? BoundInferenceArgument { get; }
   public int? BoundInferenceArgumentSerialNo { get; set; }
