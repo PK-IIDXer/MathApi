@@ -10,7 +10,15 @@ public class InferenceArgument
   public int SerialNo { get; set; }
   public InferenceArgumentType InferenceArgumentType { get; } = new();
   public int InferenceArgumentTypeId { get; set; }
-  public Symbol? PropositionVariableSymbol { get; set; }
+  /// <summary>
+  /// IsBasic = falseの場合に、論理式で推論規則を定義する場合に、
+  /// 自由変数・命題変数を保持するために使用
+  /// </summary>
+  public Symbol? VariableSymbol { get; set; }
+  /// <summary>
+  /// IsBasic = falseの場合に、論理式で推論規則を定義する場合に、
+  /// 自由変数・命題変数を保持するために使用
+  /// </summary>
   public long? VariableSymbolId { get; set; }
 
   public List<InferenceAssumptionDissolutableAssumptionFormula>? InferenceAssumptionDissolutableAssumptionFormulasToBound { get; }

@@ -45,6 +45,23 @@ public class Formula
     }
   }
 
+  /// <summary>
+  /// 自由変数かどうか
+  /// ※以下のインクルードが必要
+  /// ・FormulaStrings
+  /// ・FormulaChains
+  /// </summary>
+  public bool IsFreeVariable
+  {
+    get
+    {
+      if (FormulaStrings.Count != 1)
+        return false;
+      if (FormulaChains.Count != 0)
+        return false;
+      return FormulaStrings[0].Symbol.SymbolTypeId == (long)Const.SymbolType.FreeVariable;
+    }
+  }
   public List<AxiomProposition>? AxiomPropositions { get; }
   public List<TheoremConclusion>? TheoremConclusions { get; }
   public List<TheoremAssumption>? TheoremAssumptions { get; }
@@ -54,34 +71,58 @@ public class Formula
   public List<InferenceAssumptionFormula>? InferenceAssumptionFormulas { get; }
   public List<InferenceConclusionFormula>? InferenceConclusionFormulas { get; }
 
-  public Formula Substitute(Symbol from, Formula to)
+  /// <summary>
+  /// 変数への代入操作
+  /// ※以下のインクルードが必要
+  /// ・FormulaStrings
+  /// ・FormulaStrings.Symbol
+  /// ・from.FormulaStrings
+  /// ・from.FormulaStrings.Symbol
+  /// ・from.FormulaChains
+  /// ・to.FormulaStrings
+  /// </summary>
+  /// <param name="from">代入先変数（自由または命題変数）</param>
+  /// <param name="to">代入する論理式</param>
+  /// <returns></returns>
+  /// <exception cref="ArgumentException"></exception>
+  public Formula Substitute(Formula from, Formula to)
   {
-    if (!FreeAndPropVariables.Any(s => s.Id == from.Id))
-      throw new ArgumentException("substitution source symbol is not found in the formula");
+    if (!from.IsFreeVariable)
+      throw new ArgumentException("from formula should be free variable");
+
+    var fromSymbol = from.FormulaStrings[0].Symbol;
+
+    if (!FreeAndPropVariables.Any(s => s.Id == fromSymbol.Id))
+      return this;
     
-    if (from.SymbolTypeId == (long)Const.SymbolType.FreeVariable)
+    if (fromSymbol.SymbolTypeId == (long)Const.SymbolType.FreeVariable)
     {
       if (to.FormulaTypeId != (long)Const.FormulaType.Term)
         throw new ArgumentException("substitution destination formula should be term if substitution source symbol is free variable");
     }
 
-    if (from.SymbolTypeId == (long)Const.SymbolType.PropositionVariable)
+    if (fromSymbol.SymbolTypeId == (long)Const.SymbolType.PropositionVariable)
     {
       if (to.FormulaTypeId != (long)Const.FormulaType.Proposition)
         throw new ArgumentException("substitution destination formula should be proposition if substitution source symbol is proposition variable");
     }
 
-    var fs = CreateFormulaStringOnSubstitution(from, to);
-    var fc = CreateFormulaChainOnSubstitution(from, to);
+    var fs = CreateFormulaStringOnSubstitution(fromSymbol, to);
+    var fc = CreateFormulaChainOnSubstitution(fromSymbol, to);
 
     return new Formula
     {
-      Meaning = $"created by substituting formula#{to.Id} for symbol#{from.Id} in formula#{Id}",
+      Meaning = $"created by substituting formula#{to.Id} for symbol#{fromSymbol.Id} in formula#{Id}",
       FormulaStrings = fs,
       FormulaChains = fc
     };
   }
 
+  /// <summary>
+  /// ※以下のインクルードが必要
+  /// ・FormulaStrings
+  /// ・to.FormulaStrings
+  /// </summary>
   private List<FormulaString> CreateFormulaStringOnSubstitution(Symbol from, Formula to)
   {
     var fs = new List<FormulaString>();
@@ -110,6 +151,12 @@ public class Formula
     return fs;
   }
 
+  /// <summary>
+  /// ※以下のインクルードが必要
+  /// ・FormulaStrings
+  /// ・FormulaChains
+  /// ・to.FormulaStrings
+  /// </summary>
   private List<FormulaChain> CreateFormulaChainOnSubstitution(Symbol from, Formula to)
   {
     var formulaLength = to.Length;

@@ -119,8 +119,8 @@ namespace MathApi.Controllers
     /// POSTパラメータからFormulaStringリストを作成する
     /// </summary>
     /// <param name="firstSymbol">一文字目</param>
-    /// <param name="argFormulaIds">POSTで渡された論理式IDのリスト</param>
-    /// <param name="argFormulas">引数論理式のオブジェクトリスト</param>
+    /// <param name="argFormulaIds">POSTで渡された論理式IDのリスト(※順番が保たれている)</param>
+    /// <param name="argFormulas">引数論理式のオブジェクトリスト(※順番が保たれていない)</param>
     /// <param name="isQuant">一文字目が量化記号かどうか</param>
     /// <param name="boundVariable">束縛変数文字オブジェクト</param>
     /// <param name="boundId">束縛する自由変数のFormulaID</param>

@@ -101,7 +101,7 @@ public class MathDbContext : DbContext
                      .WithMany(iat => iat.InferenceArguments)
                      .HasPrincipalKey(iat => new { iat.Id })
                      .HasForeignKey(ia => new { ia.InferenceArgumentTypeId });
-        nestedBuilder.HasOne(ia => ia.PropositionVariableSymbol)
+        nestedBuilder.HasOne(ia => ia.VariableSymbol)
                      .WithMany(s => s.InferenceArguments)
                      .HasPrincipalKey(s => new { s.Id })
                      .HasForeignKey(ia => new { ia.VariableSymbolId });

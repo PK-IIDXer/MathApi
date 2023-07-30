@@ -40,3 +40,18 @@ public enum InferenceAssumptionDissolutionType : int {
   Required = 2,
   Necessary = 3
 }
+
+/// <summary>
+/// 基礎的な記号ID
+/// </summary>
+public enum BasicSymbol : long {
+  BoundVariable = 1,
+  Equals = 2,
+  Contradiction = 3,
+  Denial = 4,
+  And = 5,
+  Or = 6,
+  Implication = 7,
+  Forall = 8,
+  Exists = 9
+}
