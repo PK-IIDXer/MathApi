@@ -313,14 +313,6 @@ public class MathDbContext : DbContext
                      .WithMany(pi => pi.ProofInferenceArguments)
                      .HasPrincipalKey(pi => new { pi.TheoremId, pi.ProofSerialNo, pi.SerialNo })
                      .HasForeignKey(pia => new { pia.TheoremId, pia.ProofSerialNo, pia.ProofInferenceSerialNo });
-        nestedBuilder.HasOne(pia => pia.AxiomProposition)
-                     .WithMany(ap => ap.ProofArguments)
-                     .HasPrincipalKey(ap => new { ap.AxiomId, ap.SerialNo })
-                     .HasForeignKey(pa => new { pa.AxiomId, pa.AxiomPropositionSerialNo });
-        nestedBuilder.HasOne(pia => pia.TheoremAssumption)
-                     .WithMany(ta => ta.ProofInferenceArguments)
-                     .HasPrincipalKey(ta => new { ta.TheoremId, ta.SerialNo })
-                     .HasForeignKey(pia => new { pia.TheoremAssumptionTheoremId, pia.TheoremAssumptionSerialNo });
         nestedBuilder.HasOne(pia => pia.Formula)
                      .WithMany(f => f.ProofInferenceArguments)
                      .HasPrincipalKey(f => new { f.Id })

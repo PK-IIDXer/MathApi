@@ -62,6 +62,7 @@ public class Formula
       return FormulaStrings[0].Symbol.SymbolTypeId == (long)Const.SymbolType.FreeVariable;
     }
   }
+
   public List<AxiomProposition>? AxiomPropositions { get; }
   public List<TheoremConclusion>? TheoremConclusions { get; }
   public List<TheoremAssumption>? TheoremAssumptions { get; }
@@ -257,5 +258,14 @@ public class Formula
     }
 
     return true;
+  }
+
+  /// <summary>
+  /// ※以下のインクルードが必要
+  /// ・FormulaStrings
+  /// </summary>
+  public bool HasSymbol(Symbol symbol)
+  {
+    return FormulaStrings.Any(s => s.SymbolId == symbol.Id);
   }
 }

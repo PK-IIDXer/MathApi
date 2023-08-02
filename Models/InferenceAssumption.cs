@@ -47,8 +47,8 @@ public class InferenceAssumption
           // 代入操作が指示されている場合、代入を行う
           if (InferenceAssumptionFormulas[2].SubstitutionInferenceArgumentFromSerialNo.HasValue)
           {
-            int fromSerialNo = InferenceAssumptionFormulas[2].SubstitutionInferenceArgumentFromSerialNo.Value;
-            int toSerialNo = InferenceAssumptionFormulas[2].SubstitutionInferenceArgumentToSerialNo.Value;
+            int fromSerialNo = InferenceAssumptionFormulas[2].SubstitutionInferenceArgumentFromSerialNo ?? throw new Exception();
+            int toSerialNo = InferenceAssumptionFormulas[2].SubstitutionInferenceArgumentToSerialNo ?? throw new Exception();
 
             prop = prop.Substitute(
               args[fromSerialNo].Formula,
@@ -72,8 +72,8 @@ public class InferenceAssumption
           // 代入操作が指示されている場合、代入を行う
           if (InferenceAssumptionFormulas[i].SubstitutionInferenceArgumentFromSerialNo.HasValue)
           {
-            int fromSerialNo = InferenceAssumptionFormulas[i].SubstitutionInferenceArgumentFromSerialNo.Value;
-            int toSerialNo = InferenceAssumptionFormulas[i].SubstitutionInferenceArgumentToSerialNo.Value;
+            int fromSerialNo = InferenceAssumptionFormulas[i].SubstitutionInferenceArgumentFromSerialNo ?? throw new Exception();
+            int toSerialNo = InferenceAssumptionFormulas[i].SubstitutionInferenceArgumentToSerialNo ?? throw new Exception();
 
             prop = prop.Substitute(
               args[fromSerialNo].Formula,
@@ -97,8 +97,8 @@ public class InferenceAssumption
         // 代入操作が指示されている場合、代入を行う
         if (InferenceAssumptionFormulas[0].SubstitutionInferenceArgumentFromSerialNo.HasValue)
         {
-          int fromSerialNo = InferenceAssumptionFormulas[0].SubstitutionInferenceArgumentFromSerialNo.Value;
-          int toSerialNo = InferenceAssumptionFormulas[0].SubstitutionInferenceArgumentToSerialNo.Value;
+          int fromSerialNo = InferenceAssumptionFormulas[0].SubstitutionInferenceArgumentFromSerialNo ?? throw new Exception();
+          int toSerialNo = InferenceAssumptionFormulas[0].SubstitutionInferenceArgumentToSerialNo ?? throw new Exception();
 
           prop = prop.Substitute(
             args[fromSerialNo].Formula,
@@ -122,14 +122,14 @@ public class InferenceAssumption
             new FormulaString
             {
               SerialNo = 0,
-              SymbolId = Inference.InferenceArguments[i].VariableSymbolId.Value
+              SymbolId = Inference.InferenceArguments[i].VariableSymbolId ?? throw new Exception()
             }
           }
         };
         var toFormula = args[i].Formula;
-        ret = ret.Substitute(fromFormula, toFormula);
+        ret = ret?.Substitute(fromFormula, toFormula);
       }
-      return ret;
+      return ret ?? throw new Exception();
     }
   }
 
@@ -168,8 +168,8 @@ public class InferenceAssumption
           // 代入操作が指示されている場合、代入を行う
           if (InferenceAssumptionDissolutableAssumptionFormulas[2].SubstitutionInferenceArgumentFromSerialNo.HasValue)
           {
-            int fromSerialNo = InferenceAssumptionDissolutableAssumptionFormulas[2].SubstitutionInferenceArgumentFromSerialNo.Value;
-            int toSerialNo = InferenceAssumptionDissolutableAssumptionFormulas[2].SubstitutionInferenceArgumentToSerialNo.Value;
+            int fromSerialNo = InferenceAssumptionDissolutableAssumptionFormulas[2].SubstitutionInferenceArgumentFromSerialNo ?? throw new Exception();
+            int toSerialNo = InferenceAssumptionDissolutableAssumptionFormulas[2].SubstitutionInferenceArgumentToSerialNo ?? throw new Exception();
 
             prop = prop.Substitute(
               args[fromSerialNo].Formula,
@@ -193,8 +193,8 @@ public class InferenceAssumption
           // 代入操作が指示されている場合、代入を行う
           if (InferenceAssumptionDissolutableAssumptionFormulas[i].SubstitutionInferenceArgumentFromSerialNo.HasValue)
           {
-            int fromSerialNo = InferenceAssumptionDissolutableAssumptionFormulas[i].SubstitutionInferenceArgumentFromSerialNo.Value;
-            int toSerialNo = InferenceAssumptionDissolutableAssumptionFormulas[i].SubstitutionInferenceArgumentToSerialNo.Value;
+            int fromSerialNo = InferenceAssumptionDissolutableAssumptionFormulas[i].SubstitutionInferenceArgumentFromSerialNo ?? throw new Exception();
+            int toSerialNo = InferenceAssumptionDissolutableAssumptionFormulas[i].SubstitutionInferenceArgumentToSerialNo ?? throw new Exception();
 
             prop = prop.Substitute(
               args[fromSerialNo].Formula,
@@ -218,8 +218,8 @@ public class InferenceAssumption
         // 代入操作が指示されている場合、代入を行う
         if (InferenceAssumptionDissolutableAssumptionFormulas[0].SubstitutionInferenceArgumentFromSerialNo.HasValue)
         {
-          int fromSerialNo = InferenceAssumptionDissolutableAssumptionFormulas[0].SubstitutionInferenceArgumentFromSerialNo.Value;
-          int toSerialNo = InferenceAssumptionDissolutableAssumptionFormulas[0].SubstitutionInferenceArgumentToSerialNo.Value;
+          int fromSerialNo = InferenceAssumptionDissolutableAssumptionFormulas[0].SubstitutionInferenceArgumentFromSerialNo ?? throw new Exception();
+          int toSerialNo = InferenceAssumptionDissolutableAssumptionFormulas[0].SubstitutionInferenceArgumentToSerialNo ?? throw new Exception();
 
           prop = prop.Substitute(
             args[fromSerialNo].Formula,

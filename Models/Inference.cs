@@ -34,7 +34,81 @@ public class Inference
 
   public List<ProofInference>? ProofInferences { get; }
 
-  public void ValidateProofInference(List<ProofInferenceArgument> args)
+  public Formula Apply(Proof proof, List<ProofInferenceArgument> args, List<long> proofInferenceSerialNos)
+  {
+    ValidateProofInference(args);
+
+    var prevConclusionFormulas = proof.ProofInferences.Select(ppi => ppi.ConclusionFormula).ToList();
+    var nextProofInferenceSerialNo = proof.ProofInferences.Select(pi => pi.SerialNo).Max() + 1;
+
+    if ((prevConclusionFormulas?.Count ?? 0) != InferenceAssumptions.Count)
+      throw new ArgumentException("Inference assumption count mismatch");
+
+    // 未解消仮定の解消
+    foreach (var ia in InferenceAssumptions)
+    {
+      var willDissolutable = ia.CreateDissolutableAssumptionFormula(args);
+      if (willDissolutable == null)
+        continue;
+
+      // 解消フラグ（解消必須の仮定が存在しない場合エラーとする処理に使用
+      bool dissoluteFlag = false;
+      foreach (var pa in proof.ProofAssumptions)
+      {
+        if (pa.DissolutedProofInference != null)
+          continue;
+
+        if (willDissolutable.Equals(pa.Formula))
+        {
+          pa.DissolutedProofInferenceSerialNo = nextProofInferenceSerialNo;
+          pa.LastUsedProofInferenceSerialNo = nextProofInferenceSerialNo;
+          dissoluteFlag = true;
+          break;
+        }
+      }
+
+      // 解消必須の仮定が存在しない場合エラー
+      if (ia.InferenceAssumptionDissolutionTypeId == (int)Const.InferenceAssumptionDissolutionType.Required
+        && dissoluteFlag == false)
+      {
+        throw new ArgumentException("dissolution assumption is required but is not entered.");
+      }
+    }
+
+    // 推論規則制約のチェック
+    ValidateInferenceConstraint(proof, args);
+
+    // 仮定論理式のチェック
+    foreach (var ia in InferenceAssumptions)
+    {
+      var assumptionFormula = ia.CreateAssumptionFormula(args);
+      var checkedFlag = false;
+      foreach (var piSerialNo in proofInferenceSerialNos)
+      {
+        var pi = proof.ProofInferences.Find(p => p.SerialNo == piSerialNo)
+          ?? throw new ArgumentException($"ProofInference is not found of serialNo #{piSerialNo}");
+
+        if (pi.NextProofInferenceSerialNo.HasValue)
+          continue;
+
+        if (pi.ConclusionFormula.Equals(assumptionFormula))
+        {
+          pi.NextProofInferenceSerialNo = nextProofInferenceSerialNo;
+          checkedFlag = true;
+          break;
+        }
+        if (!checkedFlag)
+          throw new ArgumentException("Assumption mismatch");
+      }
+    }
+
+    // 結論論理式の作成
+    var conclusion = CreateConclusionFormula(args);
+
+    // 更新対象の返却
+  }
+
+  private void ValidateProofInference(List<ProofInferenceArgument> args)
   {
     if (args.Count != InferenceArguments.Count)
       throw new ArgumentException("args count mismatch");
@@ -111,6 +185,41 @@ public class Inference
         {
           if (dissolutableAssumptionFormulas.Count != 3)
             throw new ArgumentException("InferenceAssumptionDissolutableAssumptionFormulas should be 3-formulas if first symbol is quantifier");
+        }
+      }
+    }
+  }
+
+  private void ValidateInferenceConstraint(Proof proof, List<ProofInferenceArgument> args)
+  {
+    foreach (var ia in InferenceArguments)
+    {
+      if (ia.InferenceArgumentConstraints == null)
+        continue;
+
+      var arg = args.Find(a => a.SerialNo == ia.SerialNo)
+        ?? throw new ArgumentException("Proof Argument and Inference Argument are mismatch");
+
+      foreach (var iac in ia.InferenceArgumentConstraints)
+      {
+        // 推論規則制約が存在する推論規則引数には、自由変数のみが許可される
+        if (!arg.Formula.IsFreeVariable)
+          throw new ArgumentException("only free variable is arrowed, where has Inference argument constraints");
+
+        var trgInfArg = args.Find(a => a.SerialNo == iac.ConstraintDestinationInferenceArgumentSerialNo)
+          ?? throw new ArgumentException("Proof Argument and Inference Argument are mismatch");
+
+        if (trgInfArg.Formula.HasSymbol(arg.Formula.FormulaStrings[0].Symbol))
+          throw new ArgumentException("Inference Argument Constraint Error");
+
+        // 未解消仮定への制約チェック
+        if (iac.IsConstraintPredissolvedAssumption)
+        {
+          foreach (var lastUsedProofInference in proof.ProofAssumptions.Where(pa => pa.LastUsedProofInferenceSerialNo == arg.ProofInference.SerialNo))
+          {
+            if (lastUsedProofInference.Formula.HasSymbol(arg.Formula.FormulaStrings[0].Symbol))
+              throw new ArgumentException("Inference Argument Constraint Error");
+          }
         }
       }
     }
