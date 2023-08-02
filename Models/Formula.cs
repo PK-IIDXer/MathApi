@@ -217,4 +217,45 @@ public class Formula
 
     return fc;
   }
+
+  /// <summary>
+  /// ※以下のインクルードが必要
+  /// ・FormulaStrings
+  /// ・FormulaChains
+  /// ・target.FormulaStrings
+  /// ・target.FormulaChains
+  /// </summary>
+  public bool Equals(Formula target)
+  {
+    if (Id == target.Id)
+      return true;
+
+    if (FormulaStrings.Count != target.FormulaStrings.Count)
+      return false;
+
+    if (FormulaChains.Count != target.FormulaChains.Count)
+      return false;
+
+    for (var i = 0; i < FormulaStrings.Count; i++)
+    {
+      if (FormulaStrings[i].SymbolId != target.FormulaStrings[i].SymbolId)
+        return false;
+    }
+
+    var sortedChains = FormulaChains.OrderBy(c => c.FromFormulaStringSerialNo)
+                                    .ThenBy(c => c.ToFormulaStringSerialNo)
+                                    .ToList();
+    var sortedTarget = target.FormulaChains
+                             .OrderBy(c => c.FromFormulaStringSerialNo)
+                             .ThenBy(c => c.ToFormulaStringSerialNo)
+                             .ToList();
+    for (var i = 0; i < FormulaChains.Count; i++)
+    {
+      if (sortedChains[i].FromFormulaStringSerialNo != sortedTarget[i].FromFormulaStringSerialNo
+        || sortedChains[i].ToFormulaStringSerialNo != sortedTarget[i].ToFormulaStringSerialNo)
+        return false;
+    }
+
+    return true;
+  }
 }
