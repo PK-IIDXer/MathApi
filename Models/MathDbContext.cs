@@ -28,17 +28,17 @@ public class MathDbContext : DbContext
   public DbSet<InferenceAssumption> InferenceAssumptions { get; set; } = null!;
   public DbSet<InferenceAssumptionDissolutionType> InferenceAssumptionDissolutionTypes { get; set; } = null!;
   public DbSet<InferenceAssumptionFormula> InferenceAssumptionFormulas { get; set; } = null!;
-  public DbSet<InferenceAssumptionDissolutableAssumptionFormula> InferenceAssumptionDissolutableAssumptionFormula { get; set; } = null!;
+  public DbSet<InferenceAssumptionDissolutableAssumptionFormula> InferenceAssumptionDissolutableAssumptionFormulas { get; set; } = null!;
   public DbSet<InferenceConclusionFormula> InferenceConclusionFormulas { get; set; } = null!;
   public DbSet<Axiom> Axioms { get; set; } = null!;
   public DbSet<AxiomProposition> AxiomPropositions { get; set; } = null!;
   public DbSet<Theorem> Theorems { get; set; } = null!;
-  public DbSet<TheoremAssumption> TheoremAssumption { get; set; } = null!;
+  public DbSet<TheoremAssumption> TheoremAssumptions { get; set; } = null!;
   public DbSet<TheoremConclusion> TheoremConclusions { get; set; } = null!;
   public DbSet<Proof> Proofs { get; set; } = null!;
   public DbSet<ProofInference> ProofInferences { get; set; } = null!;
   public DbSet<ProofInferenceArgument> ProofInferenceArguments { get; set; } = null!;
-  public DbSet<ProofAssumption> ProofInferenceAssumptions { get; set; } = null!;
+  public DbSet<ProofAssumption> ProofAssumptions { get; set; } = null!;
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {

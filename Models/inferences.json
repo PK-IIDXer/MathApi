@@ -584,14 +584,11 @@
     "conclusions": [
       {
         "serialNo": 0,
-        "symbolId": 8
-      },
-      {
-        "serialNo": 1,
+        "symbolId": 8,
         "boundArgumentSerialNo": 1
       },
       {
-        "serialNo": 2,
+        "serialNo": 1,
         "argumentSerialNo": 0
       }
     ]
@@ -620,14 +617,11 @@
         "formulas": [
           {
             "serialNo": 0,
-            "symbolId": 8
-          },
-          {
-            "serialNo": 1,
+            "symbolId": 8,
             "boundArgumentSerialNo": 1
           },
           {
-            "serialNo": 2,
+            "serialNo": 1,
             "argumentSerialNo": 0
           }
         ]
@@ -676,14 +670,11 @@
     "conclusions": [
       {
         "serialNo": 0,
-        "symbolId": 9
-      },
-      {
-        "serialNo": 1,
+        "symbolId": 9,
         "boundArgumentSerialNo": 1
       },
       {
-        "serialNo": 2,
+        "serialNo": 1,
         "argumentSerialNo": 0
       }
     ]
@@ -728,14 +719,11 @@
         "formulas": [
           {
             "serialNo": 0,
-            "symbolId": 9
-          },
-          {
-            "serialNo": 1,
+            "symbolId": 9,
             "boundArgumentSerialNo": 2
           },
           {
-            "serialNo": 2,
+            "serialNo": 1,
             "argumentSerialNo": 0
           }
         ]

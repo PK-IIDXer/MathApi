@@ -176,8 +176,8 @@ public class Inference
     if (InferenceConclusionFormulas[0].SymbolId != null)
     {
       var firstSymbol = InferenceConclusionFormulas[0].Symbol;
-      var isQuant = firstSymbol.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
-                 || firstSymbol.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier;
+      var isQuant = firstSymbol?.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
+                 || firstSymbol?.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier;
 
       if (isQuant)
       {
@@ -195,8 +195,8 @@ public class Inference
       if (assumptionFormulas[0].SymbolId != null)
       {
         var firstSymbol = assumptionFormulas[0].Symbol;
-        var isQuant = firstSymbol.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
-                   || firstSymbol.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier;
+        var isQuant = firstSymbol?.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
+                   || firstSymbol?.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier;
         if (isQuant)
         {
           if (assumptionFormulas.Count != 3)
@@ -213,8 +213,8 @@ public class Inference
       if (dissolutableAssumptionFormulas[0].SymbolId != null)
       {
         var firstSymbol = dissolutableAssumptionFormulas[0].Symbol;
-        var isQuant = firstSymbol.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
-                   || firstSymbol.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier;
+        var isQuant = firstSymbol?.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
+                   || firstSymbol?.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier;
         if (isQuant)
         {
           if (dissolutableAssumptionFormulas.Count != 3)
@@ -278,8 +278,8 @@ public class Inference
       if (InferenceConclusionFormulas[0].SymbolId != null)
       {
         var firstSymbol = InferenceConclusionFormulas[0].Symbol;
-        var isQuant = firstSymbol.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
-                   || firstSymbol.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier;
+        var isQuant = firstSymbol?.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
+                   || firstSymbol?.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier;
 
         // 一文字目が量化記号の場合
         // 推論規則結論文字列が[Q][x][A]の並びである前提で組み立てる

@@ -7,8 +7,8 @@ public class InferenceDto
   public long Id { get; set; }
   public string Name { get; set; } = "";
   public bool IsAssumptionAdd { get; set; } = false;
-  public List<ArgumentDto>? Arguments { get; set; } = new();
-  public List<AssumptionDto>? Assumptions { get; set; }
+  public List<ArgumentDto> Arguments { get; set; } = new();
+  public List<AssumptionDto> Assumptions { get; set; } = new();
   public List<InferenceFormulaDto> Conclusions { get; set; } = new(); 
 
   public class ArgumentDto
@@ -50,7 +50,7 @@ public class InferenceDto
       Id = Id,
       Name = Name,
       IsAssumptionAdd = IsAssumptionAdd,
-      InferenceArguments = Arguments?.Select(a => new InferenceArgument
+      InferenceArguments = Arguments.Select(a => new InferenceArgument
       {
         InferenceId = Id,
         SerialNo = a.SerialNo,
@@ -64,7 +64,7 @@ public class InferenceDto
           IsConstraintPredissolvedAssumption = c.IsConstraintPredissolvedAssumption
         }).ToList()
       }).ToList(),
-      InferenceAssumptions = Assumptions?.Select(a => new InferenceAssumption
+      InferenceAssumptions = Assumptions.Select(a => new InferenceAssumption
       {
         InferenceId = Id,
         SerialNo = a.SerialNo,

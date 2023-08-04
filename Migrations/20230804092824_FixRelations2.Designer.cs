@@ -3,6 +3,7 @@ using System;
 using MathApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MathApi.Migrations
 {
     [DbContext(typeof(MathDbContext))]
-    partial class MathDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230804092824_FixRelations2")]
+    partial class FixRelations2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -413,6 +416,7 @@ namespace MathApi.Migrations
                         .HasColumnType("int");
 
                     b.Property<long?>("SymbolId")
+                        .IsRequired()
                         .HasColumnType("bigint");
 
                     b.HasKey("InferenceId", "SerialNo");
@@ -951,7 +955,9 @@ namespace MathApi.Migrations
 
                     b.HasOne("MathApi.Models.Symbol", "Symbol")
                         .WithMany("InferenceConclusionFormulas")
-                        .HasForeignKey("SymbolId");
+                        .HasForeignKey("SymbolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("MathApi.Models.InferenceArgument", "BoundInferenceArgument")
                         .WithMany("InferenceConclusionFormulasToBound")

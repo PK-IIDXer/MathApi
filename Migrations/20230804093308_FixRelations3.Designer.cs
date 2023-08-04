@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MathApi.Migrations
 {
     [DbContext(typeof(MathDbContext))]
-    [Migration("20230720233252_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20230804093308_FixRelations3")]
+    partial class FixRelations3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -154,6 +154,9 @@ namespace MathApi.Migrations
                     b.Property<bool>("IsAssumptionAdd")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<bool>("IsBasic")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -180,14 +183,14 @@ namespace MathApi.Migrations
                     b.Property<int>("InferenceArgumentTypeId")
                         .HasColumnType("int");
 
-                    b.Property<long?>("PropositionVariableSymbolId")
+                    b.Property<long?>("VariableSymbolId")
                         .HasColumnType("bigint");
 
                     b.HasKey("InferenceId", "SerialNo");
 
                     b.HasIndex("InferenceArgumentTypeId");
 
-                    b.HasIndex("PropositionVariableSymbolId");
+                    b.HasIndex("VariableSymbolId");
 
                     b.ToTable("InferenceArguments");
                 });
@@ -299,15 +302,15 @@ namespace MathApi.Migrations
                     b.HasIndex("InferenceId", "BoundInferenceArgumentSerialNo");
 
                     b.HasIndex("InferenceId", "InferenceArgumentSerialNo")
-                        .HasDatabaseName("IX_InferenceAssumptionDissolutableAssumptionFormula_InferenceI~1");
+                        .HasDatabaseName("IX_InferenceAssumptionDissolutableAssumptionFormulas_Inference~1");
 
                     b.HasIndex("InferenceId", "SubstitutionInferenceArgumentFromSerialNo")
-                        .HasDatabaseName("IX_InferenceAssumptionDissolutableAssumptionFormula_InferenceI~2");
+                        .HasDatabaseName("IX_InferenceAssumptionDissolutableAssumptionFormulas_Inference~2");
 
                     b.HasIndex("InferenceId", "SubstitutionInferenceArgumentToSerialNo")
-                        .HasDatabaseName("IX_InferenceAssumptionDissolutableAssumptionFormula_InferenceI~3");
+                        .HasDatabaseName("IX_InferenceAssumptionDissolutableAssumptionFormulas_Inference~3");
 
-                    b.ToTable("InferenceAssumptionDissolutableAssumptionFormula");
+                    b.ToTable("InferenceAssumptionDissolutableAssumptionFormulas");
                 });
 
             modelBuilder.Entity("MathApi.Models.InferenceAssumptionDissolutionType", b =>
@@ -446,9 +449,48 @@ namespace MathApi.Migrations
                     b.ToTable("Proofs");
                 });
 
+            modelBuilder.Entity("MathApi.Models.ProofAssumption", b =>
+                {
+                    b.Property<long>("TheoremId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ProofSerialNo")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("SerialNo")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("AddedProofInferenceSerialNo")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DissolutedProofInferenceSerialNo")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("FormulaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("LastUsedProofInferenceSerialNo")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("TheoremId", "ProofSerialNo", "SerialNo");
+
+                    b.HasIndex("FormulaId");
+
+                    b.HasIndex("TheoremId", "ProofSerialNo", "AddedProofInferenceSerialNo")
+                        .IsUnique();
+
+                    b.HasIndex("TheoremId", "ProofSerialNo", "DissolutedProofInferenceSerialNo")
+                        .IsUnique();
+
+                    b.HasIndex("TheoremId", "ProofSerialNo", "LastUsedProofInferenceSerialNo")
+                        .IsUnique();
+
+                    b.ToTable("ProofAssumptions");
+                });
+
             modelBuilder.Entity("MathApi.Models.ProofInference", b =>
                 {
-                    b.Property<long>("ProofId")
+                    b.Property<long>("TheoremId")
                         .HasColumnType("bigint");
 
                     b.Property<long>("ProofSerialNo")
@@ -466,20 +508,20 @@ namespace MathApi.Migrations
                     b.Property<long?>("NextProofInferenceSerialNo")
                         .HasColumnType("bigint");
 
-                    b.HasKey("ProofId", "ProofSerialNo", "SerialNo");
+                    b.HasKey("TheoremId", "ProofSerialNo", "SerialNo");
 
                     b.HasIndex("ConclusionFormulaId");
 
                     b.HasIndex("InferenceId");
 
-                    b.HasIndex("ProofId", "ProofSerialNo", "NextProofInferenceSerialNo");
+                    b.HasIndex("TheoremId", "ProofSerialNo", "NextProofInferenceSerialNo");
 
                     b.ToTable("ProofInferences");
                 });
 
             modelBuilder.Entity("MathApi.Models.ProofInferenceArgument", b =>
                 {
-                    b.Property<long>("ProofId")
+                    b.Property<long>("TheoremId")
                         .HasColumnType("bigint");
 
                     b.Property<long>("ProofSerialNo")
@@ -491,57 +533,16 @@ namespace MathApi.Migrations
                     b.Property<long>("SerialNo")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("AxiomId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("AxiomPropositionSerialNo")
-                        .HasColumnType("bigint");
-
                     b.Property<long>("FormulaId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("TheoremAssumptionSerialNo")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("TheoremAssumptionTheoremId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("ProofId", "ProofSerialNo", "ProofInferenceSerialNo", "SerialNo");
+                    b.HasKey("TheoremId", "ProofSerialNo", "ProofInferenceSerialNo", "SerialNo");
 
                     b.HasIndex("FormulaId");
 
-                    b.HasIndex("AxiomId", "AxiomPropositionSerialNo");
-
-                    b.HasIndex("TheoremAssumptionTheoremId", "TheoremAssumptionSerialNo");
+                    b.HasIndex("TheoremId", "SerialNo");
 
                     b.ToTable("ProofInferenceArguments");
-                });
-
-            modelBuilder.Entity("MathApi.Models.ProofInferenceAssumption", b =>
-                {
-                    b.Property<long>("ProofId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("ProofSerialNo")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("ProofInferenceSerialNo")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("DissolutedProofInferenceSerialNo")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("FormulaId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("ProofId", "ProofSerialNo", "ProofInferenceSerialNo");
-
-                    b.HasIndex("FormulaId");
-
-                    b.HasIndex("ProofId", "ProofSerialNo", "DissolutedProofInferenceSerialNo")
-                        .IsUnique();
-
-                    b.ToTable("ProofInferenceAssumptions");
                 });
 
             modelBuilder.Entity("MathApi.Models.Symbol", b =>
@@ -687,7 +688,7 @@ namespace MathApi.Migrations
 
                     b.HasIndex("FormulaId");
 
-                    b.ToTable("TheoremAssumption");
+                    b.ToTable("TheoremAssumptions");
                 });
 
             modelBuilder.Entity("MathApi.Models.TheoremConclusion", b =>
@@ -796,15 +797,15 @@ namespace MathApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MathApi.Models.Symbol", "PropositionVariableSymbol")
+                    b.HasOne("MathApi.Models.Symbol", "VariableSymbol")
                         .WithMany("InferenceArguments")
-                        .HasForeignKey("PropositionVariableSymbolId");
+                        .HasForeignKey("VariableSymbolId");
 
                     b.Navigation("Inference");
 
                     b.Navigation("InferenceArgumentType");
 
-                    b.Navigation("PropositionVariableSymbol");
+                    b.Navigation("VariableSymbol");
                 });
 
             modelBuilder.Entity("MathApi.Models.InferenceArgumentConstraint", b =>
@@ -859,23 +860,24 @@ namespace MathApi.Migrations
                     b.HasOne("MathApi.Models.InferenceArgument", "InferenceArgument")
                         .WithMany("InferenceAssumptionDissolutableAssumptionFormulas")
                         .HasForeignKey("InferenceId", "InferenceArgumentSerialNo")
-                        .HasConstraintName("FK_InferenceAssumptionDissolutableAssumptionFormula_InferenceA~1");
+                        .HasConstraintName("FK_InferenceAssumptionDissolutableAssumptionFormulas_Inference~1");
 
                     b.HasOne("MathApi.Models.InferenceAssumption", "InferenceAssumption")
                         .WithMany("InferenceAssumptionDissolutableAssumptionFormulas")
                         .HasForeignKey("InferenceId", "InferenceAssumptionSerialNo")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_InferenceAssumptionDissolutableAssumptionFormulas_Inference~2");
 
                     b.HasOne("MathApi.Models.InferenceArgument", "SubstitutionInferenceArgumentFrom")
                         .WithMany("InferenceAssumptionDissolutableAssumptionFormulasToSubstitutionInferenceArgumentFrom")
                         .HasForeignKey("InferenceId", "SubstitutionInferenceArgumentFromSerialNo")
-                        .HasConstraintName("FK_InferenceAssumptionDissolutableAssumptionFormula_InferenceA~2");
+                        .HasConstraintName("FK_InferenceAssumptionDissolutableAssumptionFormulas_Inference~3");
 
                     b.HasOne("MathApi.Models.InferenceArgument", "SubstitutionInferenceArgumentTo")
                         .WithMany("InferenceAssumptionDissolutableAssumptionFormulasToSubstitutionInferenceArgumentTo")
                         .HasForeignKey("InferenceId", "SubstitutionInferenceArgumentToSerialNo")
-                        .HasConstraintName("FK_InferenceAssumptionDissolutableAssumptionFormula_InferenceA~3");
+                        .HasConstraintName("FK_InferenceAssumptionDissolutableAssumptionFormulas_Inference~4");
 
                     b.Navigation("BoundInferenceArgument");
 
@@ -997,6 +999,47 @@ namespace MathApi.Migrations
                     b.Navigation("Theorem");
                 });
 
+            modelBuilder.Entity("MathApi.Models.ProofAssumption", b =>
+                {
+                    b.HasOne("MathApi.Models.Formula", "Formula")
+                        .WithMany("ProofAssumptions")
+                        .HasForeignKey("FormulaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MathApi.Models.Proof", "Proof")
+                        .WithMany("ProofAssumptions")
+                        .HasForeignKey("TheoremId", "ProofSerialNo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MathApi.Models.ProofInference", "AddedProofInference")
+                        .WithOne("AddingProofInference")
+                        .HasForeignKey("MathApi.Models.ProofAssumption", "TheoremId", "ProofSerialNo", "AddedProofInferenceSerialNo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MathApi.Models.ProofInference", "DissolutedProofInference")
+                        .WithOne("DissolutingAssumption")
+                        .HasForeignKey("MathApi.Models.ProofAssumption", "TheoremId", "ProofSerialNo", "DissolutedProofInferenceSerialNo");
+
+                    b.HasOne("MathApi.Models.ProofInference", "LastUsedProofInference")
+                        .WithOne("LastUsingProofInference")
+                        .HasForeignKey("MathApi.Models.ProofAssumption", "TheoremId", "ProofSerialNo", "LastUsedProofInferenceSerialNo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AddedProofInference");
+
+                    b.Navigation("DissolutedProofInference");
+
+                    b.Navigation("Formula");
+
+                    b.Navigation("LastUsedProofInference");
+
+                    b.Navigation("Proof");
+                });
+
             modelBuilder.Entity("MathApi.Models.ProofInference", b =>
                 {
                     b.HasOne("MathApi.Models.Formula", "ConclusionFormula")
@@ -1013,13 +1056,13 @@ namespace MathApi.Migrations
 
                     b.HasOne("MathApi.Models.Proof", "Proof")
                         .WithMany("ProofInferences")
-                        .HasForeignKey("ProofId", "ProofSerialNo")
+                        .HasForeignKey("TheoremId", "ProofSerialNo")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MathApi.Models.ProofInference", "NextProofInference")
                         .WithMany("PreviousProofInferences")
-                        .HasForeignKey("ProofId", "ProofSerialNo", "NextProofInferenceSerialNo");
+                        .HasForeignKey("TheoremId", "ProofSerialNo", "NextProofInferenceSerialNo");
 
                     b.Navigation("ConclusionFormula");
 
@@ -1038,49 +1081,17 @@ namespace MathApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MathApi.Models.AxiomProposition", "AxiomProposition")
-                        .WithMany("ProofArguments")
-                        .HasForeignKey("AxiomId", "AxiomPropositionSerialNo");
-
-                    b.HasOne("MathApi.Models.TheoremAssumption", "TheoremAssumption")
+                    b.HasOne("MathApi.Models.TheoremAssumption", null)
                         .WithMany("ProofInferenceArguments")
-                        .HasForeignKey("TheoremAssumptionTheoremId", "TheoremAssumptionSerialNo");
-
-                    b.HasOne("MathApi.Models.ProofInference", "ProofInference")
-                        .WithMany("ProofInferenceArguments")
-                        .HasForeignKey("ProofId", "ProofSerialNo", "ProofInferenceSerialNo")
+                        .HasForeignKey("TheoremId", "SerialNo")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("AxiomProposition");
-
-                    b.Navigation("Formula");
-
-                    b.Navigation("ProofInference");
-
-                    b.Navigation("TheoremAssumption");
-                });
-
-            modelBuilder.Entity("MathApi.Models.ProofInferenceAssumption", b =>
-                {
-                    b.HasOne("MathApi.Models.Formula", "Formula")
-                        .WithMany("ProofInferenceAssumptions")
-                        .HasForeignKey("FormulaId")
+                    b.HasOne("MathApi.Models.ProofInference", "ProofInference")
+                        .WithMany("ProofInferenceArguments")
+                        .HasForeignKey("TheoremId", "ProofSerialNo", "ProofInferenceSerialNo")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("MathApi.Models.ProofInference", "DissolutedProofInference")
-                        .WithOne("DissolutingAssumption")
-                        .HasForeignKey("MathApi.Models.ProofInferenceAssumption", "ProofId", "ProofSerialNo", "DissolutedProofInferenceSerialNo");
-
-                    b.HasOne("MathApi.Models.ProofInference", "ProofInference")
-                        .WithOne("ProofInferenceAssumption")
-                        .HasForeignKey("MathApi.Models.ProofInferenceAssumption", "ProofId", "ProofSerialNo", "ProofInferenceSerialNo")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_ProofInferenceAssumptions_ProofInferences_ProofId_ProofSeri~1");
-
-                    b.Navigation("DissolutedProofInference");
 
                     b.Navigation("Formula");
 
@@ -1158,11 +1169,6 @@ namespace MathApi.Migrations
                     b.Navigation("AxiomPropositions");
                 });
 
-            modelBuilder.Entity("MathApi.Models.AxiomProposition", b =>
-                {
-                    b.Navigation("ProofArguments");
-                });
-
             modelBuilder.Entity("MathApi.Models.Formula", b =>
                 {
                     b.Navigation("AxiomPropositions");
@@ -1175,9 +1181,9 @@ namespace MathApi.Migrations
 
                     b.Navigation("InferenceConclusionFormulas");
 
-                    b.Navigation("ProofInferenceArguments");
+                    b.Navigation("ProofAssumptions");
 
-                    b.Navigation("ProofInferenceAssumptions");
+                    b.Navigation("ProofInferenceArguments");
 
                     b.Navigation("ProofInferences");
 
@@ -1261,18 +1267,22 @@ namespace MathApi.Migrations
 
             modelBuilder.Entity("MathApi.Models.Proof", b =>
                 {
+                    b.Navigation("ProofAssumptions");
+
                     b.Navigation("ProofInferences");
                 });
 
             modelBuilder.Entity("MathApi.Models.ProofInference", b =>
                 {
+                    b.Navigation("AddingProofInference");
+
                     b.Navigation("DissolutingAssumption");
+
+                    b.Navigation("LastUsingProofInference");
 
                     b.Navigation("PreviousProofInferences");
 
                     b.Navigation("ProofInferenceArguments");
-
-                    b.Navigation("ProofInferenceAssumption");
                 });
 
             modelBuilder.Entity("MathApi.Models.Symbol", b =>

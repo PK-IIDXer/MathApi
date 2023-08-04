@@ -148,7 +148,7 @@ namespace MathApi.Controllers
       if (await _context.InferenceAssumptionFormulas.AnyAsync(iaf => iaf.SymbolId == id))
         return BadRequest("Cannot delete if the symbol is contained in some Inferences");
 
-      if (await _context.InferenceAssumptionDissolutableAssumptionFormula.AnyAsync(iaf => iaf.SymbolId == id))
+      if (await _context.InferenceAssumptionDissolutableAssumptionFormulas.AnyAsync(iaf => iaf.SymbolId == id))
         return BadRequest("Cannot delete if the symbol is contained in some Inferences");
 
       if (await _context.InferenceConclusionFormulas.AnyAsync(iaf => iaf.SymbolId == id))

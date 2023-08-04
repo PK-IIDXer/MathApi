@@ -48,8 +48,8 @@ public class InferenceAssumption
       if (InferenceAssumptionFormulas[0].SymbolId != null)
       {
         var firstSymbol = InferenceAssumptionFormulas[0].Symbol;
-        var isQuant = firstSymbol.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
-                   || firstSymbol.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier;
+        var isQuant = firstSymbol?.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
+                   || firstSymbol?.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier;
 
         // 一文字目が量化記号の場合
         // 推論規則結論文字列が[Q][x][A]の並びである前提で組み立てる
@@ -169,8 +169,8 @@ public class InferenceAssumption
       if (InferenceAssumptionDissolutableAssumptionFormulas[0].SymbolId != null)
       {
         var firstSymbol = InferenceAssumptionDissolutableAssumptionFormulas[0].Symbol;
-        var isQuant = firstSymbol.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
-                   || firstSymbol.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier;
+        var isQuant = firstSymbol?.SymbolTypeId is ((long)Const.SymbolType.TermQuantifier)
+                   or ((long)Const.SymbolType.PropositionQuantifier);
 
         // 一文字目が量化記号の場合
         // 推論規則結論文字列が[Q][x][A]の並びである前提で組み立てる

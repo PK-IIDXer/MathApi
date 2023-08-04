@@ -22,7 +22,7 @@ public class InferenceConclusionFormula
   /// 推論規則結論論理式構成要素連番
   /// </summary>
   public int SerialNo { get; set; }
-  public Symbol Symbol { get; } = new();
+  public Symbol? Symbol { get; }
   /// <summary>
   /// 記号ID
   /// </summary>

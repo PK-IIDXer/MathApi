@@ -118,35 +118,35 @@ namespace MathApi.Controllers
       return (_context.Proofs?.Any(e => e.TheoremId == id)).GetValueOrDefault();
     }
 
-    public async Task<string?> ValidateDto(ProofDto dto)
-    {
-      var proof = await _context
-      .Proofs
-      .Include(
-        p => p.ProofInferences
-              .Where(pi => !pi.NextProofInferenceSerialNo.HasValue)
-      )
-      .FirstOrDefaultAsync(
-        p => p.TheoremId == dto.TheoremId
-             && p.SerialNo == dto.ProofSerialNo
-      );
+    // public async Task<string?> ValidateDto(ProofDto dto)
+    // {
+    //   var proof = await _context
+    //   .Proofs
+    //   .Include(
+    //     p => p.ProofInferences
+    //           .Where(pi => !pi.NextProofInferenceSerialNo.HasValue)
+    //   )
+    //   .FirstOrDefaultAsync(
+    //     p => p.TheoremId == dto.TheoremId
+    //          && p.SerialNo == dto.ProofSerialNo
+    //   );
 
-      var inference = await _context
-      .Inferences
-      .Include(i => i.InferenceArguments)
-      .Include(i => i.InferenceAssumptions)
-      .Include(i => i.InferenceConclusionFormulas)
-      .FirstAsync(i => i.Id == dto.InferenceId);
+    //   var inference = await _context
+    //   .Inferences
+    //   .Include(i => i.InferenceArguments)
+    //   .Include(i => i.InferenceAssumptions)
+    //   .Include(i => i.InferenceConclusionFormulas)
+    //   .FirstAsync(i => i.Id == dto.InferenceId);
 
-      if (inference.InferenceArguments.Count != dto.InferenceArgumentFormulas.Count)
-        return "Argument couunt mismatch.";
+    //   if (inference.InferenceArguments.Count != dto.InferenceArgumentFormulas.Count)
+    //     return "Argument couunt mismatch.";
 
-      if (inference.InferenceAssumptions.Count != dto.AssumingInferenceResults.Count)
-        return "Assumption count mismatch.";
+    //   if (inference.InferenceAssumptions.Count != dto.AssumingInferenceResults.Count)
+    //     return "Assumption count mismatch.";
 
       
 
-      return null;
-    }
+    //   return null;
+    // }
   }
 }
