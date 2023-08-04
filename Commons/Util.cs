@@ -16,8 +16,16 @@ public static class Util
   /// <param name="boundVariable">束縛先の自由変数を表す論理式オブジェクト(symbolが量化記号の場合)</param>
   /// <param name="arguments">symbolに渡す引数</param>
   /// <returns>新しいFormulaオブジェクト</returns>
-  public static Formula ProceedFormulaConstruction(Symbol symbol, Formula? boundVariable, List<Formula> arguments)
+  public static Formula ProceedFormulaConstruction(Symbol? symbol, Formula? boundVariable, List<Formula> arguments)
   {
+    if (symbol == null)
+    {
+      if (arguments.Count != 1)
+        throw new ArgumentException("\"argument\" should be 1-element if symbol is null");
+
+      return arguments[0];
+    }
+
     if (symbol.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
       || symbol.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier)
     {

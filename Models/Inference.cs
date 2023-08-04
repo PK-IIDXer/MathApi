@@ -2,10 +2,22 @@ using MathApi.Commons;
 
 namespace MathApi.Models;
 
+/// <summary>
+/// 推論規則
+/// </summary>
 public class Inference
 {
+  /// <summary>
+  /// 推論規則ID
+  /// </summary>
   public long Id { get; set; }
+  /// <summary>
+  /// 推論規則名称
+  /// </summary>
   public string Name { get; set;} = "";
+  /// <summary>
+  /// 仮定を追加するかどうか
+  /// </summary>
   public bool IsAssumptionAdd { get; set; }
   /// <summary>
   /// 基礎的な推論規則かどうか
@@ -34,13 +46,26 @@ public class Inference
 
   public List<ProofInference>? ProofInferences { get; }
 
-  public Formula Apply(Proof proof, List<ProofInferenceArgument> args, List<long> proofInferenceSerialNos)
+  public struct InferenceResult
   {
+    public ProofInference ProofInference { get; set; }
+    public List<ProofInference> UpdatedProofInferences { get; set; }
+    public List<ProofAssumption> UpdatedProofAssumptions { get; set; }
+  }
+
+  public InferenceResult Apply(
+    long nextProofInferenceSerialNo,
+    Proof proof,
+    List<ProofInference> prevProofInferences,
+    List<ProofAssumption> proofAssumptions,
+    List<ProofInference> unusedProofInferences,
+    List<ProofInferenceArgument> args)
+  {
+    InferenceResult result = new();
+
+    // 基本的なバリデーション
     ValidateProofInference(args);
-
-    var prevConclusionFormulas = proof.ProofInferences.Select(ppi => ppi.ConclusionFormula).ToList();
-    var nextProofInferenceSerialNo = proof.ProofInferences.Select(pi => pi.SerialNo).Max() + 1;
-
+    var prevConclusionFormulas = prevProofInferences.Select(ppi => ppi.ConclusionFormula).ToList();
     if ((prevConclusionFormulas?.Count ?? 0) != InferenceAssumptions.Count)
       throw new ArgumentException("Inference assumption count mismatch");
 
@@ -53,7 +78,7 @@ public class Inference
 
       // 解消フラグ（解消必須の仮定が存在しない場合エラーとする処理に使用
       bool dissoluteFlag = false;
-      foreach (var pa in proof.ProofAssumptions)
+      foreach (var pa in proofAssumptions)
       {
         if (pa.DissolutedProofInference != null)
           continue;
@@ -63,6 +88,8 @@ public class Inference
           pa.DissolutedProofInferenceSerialNo = nextProofInferenceSerialNo;
           pa.LastUsedProofInferenceSerialNo = nextProofInferenceSerialNo;
           dissoluteFlag = true;
+
+          result.UpdatedProofAssumptions.Add(pa);
           break;
         }
       }
@@ -76,36 +103,43 @@ public class Inference
     }
 
     // 推論規則制約のチェック
-    ValidateInferenceConstraint(proof, args);
+    ValidateInferenceConstraint(proofAssumptions, args);
 
     // 仮定論理式のチェック
     foreach (var ia in InferenceAssumptions)
     {
       var assumptionFormula = ia.CreateAssumptionFormula(args);
       var checkedFlag = false;
-      foreach (var piSerialNo in proofInferenceSerialNos)
+      foreach (var unusedPi in unusedProofInferences)
       {
-        var pi = proof.ProofInferences.Find(p => p.SerialNo == piSerialNo)
-          ?? throw new ArgumentException($"ProofInference is not found of serialNo #{piSerialNo}");
-
-        if (pi.NextProofInferenceSerialNo.HasValue)
-          continue;
-
-        if (pi.ConclusionFormula.Equals(assumptionFormula))
+        if (unusedPi.ConclusionFormula.Equals(assumptionFormula))
         {
-          pi.NextProofInferenceSerialNo = nextProofInferenceSerialNo;
+          unusedPi.NextProofInferenceSerialNo = nextProofInferenceSerialNo;
+
+          result.UpdatedProofInferences.Add(unusedPi);
           checkedFlag = true;
           break;
         }
-        if (!checkedFlag)
-          throw new ArgumentException("Assumption mismatch");
       }
+      if (!checkedFlag)
+        throw new ArgumentException("Assumption mismatch");
     }
 
     // 結論論理式の作成
     var conclusion = CreateConclusionFormula(args);
 
     // 更新対象の返却
+    result.ProofInference = new ProofInference
+    {
+      TheoremId = proof.TheoremId,
+      ProofSerialNo = proof.SerialNo,
+      SerialNo = nextProofInferenceSerialNo,
+      InferenceId = Id,
+      ConclusionFormula = CreateConclusionFormula(args),
+      PreviousProofInferences = prevProofInferences
+    };
+
+    return result;
   }
 
   private void ValidateProofInference(List<ProofInferenceArgument> args)
@@ -190,7 +224,7 @@ public class Inference
     }
   }
 
-  private void ValidateInferenceConstraint(Proof proof, List<ProofInferenceArgument> args)
+  private void ValidateInferenceConstraint(List<ProofAssumption> proofAssumptions, List<ProofInferenceArgument> args)
   {
     foreach (var ia in InferenceArguments)
     {
@@ -215,7 +249,7 @@ public class Inference
         // 未解消仮定への制約チェック
         if (iac.IsConstraintPredissolvedAssumption)
         {
-          foreach (var lastUsedProofInference in proof.ProofAssumptions.Where(pa => pa.LastUsedProofInferenceSerialNo == arg.ProofInference.SerialNo))
+          foreach (var lastUsedProofInference in proofAssumptions.Where(pa => pa.LastUsedProofInferenceSerialNo == arg.ProofInference.SerialNo))
           {
             if (lastUsedProofInference.Formula.HasSymbol(arg.Formula.FormulaStrings[0].Symbol))
               throw new ArgumentException("Inference Argument Constraint Error");
@@ -255,8 +289,8 @@ public class Inference
           // 代入操作が指示されている場合、代入を行う
           if (InferenceConclusionFormulas[2].SubstitutionInferenceArgumentFromSerialNo.HasValue)
           {
-            int fromSerialNo = InferenceConclusionFormulas[2].SubstitutionInferenceArgumentFromSerialNo.Value;
-            int toSerialNo = InferenceConclusionFormulas[2].SubstitutionInferenceArgumentToSerialNo.Value;
+            int fromSerialNo = InferenceConclusionFormulas[2].SubstitutionInferenceArgumentFromSerialNo ?? throw new Exception(Name);
+            int toSerialNo = InferenceConclusionFormulas[2].SubstitutionInferenceArgumentToSerialNo ?? throw new Exception(Name);
 
             prop = prop.Substitute(
               args[fromSerialNo].Formula,
@@ -280,8 +314,8 @@ public class Inference
           // 代入操作が指示されている場合、代入を行う
           if (InferenceConclusionFormulas[i].SubstitutionInferenceArgumentFromSerialNo.HasValue)
           {
-            int fromSerialNo = InferenceConclusionFormulas[i].SubstitutionInferenceArgumentFromSerialNo.Value;
-            int toSerialNo = InferenceConclusionFormulas[i].SubstitutionInferenceArgumentToSerialNo.Value;
+            int fromSerialNo = InferenceConclusionFormulas[i].SubstitutionInferenceArgumentFromSerialNo ?? throw new Exception(Name);
+            int toSerialNo = InferenceConclusionFormulas[i].SubstitutionInferenceArgumentToSerialNo ?? throw new Exception(Name);
 
             prop = prop.Substitute(
               args[fromSerialNo].Formula,
@@ -305,8 +339,8 @@ public class Inference
         // 代入操作が指示されている場合、代入を行う
         if (InferenceConclusionFormulas[0].SubstitutionInferenceArgumentFromSerialNo.HasValue)
         {
-          int fromSerialNo = InferenceConclusionFormulas[0].SubstitutionInferenceArgumentFromSerialNo.Value;
-          int toSerialNo = InferenceConclusionFormulas[0].SubstitutionInferenceArgumentToSerialNo.Value;
+          int fromSerialNo = InferenceConclusionFormulas[0].SubstitutionInferenceArgumentFromSerialNo ?? throw new Exception(Name);
+          int toSerialNo = InferenceConclusionFormulas[0].SubstitutionInferenceArgumentToSerialNo ?? throw new Exception(Name);
 
           prop = prop.Substitute(
             args[fromSerialNo].Formula,
@@ -330,14 +364,14 @@ public class Inference
             new FormulaString
             {
               SerialNo = 0,
-              SymbolId = InferenceArguments[i].VariableSymbolId.Value
+              SymbolId = InferenceArguments[i].VariableSymbolId ?? throw new Exception(Name)
             }
           }
         };
         var toFormula = args[i].Formula;
-        ret = ret.Substitute(fromFormula, toFormula);
+        ret = ret?.Substitute(fromFormula, toFormula);
       }
-      return ret;
+      return ret ?? throw new Exception(Name);
     }
   }
 }

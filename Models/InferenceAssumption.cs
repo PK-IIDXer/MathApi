@@ -3,13 +3,25 @@ using MathApi.Commons;
 
 namespace MathApi.Models;
 
+/// <summary>
+/// 推論規則仮定
+/// </summary>
 [PrimaryKey(nameof(InferenceId), nameof(SerialNo))]
 public class InferenceAssumption
 {
   public Inference Inference { get; set; } = new();
+  /// <summary>
+  /// 推論規則ID
+  /// </summary>
   public long InferenceId { get; set; }
+  /// <summary>
+  /// 推論規則仮定連番
+  /// </summary>
   public int SerialNo { get; set; }
   public InferenceAssumptionDissolutionType InferenceAssumptionDissolutionType { get; } = new();
+  /// <summary>
+  /// 推論規則仮定解消種類ID
+  /// </summary>
   public int InferenceAssumptionDissolutionTypeId { get; set; }
 
   public List<InferenceAssumptionFormula> InferenceAssumptionFormulas { get; set; } = new();
