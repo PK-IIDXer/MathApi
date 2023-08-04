@@ -7,12 +7,11 @@ public enum SymbolType : long {
   FreeVariable = 1,
   BoundVariable = 2,
   PropositionVariable = 3,
-  Constant = 4,
-  Function = 5,
-  Predicate = 6,
-  Logic = 7,
-  TermQuantifier = 8,
-  PropositionQuantifier = 9
+  Function = 4,
+  Predicate = 5,
+  Logic = 6,
+  TermQuantifier = 7,
+  PropositionQuantifier = 8
 }
 
 /// <summary>

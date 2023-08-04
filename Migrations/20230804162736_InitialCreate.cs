@@ -145,7 +145,8 @@ namespace MathApi.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    FormulaTypeId = table.Column<long>(type: "bigint", nullable: false)
+                    FormulaTypeId = table.Column<long>(type: "bigint", nullable: false),
+                    IsQuantifier = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -202,7 +203,7 @@ namespace MathApi.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "TheoremAssumption",
+                name: "TheoremAssumptions",
                 columns: table => new
                 {
                     TheoremId = table.Column<long>(type: "bigint", nullable: false),
@@ -211,15 +212,15 @@ namespace MathApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TheoremAssumption", x => new { x.TheoremId, x.SerialNo });
+                    table.PrimaryKey("PK_TheoremAssumptions", x => new { x.TheoremId, x.SerialNo });
                     table.ForeignKey(
-                        name: "FK_TheoremAssumption_Formulas_FormulaId",
+                        name: "FK_TheoremAssumptions_Formulas_FormulaId",
                         column: x => x.FormulaId,
                         principalTable: "Formulas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TheoremAssumption_Theorems_TheoremId",
+                        name: "FK_TheoremAssumptions_Theorems_TheoremId",
                         column: x => x.TheoremId,
                         principalTable: "Theorems",
                         principalColumn: "Id",
@@ -409,6 +410,53 @@ namespace MathApi.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "ProofAssumptions",
+                columns: table => new
+                {
+                    TheoremId = table.Column<long>(type: "bigint", nullable: false),
+                    ProofSerialNo = table.Column<long>(type: "bigint", nullable: false),
+                    SerialNo = table.Column<long>(type: "bigint", nullable: false),
+                    FormulaId = table.Column<long>(type: "bigint", nullable: false),
+                    AddedProofInferenceSerialNo = table.Column<long>(type: "bigint", nullable: false),
+                    LastUsedProofInferenceSerialNo = table.Column<long>(type: "bigint", nullable: false),
+                    DissolutedProofInferenceSerialNo = table.Column<long>(type: "bigint", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProofAssumptions", x => new { x.TheoremId, x.ProofSerialNo, x.SerialNo });
+                    table.ForeignKey(
+                        name: "FK_ProofAssumptions_Formulas_FormulaId",
+                        column: x => x.FormulaId,
+                        principalTable: "Formulas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProofAssumptions_ProofInferences_TheoremId_ProofSerialNo_Add~",
+                        columns: x => new { x.TheoremId, x.ProofSerialNo, x.AddedProofInferenceSerialNo },
+                        principalTable: "ProofInferences",
+                        principalColumns: new[] { "TheoremId", "ProofSerialNo", "SerialNo" },
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProofAssumptions_ProofInferences_TheoremId_ProofSerialNo_Dis~",
+                        columns: x => new { x.TheoremId, x.ProofSerialNo, x.DissolutedProofInferenceSerialNo },
+                        principalTable: "ProofInferences",
+                        principalColumns: new[] { "TheoremId", "ProofSerialNo", "SerialNo" });
+                    table.ForeignKey(
+                        name: "FK_ProofAssumptions_ProofInferences_TheoremId_ProofSerialNo_Las~",
+                        columns: x => new { x.TheoremId, x.ProofSerialNo, x.LastUsedProofInferenceSerialNo },
+                        principalTable: "ProofInferences",
+                        principalColumns: new[] { "TheoremId", "ProofSerialNo", "SerialNo" },
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProofAssumptions_Proofs_TheoremId_ProofSerialNo",
+                        columns: x => new { x.TheoremId, x.ProofSerialNo },
+                        principalTable: "Proofs",
+                        principalColumns: new[] { "TheoremId", "SerialNo" },
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "ProofInferenceArguments",
                 columns: table => new
                 {
@@ -416,18 +464,11 @@ namespace MathApi.Migrations
                     ProofSerialNo = table.Column<long>(type: "bigint", nullable: false),
                     ProofInferenceSerialNo = table.Column<long>(type: "bigint", nullable: false),
                     SerialNo = table.Column<long>(type: "bigint", nullable: false),
-                    FormulaId = table.Column<long>(type: "bigint", nullable: false),
-                    AxiomPropositionAxiomId = table.Column<long>(type: "bigint", nullable: true),
-                    AxiomPropositionSerialNo = table.Column<long>(type: "bigint", nullable: true)
+                    FormulaId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProofInferenceArguments", x => new { x.TheoremId, x.ProofSerialNo, x.ProofInferenceSerialNo, x.SerialNo });
-                    table.ForeignKey(
-                        name: "FK_ProofInferenceArguments_AxiomPropositions_AxiomPropositionAx~",
-                        columns: x => new { x.AxiomPropositionAxiomId, x.AxiomPropositionSerialNo },
-                        principalTable: "AxiomPropositions",
-                        principalColumns: new[] { "AxiomId", "SerialNo" });
                     table.ForeignKey(
                         name: "FK_ProofInferenceArguments_Formulas_FormulaId",
                         column: x => x.FormulaId,
@@ -441,56 +482,9 @@ namespace MathApi.Migrations
                         principalColumns: new[] { "TheoremId", "ProofSerialNo", "SerialNo" },
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ProofInferenceArguments_TheoremAssumption_TheoremId_SerialNo",
+                        name: "FK_ProofInferenceArguments_TheoremAssumptions_TheoremId_SerialNo",
                         columns: x => new { x.TheoremId, x.SerialNo },
-                        principalTable: "TheoremAssumption",
-                        principalColumns: new[] { "TheoremId", "SerialNo" },
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "ProofInferenceAssumptions",
-                columns: table => new
-                {
-                    TheoremId = table.Column<long>(type: "bigint", nullable: false),
-                    ProofSerialNo = table.Column<long>(type: "bigint", nullable: false),
-                    SerialNo = table.Column<long>(type: "bigint", nullable: false),
-                    FormulaId = table.Column<long>(type: "bigint", nullable: false),
-                    AddedProofInferenceSerialNo = table.Column<long>(type: "bigint", nullable: false),
-                    LastUsedProofInferenceSerialNo = table.Column<long>(type: "bigint", nullable: false),
-                    DissolutedProofInferenceSerialNo = table.Column<long>(type: "bigint", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProofInferenceAssumptions", x => new { x.TheoremId, x.ProofSerialNo, x.SerialNo });
-                    table.ForeignKey(
-                        name: "FK_ProofInferenceAssumptions_Formulas_FormulaId",
-                        column: x => x.FormulaId,
-                        principalTable: "Formulas",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ProofInferenceAssumptions_ProofInferences_TheoremId_ProofSer~",
-                        columns: x => new { x.TheoremId, x.ProofSerialNo, x.AddedProofInferenceSerialNo },
-                        principalTable: "ProofInferences",
-                        principalColumns: new[] { "TheoremId", "ProofSerialNo", "SerialNo" },
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ProofInferenceAssumptions_ProofInferences_TheoremId_ProofSe~1",
-                        columns: x => new { x.TheoremId, x.ProofSerialNo, x.DissolutedProofInferenceSerialNo },
-                        principalTable: "ProofInferences",
-                        principalColumns: new[] { "TheoremId", "ProofSerialNo", "SerialNo" });
-                    table.ForeignKey(
-                        name: "FK_ProofInferenceAssumptions_ProofInferences_TheoremId_ProofSe~2",
-                        columns: x => new { x.TheoremId, x.ProofSerialNo, x.LastUsedProofInferenceSerialNo },
-                        principalTable: "ProofInferences",
-                        principalColumns: new[] { "TheoremId", "ProofSerialNo", "SerialNo" },
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ProofInferenceAssumptions_Proofs_TheoremId_ProofSerialNo",
-                        columns: x => new { x.TheoremId, x.ProofSerialNo },
-                        principalTable: "Proofs",
+                        principalTable: "TheoremAssumptions",
                         principalColumns: new[] { "TheoremId", "SerialNo" },
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -558,57 +552,52 @@ namespace MathApi.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "InferenceAssumptionDissolutableAssumptionFormula",
+                name: "InferenceAssumptionDissolutableAssumptionFormulas",
                 columns: table => new
                 {
                     InferenceId = table.Column<long>(type: "bigint", nullable: false),
                     InferenceAssumptionSerialNo = table.Column<int>(type: "int", nullable: false),
                     SerialNo = table.Column<int>(type: "int", nullable: false),
-                    SymbolId = table.Column<long>(type: "bigint", nullable: false),
-                    BoundInferenceArgumentSerialNo = table.Column<int>(type: "int", nullable: false),
-                    InferenceArgumentSerialNo = table.Column<int>(type: "int", nullable: false),
-                    SubstitutionInferenceArgumentFromSerialNo = table.Column<int>(type: "int", nullable: false),
-                    SubstitutionInferenceArgumentToSerialNo = table.Column<int>(type: "int", nullable: false)
+                    SymbolId = table.Column<long>(type: "bigint", nullable: true),
+                    BoundInferenceArgumentSerialNo = table.Column<int>(type: "int", nullable: true),
+                    InferenceArgumentSerialNo = table.Column<int>(type: "int", nullable: true),
+                    SubstitutionInferenceArgumentFromSerialNo = table.Column<int>(type: "int", nullable: true),
+                    SubstitutionInferenceArgumentToSerialNo = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_InferenceAssumptionDissolutableAssumptionFormula", x => new { x.InferenceId, x.InferenceAssumptionSerialNo, x.SerialNo });
+                    table.PrimaryKey("PK_InferenceAssumptionDissolutableAssumptionFormulas", x => new { x.InferenceId, x.InferenceAssumptionSerialNo, x.SerialNo });
                     table.ForeignKey(
-                        name: "FK_InferenceAssumptionDissolutableAssumptionFormula_InferenceAr~",
+                        name: "FK_InferenceAssumptionDissolutableAssumptionFormulas_InferenceA~",
                         columns: x => new { x.InferenceId, x.BoundInferenceArgumentSerialNo },
                         principalTable: "InferenceArguments",
-                        principalColumns: new[] { "InferenceId", "SerialNo" },
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumns: new[] { "InferenceId", "SerialNo" });
                     table.ForeignKey(
-                        name: "FK_InferenceAssumptionDissolutableAssumptionFormula_InferenceAs~",
+                        name: "FK_InferenceAssumptionDissolutableAssumptionFormulas_Inference~1",
+                        columns: x => new { x.InferenceId, x.InferenceArgumentSerialNo },
+                        principalTable: "InferenceArguments",
+                        principalColumns: new[] { "InferenceId", "SerialNo" });
+                    table.ForeignKey(
+                        name: "FK_InferenceAssumptionDissolutableAssumptionFormulas_Inference~2",
                         columns: x => new { x.InferenceId, x.InferenceAssumptionSerialNo },
                         principalTable: "InferenceAssumptions",
                         principalColumns: new[] { "InferenceId", "SerialNo" },
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_InferenceAssumptionDissolutableAssumptionFormula_InferenceA~1",
-                        columns: x => new { x.InferenceId, x.InferenceArgumentSerialNo },
-                        principalTable: "InferenceArguments",
-                        principalColumns: new[] { "InferenceId", "SerialNo" },
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_InferenceAssumptionDissolutableAssumptionFormula_InferenceA~2",
+                        name: "FK_InferenceAssumptionDissolutableAssumptionFormulas_Inference~3",
                         columns: x => new { x.InferenceId, x.SubstitutionInferenceArgumentFromSerialNo },
                         principalTable: "InferenceArguments",
-                        principalColumns: new[] { "InferenceId", "SerialNo" },
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumns: new[] { "InferenceId", "SerialNo" });
                     table.ForeignKey(
-                        name: "FK_InferenceAssumptionDissolutableAssumptionFormula_InferenceA~3",
+                        name: "FK_InferenceAssumptionDissolutableAssumptionFormulas_Inference~4",
                         columns: x => new { x.InferenceId, x.SubstitutionInferenceArgumentToSerialNo },
                         principalTable: "InferenceArguments",
-                        principalColumns: new[] { "InferenceId", "SerialNo" },
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumns: new[] { "InferenceId", "SerialNo" });
                     table.ForeignKey(
-                        name: "FK_InferenceAssumptionDissolutableAssumptionFormula_Symbols_Sym~",
+                        name: "FK_InferenceAssumptionDissolutableAssumptionFormulas_Symbols_Sy~",
                         column: x => x.SymbolId,
                         principalTable: "Symbols",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -619,11 +608,11 @@ namespace MathApi.Migrations
                     InferenceId = table.Column<long>(type: "bigint", nullable: false),
                     InferenceAssumptionSerialNo = table.Column<int>(type: "int", nullable: false),
                     SerialNo = table.Column<int>(type: "int", nullable: false),
-                    SymbolId = table.Column<long>(type: "bigint", nullable: false),
-                    BoundInferenceArgumentSerialNo = table.Column<int>(type: "int", nullable: false),
-                    InferenceArgumentSerialNo = table.Column<int>(type: "int", nullable: false),
-                    SubstitutionInferenceArgumentFromSerialNo = table.Column<int>(type: "int", nullable: false),
-                    SubstitutionInferenceArgumentToSerialNo = table.Column<int>(type: "int", nullable: false),
+                    SymbolId = table.Column<long>(type: "bigint", nullable: true),
+                    BoundInferenceArgumentSerialNo = table.Column<int>(type: "int", nullable: true),
+                    InferenceArgumentSerialNo = table.Column<int>(type: "int", nullable: true),
+                    SubstitutionInferenceArgumentFromSerialNo = table.Column<int>(type: "int", nullable: true),
+                    SubstitutionInferenceArgumentToSerialNo = table.Column<int>(type: "int", nullable: true),
                     FormulaId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
@@ -638,26 +627,22 @@ namespace MathApi.Migrations
                         name: "FK_InferenceAssumptionFormulas_InferenceArguments_InferenceId_B~",
                         columns: x => new { x.InferenceId, x.BoundInferenceArgumentSerialNo },
                         principalTable: "InferenceArguments",
-                        principalColumns: new[] { "InferenceId", "SerialNo" },
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumns: new[] { "InferenceId", "SerialNo" });
                     table.ForeignKey(
                         name: "FK_InferenceAssumptionFormulas_InferenceArguments_InferenceId_I~",
                         columns: x => new { x.InferenceId, x.InferenceArgumentSerialNo },
                         principalTable: "InferenceArguments",
-                        principalColumns: new[] { "InferenceId", "SerialNo" },
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumns: new[] { "InferenceId", "SerialNo" });
                     table.ForeignKey(
                         name: "FK_InferenceAssumptionFormulas_InferenceArguments_InferenceId_S~",
                         columns: x => new { x.InferenceId, x.SubstitutionInferenceArgumentFromSerialNo },
                         principalTable: "InferenceArguments",
-                        principalColumns: new[] { "InferenceId", "SerialNo" },
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumns: new[] { "InferenceId", "SerialNo" });
                     table.ForeignKey(
                         name: "FK_InferenceAssumptionFormulas_InferenceArguments_InferenceId_~1",
                         columns: x => new { x.InferenceId, x.SubstitutionInferenceArgumentToSerialNo },
                         principalTable: "InferenceArguments",
-                        principalColumns: new[] { "InferenceId", "SerialNo" },
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumns: new[] { "InferenceId", "SerialNo" });
                     table.ForeignKey(
                         name: "FK_InferenceAssumptionFormulas_InferenceAssumptions_InferenceId~",
                         columns: x => new { x.InferenceId, x.InferenceAssumptionSerialNo },
@@ -668,8 +653,7 @@ namespace MathApi.Migrations
                         name: "FK_InferenceAssumptionFormulas_Symbols_SymbolId",
                         column: x => x.SymbolId,
                         principalTable: "Symbols",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -679,7 +663,7 @@ namespace MathApi.Migrations
                 {
                     InferenceId = table.Column<long>(type: "bigint", nullable: false),
                     SerialNo = table.Column<int>(type: "int", nullable: false),
-                    SymbolId = table.Column<long>(type: "bigint", nullable: false),
+                    SymbolId = table.Column<long>(type: "bigint", nullable: true),
                     BoundInferenceArgumentSerialNo = table.Column<int>(type: "int", nullable: true),
                     InferenceArgumentSerialNo = table.Column<int>(type: "int", nullable: true),
                     SubstitutionInferenceArgumentFromSerialNo = table.Column<int>(type: "int", nullable: true),
@@ -724,8 +708,7 @@ namespace MathApi.Migrations
                         name: "FK_InferenceConclusionFormulas_Symbols_SymbolId",
                         column: x => x.SymbolId,
                         principalTable: "Symbols",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -760,18 +743,17 @@ namespace MathApi.Migrations
 
             migrationBuilder.InsertData(
                 table: "SymbolTypes",
-                columns: new[] { "Id", "FormulaTypeId", "Name" },
+                columns: new[] { "Id", "FormulaTypeId", "IsQuantifier", "Name" },
                 values: new object[,]
                 {
-                    { 1L, 1L, "free variable" },
-                    { 2L, 1L, "bound variable" },
-                    { 3L, 2L, "proposition variable" },
-                    { 4L, 1L, "constant" },
-                    { 5L, 1L, "function" },
-                    { 6L, 2L, "predicate" },
-                    { 7L, 2L, "logic" },
-                    { 8L, 1L, "term quantifier" },
-                    { 9L, 2L, "proposition quantifier" }
+                    { 1L, 1L, false, "free variable" },
+                    { 2L, 1L, false, "bound variable" },
+                    { 3L, 2L, false, "proposition variable" },
+                    { 4L, 1L, false, "function" },
+                    { 5L, 2L, false, "predicate" },
+                    { 6L, 2L, false, "logic" },
+                    { 7L, 1L, true, "term quantifier" },
+                    { 8L, 2L, true, "proposition quantifier" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -812,28 +794,28 @@ namespace MathApi.Migrations
                 column: "VariableSymbolId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_InferenceAssumptionDissolutableAssumptionFormula_InferenceI~1",
-                table: "InferenceAssumptionDissolutableAssumptionFormula",
+                name: "IX_InferenceAssumptionDissolutableAssumptionFormulas_Inference~1",
+                table: "InferenceAssumptionDissolutableAssumptionFormulas",
                 columns: new[] { "InferenceId", "InferenceArgumentSerialNo" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_InferenceAssumptionDissolutableAssumptionFormula_InferenceI~2",
-                table: "InferenceAssumptionDissolutableAssumptionFormula",
+                name: "IX_InferenceAssumptionDissolutableAssumptionFormulas_Inference~2",
+                table: "InferenceAssumptionDissolutableAssumptionFormulas",
                 columns: new[] { "InferenceId", "SubstitutionInferenceArgumentFromSerialNo" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_InferenceAssumptionDissolutableAssumptionFormula_InferenceI~3",
-                table: "InferenceAssumptionDissolutableAssumptionFormula",
+                name: "IX_InferenceAssumptionDissolutableAssumptionFormulas_Inference~3",
+                table: "InferenceAssumptionDissolutableAssumptionFormulas",
                 columns: new[] { "InferenceId", "SubstitutionInferenceArgumentToSerialNo" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_InferenceAssumptionDissolutableAssumptionFormula_InferenceId~",
-                table: "InferenceAssumptionDissolutableAssumptionFormula",
+                name: "IX_InferenceAssumptionDissolutableAssumptionFormulas_InferenceI~",
+                table: "InferenceAssumptionDissolutableAssumptionFormulas",
                 columns: new[] { "InferenceId", "BoundInferenceArgumentSerialNo" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_InferenceAssumptionDissolutableAssumptionFormula_SymbolId",
-                table: "InferenceAssumptionDissolutableAssumptionFormula",
+                name: "IX_InferenceAssumptionDissolutableAssumptionFormulas_SymbolId",
+                table: "InferenceAssumptionDissolutableAssumptionFormulas",
                 column: "SymbolId");
 
             migrationBuilder.CreateIndex(
@@ -908,9 +890,27 @@ namespace MathApi.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProofInferenceArguments_AxiomPropositionAxiomId_AxiomProposi~",
-                table: "ProofInferenceArguments",
-                columns: new[] { "AxiomPropositionAxiomId", "AxiomPropositionSerialNo" });
+                name: "IX_ProofAssumptions_FormulaId",
+                table: "ProofAssumptions",
+                column: "FormulaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProofAssumptions_TheoremId_ProofSerialNo_AddedProofInference~",
+                table: "ProofAssumptions",
+                columns: new[] { "TheoremId", "ProofSerialNo", "AddedProofInferenceSerialNo" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProofAssumptions_TheoremId_ProofSerialNo_DissolutedProofInfe~",
+                table: "ProofAssumptions",
+                columns: new[] { "TheoremId", "ProofSerialNo", "DissolutedProofInferenceSerialNo" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProofAssumptions_TheoremId_ProofSerialNo_LastUsedProofInfere~",
+                table: "ProofAssumptions",
+                columns: new[] { "TheoremId", "ProofSerialNo", "LastUsedProofInferenceSerialNo" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProofInferenceArguments_FormulaId",
@@ -921,29 +921,6 @@ namespace MathApi.Migrations
                 name: "IX_ProofInferenceArguments_TheoremId_SerialNo",
                 table: "ProofInferenceArguments",
                 columns: new[] { "TheoremId", "SerialNo" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProofInferenceAssumptions_FormulaId",
-                table: "ProofInferenceAssumptions",
-                column: "FormulaId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProofInferenceAssumptions_TheoremId_ProofSerialNo_AddedProof~",
-                table: "ProofInferenceAssumptions",
-                columns: new[] { "TheoremId", "ProofSerialNo", "AddedProofInferenceSerialNo" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProofInferenceAssumptions_TheoremId_ProofSerialNo_Dissoluted~",
-                table: "ProofInferenceAssumptions",
-                columns: new[] { "TheoremId", "ProofSerialNo", "DissolutedProofInferenceSerialNo" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProofInferenceAssumptions_TheoremId_ProofSerialNo_LastUsedPr~",
-                table: "ProofInferenceAssumptions",
-                columns: new[] { "TheoremId", "ProofSerialNo", "LastUsedProofInferenceSerialNo" },
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProofInferences_ConclusionFormulaId",
@@ -982,8 +959,8 @@ namespace MathApi.Migrations
                 column: "FormulaTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TheoremAssumption_FormulaId",
-                table: "TheoremAssumption",
+                name: "IX_TheoremAssumptions_FormulaId",
+                table: "TheoremAssumptions",
                 column: "FormulaId");
 
             migrationBuilder.CreateIndex(
@@ -996,13 +973,16 @@ namespace MathApi.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AxiomPropositions");
+
+            migrationBuilder.DropTable(
                 name: "FormulaChains");
 
             migrationBuilder.DropTable(
                 name: "InferenceArgumentConstraints");
 
             migrationBuilder.DropTable(
-                name: "InferenceAssumptionDissolutableAssumptionFormula");
+                name: "InferenceAssumptionDissolutableAssumptionFormulas");
 
             migrationBuilder.DropTable(
                 name: "InferenceAssumptionFormulas");
@@ -1011,13 +991,16 @@ namespace MathApi.Migrations
                 name: "InferenceConclusionFormulas");
 
             migrationBuilder.DropTable(
+                name: "ProofAssumptions");
+
+            migrationBuilder.DropTable(
                 name: "ProofInferenceArguments");
 
             migrationBuilder.DropTable(
-                name: "ProofInferenceAssumptions");
+                name: "TheoremConclusions");
 
             migrationBuilder.DropTable(
-                name: "TheoremConclusions");
+                name: "Axioms");
 
             migrationBuilder.DropTable(
                 name: "FormulaStrings");
@@ -1029,13 +1012,10 @@ namespace MathApi.Migrations
                 name: "InferenceArguments");
 
             migrationBuilder.DropTable(
-                name: "AxiomPropositions");
-
-            migrationBuilder.DropTable(
-                name: "TheoremAssumption");
-
-            migrationBuilder.DropTable(
                 name: "ProofInferences");
+
+            migrationBuilder.DropTable(
+                name: "TheoremAssumptions");
 
             migrationBuilder.DropTable(
                 name: "InferenceAssumptionDissolutionTypes");
@@ -1047,16 +1027,13 @@ namespace MathApi.Migrations
                 name: "Symbols");
 
             migrationBuilder.DropTable(
-                name: "Axioms");
-
-            migrationBuilder.DropTable(
-                name: "Formulas");
-
-            migrationBuilder.DropTable(
                 name: "Inferences");
 
             migrationBuilder.DropTable(
                 name: "Proofs");
+
+            migrationBuilder.DropTable(
+                name: "Formulas");
 
             migrationBuilder.DropTable(
                 name: "SymbolTypes");

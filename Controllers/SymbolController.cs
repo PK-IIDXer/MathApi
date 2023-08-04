@@ -167,8 +167,7 @@ namespace MathApi.Controllers
 
     private static string? Validate(Symbol symbol)
     {
-      if (symbol.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
-        || symbol.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier)
+      if (symbol.IsQuantifier)
       {
         if (symbol.Arity == 0)
         {
@@ -180,17 +179,7 @@ namespace MathApi.Controllers
 
     private static bool SaveToFormula(Symbol symbol)
     {
-      if (symbol.SymbolTypeId == (long)Const.SymbolType.FreeVariable
-        || symbol.SymbolTypeId == (long)Const.SymbolType.BoundVariable
-        || symbol.SymbolTypeId == (long)Const.SymbolType.PropositionVariable
-        || symbol.SymbolTypeId == (long)Const.SymbolType.Constant)
-      {
-        return true;
-      }
-
-      if (symbol.SymbolTypeId != (long)Const.SymbolType.TermQuantifier
-        && symbol.SymbolTypeId != (long)Const.SymbolType.PropositionQuantifier
-        && symbol.Arity == 0)
+      if (!symbol.Arity.HasValue || symbol.Arity == 0)
       {
         return true;
       }

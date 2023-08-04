@@ -585,6 +585,9 @@ namespace MathApi.Migrations
                     b.Property<long>("FormulaTypeId")
                         .HasColumnType("bigint");
 
+                    b.Property<bool>("IsQuantifier")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -600,54 +603,56 @@ namespace MathApi.Migrations
                         {
                             Id = 1L,
                             FormulaTypeId = 1L,
+                            IsQuantifier = false,
                             Name = "free variable"
                         },
                         new
                         {
                             Id = 2L,
                             FormulaTypeId = 1L,
+                            IsQuantifier = false,
                             Name = "bound variable"
                         },
                         new
                         {
                             Id = 3L,
                             FormulaTypeId = 2L,
+                            IsQuantifier = false,
                             Name = "proposition variable"
                         },
                         new
                         {
                             Id = 4L,
                             FormulaTypeId = 1L,
-                            Name = "constant"
+                            IsQuantifier = false,
+                            Name = "function"
                         },
                         new
                         {
                             Id = 5L,
-                            FormulaTypeId = 1L,
-                            Name = "function"
+                            FormulaTypeId = 2L,
+                            IsQuantifier = false,
+                            Name = "predicate"
                         },
                         new
                         {
                             Id = 6L,
                             FormulaTypeId = 2L,
-                            Name = "predicate"
-                        },
-                        new
-                        {
-                            Id = 7L,
-                            FormulaTypeId = 2L,
+                            IsQuantifier = false,
                             Name = "logic"
                         },
                         new
                         {
-                            Id = 8L,
+                            Id = 7L,
                             FormulaTypeId = 1L,
+                            IsQuantifier = true,
                             Name = "term quantifier"
                         },
                         new
                         {
-                            Id = 9L,
+                            Id = 8L,
                             FormulaTypeId = 2L,
+                            IsQuantifier = true,
                             Name = "proposition quantifier"
                         });
                 });

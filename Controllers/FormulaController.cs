@@ -261,13 +261,9 @@ namespace MathApi.Controllers
                                       .FirstAsync(s => s.Id == postParam.FirstSymbolId)
                         ?? throw new InvalidDataException("first symbol is not found");
 
-      // 一文字目が量化記号かどうかを取得
-      var isQuant = firstSymbol.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
-                 || firstSymbol.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier;
-
       // 一文字目が量化記号のとき、束縛変数を取得
       Symbol? boundVariable = null;
-      if (isQuant)
+      if (firstSymbol.IsQuantifier)
       {
         boundVariable = await _context.Symbols
                                       .Include(s => s.SymbolType)
@@ -294,7 +290,7 @@ namespace MathApi.Controllers
         firstSymbol,
         postParam.ArgumentedFormulaIds,
         argFormulas,
-        isQuant,
+        firstSymbol.IsQuantifier,
         boundVariable,
         postParam.BoundVariableId
       );
@@ -303,7 +299,7 @@ namespace MathApi.Controllers
       var chains = CreateFormulaChainFromPostParam(
         postParam.ArgumentedFormulaIds,
         argFormulas,
-        isQuant,
+        firstSymbol.IsQuantifier,
         postParam.BoundVariableId
       );
 

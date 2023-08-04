@@ -8,63 +8,56 @@
   {
     "id": 2,
     "character": "=",
-    "symbolTypeId": 6,
+    "symbolTypeId": 5,
     "arity": 2,
-    "arityFormulaTypeId": 1,
     "meaning": "等号"
   },
   {
     "id": 3,
     "character": "⊥",
-    "symbolTypeId": 7,
+    "symbolTypeId": 6,
     "arity": 0,
     "meaning": "矛盾"
   },
   {
     "id": 4,
     "character": "￢",
-    "symbolTypeId": 7,
+    "symbolTypeId": 6,
     "arity": 1,
-    "arityFormulaTypeId": 2,
     "meaning": "否定"
   },
   {
     "id": 5,
     "character": "∧",
-    "symbolTypeId": 7,
+    "symbolTypeId": 6,
     "arity": 2,
-    "arityFormulaTypeId": 2,
     "meaning": "かつ"
   },
   {
     "id": 6,
     "character": "∨",
-    "symbolTypeId": 7,
+    "symbolTypeId": 6,
     "arity": 2,
-    "arityFormulaTypeId": 2,
     "meaning": "または"
   },
   {
     "id": 7,
     "character": "→",
-    "symbolTypeId": 7,
+    "symbolTypeId": 6,
     "arity": 2,
-    "arityFormulaTypeId": 2,
     "meaning": "ならば"
   },
   {
     "id": 8,
     "character": "∀",
-    "symbolTypeId": 9,
-    "arity": 1,
+    "symbolTypeId": 8,
     "arityFormulaTypeId": 2,
     "meaning": "任意の"
   },
   {
     "id": 9,
     "character": "∃",
-    "symbolTypeId": 9,
-    "arity": 1,
+    "symbolTypeId": 8,
     "arityFormulaTypeId": 2,
     "meaning": "存在する"
   }

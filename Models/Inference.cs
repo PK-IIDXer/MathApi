@@ -176,10 +176,7 @@ public class Inference
     if (InferenceConclusionFormulas[0].SymbolId != null)
     {
       var firstSymbol = InferenceConclusionFormulas[0].Symbol;
-      var isQuant = firstSymbol?.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
-                 || firstSymbol?.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier;
-
-      if (isQuant)
+      if (firstSymbol?.IsQuantifier ?? false)
       {
         if (InferenceConclusionFormulas.Count != 3)
           throw new ArgumentException("InferenceConclusionFormulas should be 3-formulas if first symbol is quantifier");
@@ -195,9 +192,7 @@ public class Inference
       if (assumptionFormulas[0].SymbolId != null)
       {
         var firstSymbol = assumptionFormulas[0].Symbol;
-        var isQuant = firstSymbol?.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
-                   || firstSymbol?.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier;
-        if (isQuant)
+        if (firstSymbol?.IsQuantifier ?? false)
         {
           if (assumptionFormulas.Count != 3)
             throw new ArgumentException("InferenceAssumptionFormulas should be 3-formulas if first symbol is quantifier");
@@ -213,9 +208,7 @@ public class Inference
       if (dissolutableAssumptionFormulas[0].SymbolId != null)
       {
         var firstSymbol = dissolutableAssumptionFormulas[0].Symbol;
-        var isQuant = firstSymbol?.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
-                   || firstSymbol?.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier;
-        if (isQuant)
+        if (firstSymbol?.IsQuantifier ?? false)
         {
           if (dissolutableAssumptionFormulas.Count != 3)
             throw new ArgumentException("InferenceAssumptionDissolutableAssumptionFormulas should be 3-formulas if first symbol is quantifier");
@@ -278,12 +271,10 @@ public class Inference
       if (InferenceConclusionFormulas[0].SymbolId != null)
       {
         var firstSymbol = InferenceConclusionFormulas[0].Symbol;
-        var isQuant = firstSymbol?.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
-                   || firstSymbol?.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier;
 
         // 一文字目が量化記号の場合
         // 推論規則結論文字列が[Q][x][A]の並びである前提で組み立てる
-        if (isQuant)
+        if (firstSymbol?.IsQuantifier ?? false)
         {
           var prop = args[InferenceConclusionFormulas[2].SerialNo].Formula;
           // 代入操作が指示されている場合、代入を行う

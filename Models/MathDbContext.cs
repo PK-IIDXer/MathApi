@@ -401,15 +401,14 @@ public class MathDbContext : DbContext
     );
 
     modelBuilder.Entity<SymbolType>().HasData(
-      new { Id = 1L, Name = "free variable", FormulaTypeId = 1L },
-      new { Id = 2L, Name = "bound variable", FormulaTypeId = 1L },
-      new { Id = 3L, Name = "proposition variable", FormulaTypeId = 2L },
-      new { Id = 4L, Name = "constant", FormulaTypeId = 1L },
-      new { Id = 5L, Name = "function", FormulaTypeId = 1L },
-      new { Id = 6L, Name = "predicate", FormulaTypeId = 2L },
-      new { Id = 7L, Name = "logic", FormulaTypeId = 2L },
-      new { Id = 8L, Name = "term quantifier", FormulaTypeId = 1L },
-      new { Id = 9L, Name = "proposition quantifier", FormulaTypeId = 2L }
+      new { Id = 1L, Name = "free variable", FormulaTypeId = 1L, IsQuantifier = false },
+      new { Id = 2L, Name = "bound variable", FormulaTypeId = 1L, IsQuantifier = false },
+      new { Id = 3L, Name = "proposition variable", FormulaTypeId = 2L, IsQuantifier = false },
+      new { Id = 4L, Name = "function", FormulaTypeId = 1L, IsQuantifier = false },
+      new { Id = 5L, Name = "predicate", FormulaTypeId = 2L, IsQuantifier = false },
+      new { Id = 6L, Name = "logic", FormulaTypeId = 2L, IsQuantifier = false },
+      new { Id = 7L, Name = "term quantifier", FormulaTypeId = 1L, IsQuantifier = true },
+      new { Id = 8L, Name = "proposition quantifier", FormulaTypeId = 2L, IsQuantifier = true }
     );
 
     modelBuilder.Entity<InferenceArgumentType>().HasData(

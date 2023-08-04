@@ -26,8 +26,7 @@ public static class Util
       return arguments[0];
     }
 
-    if (symbol.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
-      || symbol.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier)
+    if (symbol.IsQuantifier)
     {
       if (boundVariable == null)
         throw new ArgumentNullException(nameof(boundVariable), "must boundVariable be not null if symbol is quantifier");

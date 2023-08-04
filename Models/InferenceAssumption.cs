@@ -48,12 +48,10 @@ public class InferenceAssumption
       if (InferenceAssumptionFormulas[0].SymbolId != null)
       {
         var firstSymbol = InferenceAssumptionFormulas[0].Symbol;
-        var isQuant = firstSymbol?.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
-                   || firstSymbol?.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier;
 
         // 一文字目が量化記号の場合
         // 推論規則結論文字列が[Q][x][A]の並びである前提で組み立てる
-        if (isQuant)
+        if (firstSymbol?.IsQuantifier ?? false)
         {
           var prop = args[InferenceAssumptionFormulas[2].SerialNo].Formula;
           // 代入操作が指示されている場合、代入を行う
@@ -169,12 +167,10 @@ public class InferenceAssumption
       if (InferenceAssumptionDissolutableAssumptionFormulas[0].SymbolId != null)
       {
         var firstSymbol = InferenceAssumptionDissolutableAssumptionFormulas[0].Symbol;
-        var isQuant = firstSymbol?.SymbolTypeId is ((long)Const.SymbolType.TermQuantifier)
-                   or ((long)Const.SymbolType.PropositionQuantifier);
 
         // 一文字目が量化記号の場合
         // 推論規則結論文字列が[Q][x][A]の並びである前提で組み立てる
-        if (isQuant)
+        if (firstSymbol?.IsQuantifier ?? false)
         {
           var prop = args[InferenceAssumptionDissolutableAssumptionFormulas[2].SerialNo].Formula;
           // 代入操作が指示されている場合、代入を行う
