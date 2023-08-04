@@ -97,11 +97,6 @@ namespace MathApi.Controllers
     public async Task<ActionResult<Symbol>> PostSymbol(SymbolDto symbolDto)
     {
       var symbol = symbolDto.CreateModel();
-      var valid = Validate(symbol);
-      if (valid != null)
-      {
-        return BadRequest(valid);
-      }
 
       // 束縛変数は一種類のみ登録可能
       var boundVarCnt = _context.Symbols.Count(x => x.SymbolTypeId == (long)Const.SymbolType.BoundVariable);
@@ -163,18 +158,6 @@ namespace MathApi.Controllers
     private bool SymbolExists(long id)
     {
       return (_context.Symbols?.Any(e => e.Id == id)).GetValueOrDefault();
-    }
-
-    private static string? Validate(Symbol symbol)
-    {
-      if (symbol.IsQuantifier)
-      {
-        if (symbol.Arity == 0)
-        {
-          return "Cannot set Arity = 0 if it is Quantifier";
-        }
-      }
-      return null;
     }
 
     private static bool SaveToFormula(Symbol symbol)

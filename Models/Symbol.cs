@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace MathApi.Models;
 
@@ -8,7 +9,7 @@ public class Symbol
 {
   public long Id { get; set; }
   public string Character { get; set; } = "";
-  public SymbolType? SymbolType { get; } = new();
+  public SymbolType? SymbolType { get; }
   public long SymbolTypeId { get; set; }
   public int? Arity { get; set; }
   public FormulaType? ArityFormulaType { get; }
@@ -22,6 +23,7 @@ public class Symbol
   public List<InferenceAssumptionDissolutableAssumptionFormula>? InferenceAssumptionDissolutableAssumptionFormulas { get; }
   public List<InferenceArgument>? InferenceArguments { get; }
 
+  [JsonIgnore]
   [NotMapped]
   public bool IsQuantifier
   {
