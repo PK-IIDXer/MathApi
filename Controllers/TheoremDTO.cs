@@ -6,8 +6,7 @@ public class TheoremDto
 {
   public long Id { get; set; }
   public string Name { get; set; } = "";
-  public bool IsProved { get; set; } = false;
-  public List<TheoremPropositionDto> Assumptions { get; set; } = new();
+  public List<TheoremPropositionDto>? Assumptions { get; set; }
   public TheoremPropositionDto Conclusion { get; set; } = new();
   public Theorem CreateModel()
   {
@@ -15,12 +14,12 @@ public class TheoremDto
     {
       Id = Id,
       Name = Name,
-      IsProved = IsProved,
-      TheoremAssumptions = Assumptions.Select(a => new TheoremAssumption{
+      IsProved = false,
+      TheoremAssumptions = Assumptions?.Select(a => new TheoremAssumption{
         TheoremId = Id,
         SerialNo = a.SerialNo,
         FormulaId = a.FormulaId
-      }).ToList(),
+      }).ToList() ?? new List<TheoremAssumption>(),
       TheoremConclusions = new List<TheoremConclusion> {
         new TheoremConclusion
         {

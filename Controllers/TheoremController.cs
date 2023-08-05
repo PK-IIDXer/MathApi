@@ -90,6 +90,7 @@ namespace MathApi.Controllers
       if (await _context.Inferences.AnyAsync(i => i.TheoremId == id))
         return BadRequest($"Already exists inference induced by the theorem #{id}");
 
+#pragma warning disable CS8602
       var theorem = await _context.Theorems
                                   .Include(t => t.TheoremAssumptions)
                                   .ThenInclude(ta => ta.Formula)
@@ -100,6 +101,8 @@ namespace MathApi.Controllers
                                   .ThenInclude(f => f.FormulaStrings)
                                   .ThenInclude(fs => fs.Symbol)
                                   .FirstAsync(t => t.Id == id);
+#pragma warning restore CS8602
+
       if (theorem == null) return NotFound();
 
       if (!theorem.IsProved)

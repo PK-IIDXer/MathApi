@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace MathApi.Models;
 
@@ -15,6 +16,7 @@ public class Theorem
   /// 　およびそれらのFormulaStringおよびFormulaString.Symbolのインクルードが必要
   /// </summary>
   [NotMapped]
+  [JsonIgnore]
   public List<Symbol> FreeAndPropVariables
   {
     get
@@ -25,7 +27,7 @@ public class Theorem
       _FreeAndPropVariables = new List<Symbol>();
       foreach (var ta in TheoremAssumptions)
       {
-        foreach (var s in ta.Formula.FreeAndPropVariables)
+        foreach (var s in ta.Formula?.FreeAndPropVariables ?? throw new Exception("Include TheoremAssumption.Formula"))
         {
           if (_FreeAndPropVariables.Any(r => r.Id == s.Id))
             continue;
@@ -34,7 +36,7 @@ public class Theorem
       }
       foreach (var ta in TheoremConclusions)
       {
-        foreach (var s in ta.Formula.FreeAndPropVariables)
+        foreach (var s in ta.Formula?.FreeAndPropVariables ?? throw new Exception("Include TheoremAssumption.Formula"))
         {
           if (_FreeAndPropVariables.Any(r => r.Id == s.Id))
             continue;

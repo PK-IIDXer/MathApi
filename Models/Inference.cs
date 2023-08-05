@@ -51,6 +51,7 @@ public class Inference
     public ProofInference ProofInference { get; set; }
     public List<ProofInference> UpdatedProofInferences { get; set; }
     public List<ProofAssumption> UpdatedProofAssumptions { get; set; }
+    public Formula? AddedProofAssumption { get; set; }
   }
 
   public InferenceResult Apply(
@@ -138,6 +139,10 @@ public class Inference
       ConclusionFormula = CreateConclusionFormula(args),
       PreviousProofInferences = prevProofInferences
     };
+    if (IsAssumptionAdd)
+    {
+      result.AddedProofAssumption = args[0].Formula;
+    }
 
     return result;
   }
