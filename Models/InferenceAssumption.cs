@@ -18,7 +18,7 @@ public class InferenceAssumption
   /// 推論規則仮定連番
   /// </summary>
   public int SerialNo { get; set; }
-  public InferenceAssumptionDissolutionType InferenceAssumptionDissolutionType { get; } = new();
+  public InferenceAssumptionDissolutionType? InferenceAssumptionDissolutionType { get; }
   /// <summary>
   /// 推論規則仮定解消種類ID
   /// </summary>

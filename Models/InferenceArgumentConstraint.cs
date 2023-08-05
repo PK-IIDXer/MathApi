@@ -30,7 +30,7 @@ public class InferenceArgumentConstraint
   /// 推論規則引数制約連番
   /// </summary>
   public int SerialNo { get; set; }
-  public InferenceArgument ConstraintDestinationInferenceArgument { get; } = new();
+  public InferenceArgument? ConstraintDestinationInferenceArgument { get; }
   /// <summary>
   /// 制約先推論規則引数連番
   /// </summary>

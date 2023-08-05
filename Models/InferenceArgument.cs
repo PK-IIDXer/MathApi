@@ -21,7 +21,7 @@ public class InferenceArgument
   /// 推論規則引数連番
   /// </summary>
   public int SerialNo { get; set; }
-  public InferenceArgumentType InferenceArgumentType { get; } = new();
+  public InferenceArgumentType? InferenceArgumentType { get; }
   /// <summary>
   /// 推論規則引数種類ID
   /// </summary>
