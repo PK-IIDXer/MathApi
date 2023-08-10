@@ -27,10 +27,6 @@ public class ProofDto
   {
     public long SerialNo { get; set; }
     public long FormulaId { get; set; }
-    public long? AxiomId { get; set; }
-    public long? AxiomPropositionSerialNo { get; set; }
-    public long? TheoremId { get; set; }
-    public long? TheoremAssumptionSerialNo { get; set; }
   }
 
   public class AssumingInferenceResultDto

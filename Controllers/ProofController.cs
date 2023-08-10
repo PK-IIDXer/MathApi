@@ -75,24 +75,46 @@ namespace MathApi.Controllers
     // POST: api/Proof
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<Proof>> PostProof(Proof proof)
+    public async Task<ActionResult<Proof>> PostProof(ProofDto dto)
     {
-      _context.Proofs.Add(proof);
-      try
-      {
-        await _context.SaveChangesAsync();
-      }
-      catch (DbUpdateException)
-      {
-        if (ProofExists(proof.TheoremId))
-        {
-          return Conflict();
-        }
-        else
-        {
-          throw;
-        }
-      }
+      var nextProofInferenceSerialNo = await _context
+        .ProofInferences
+        .Where(
+          pi =>
+            pi.TheoremId == dto.TheoremId
+            && pi.ProofSerialNo == dto.ProofSerialNo)
+        .MaxAsync(pi => pi.SerialNo) + 1;
+
+      // TODO: Include
+      var proof = await _context.Proofs.FindAsync(dto.TheoremId, dto.ProofSerialNo);
+      if (proof == null)
+        return BadRequest($"Proof (TheoremId, SerialNo) = (#{dto.TheoremId}, #{dto.ProofSerialNo}) is not found");
+
+      // TODO: Include
+      var inference = await _context.Inferences.FindAsync(dto.InferenceId);
+      if (inference == null)
+        return BadRequest($"Inference #{dto.InferenceId} is not found");
+
+      // TODO: Include
+      var prevProofInferences = await _context.ProofInferences.Where(
+        pi => pi.TheoremId == dto.TheoremId
+          && dto.AssumingInferenceResults
+                .Select(air => air.ProofInferenceSerialNo)
+                .Contains(pi.SerialNo)
+      ).ToListAsync();
+
+      var proofAssumptions = await _context.ProofAssumptions.Where(
+        pa => pa.TheoremId == dto.TheoremId
+          && pa.ProofSerialNo == dto.ProofSerialNo
+          && !pa.DissolutedProofInferenceSerialNo.HasValue // 未解消の仮定
+      ).ToListAsync();
+
+      // var inferenceResult = inference.Apply(
+      //   nextProofInferenceSerialNo,
+      //   proof,
+      //   prevProofInferences,
+      //   proofAssumptions,
+      // );
 
       return CreatedAtAction("GetProof", new { id = proof.TheoremId }, proof);
     }

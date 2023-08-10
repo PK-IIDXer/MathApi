@@ -25,7 +25,7 @@ public class ProofInferenceArgument
   /// 証明推論引数連番
   /// </summary>
   public long SerialNo { get; set; }
-  public Formula Formula { get; } = new();
+  public Formula? Formula { get; }
   /// <summary>
   /// 論理式ID
   /// </summary>

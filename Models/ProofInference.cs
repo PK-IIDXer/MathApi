@@ -21,12 +21,12 @@ public class ProofInference
   /// 証明推論連番
   /// </summary>
   public long SerialNo { get; set; }
-  public Inference Inference { get; } = new();
+  public Inference? Inference { get; }
   /// <summary>
   /// 推論規則ID
   /// </summary>
   public long InferenceId { get; set; }
-  public Formula ConclusionFormula { get; set; } = new();
+  public Formula? ConclusionFormula { get; set; }
   /// <summary>
   /// 結論論理式ID
   /// </summary>

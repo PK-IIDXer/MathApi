@@ -10,6 +10,4 @@ public class TheoremAssumption
   public long SerialNo { get; set; }
   public Formula? Formula { get; }
   public long FormulaId { get; set; }
-
-  public List<ProofInferenceArgument>? ProofInferenceArguments { get; }
 }

@@ -11,7 +11,7 @@ namespace MathApi.Models;
 /// その自由変数に対する項の代入操作が指定できるよう「代入元・代入先推論規則引数連番」をもつ。
 /// </remarks>
 [PrimaryKey(nameof(InferenceId), nameof(InferenceAssumptionSerialNo), nameof(SerialNo))]
-public class InferenceAssumptionDissolutableAssumptionFormula
+public class InferenceAssumptionDissolutableAssumptionFormula : IInferenceFormula
 {
   public InferenceAssumption InferenceAssumption { get; } = new();
   /// <summary>

@@ -7,7 +7,6 @@ public class InferenceDto
   public long Id { get; set; }
   public string Name { get; set; } = "";
   public bool IsAssumptionAdd { get; set; } = false;
-  public bool IsBasic { get; set; } = false;
   public List<ArgumentDto> Arguments { get; set; } = new();
   public List<AssumptionDto> Assumptions { get; set; } = new();
   public List<InferenceFormulaDto> Conclusions { get; set; } = new(); 
@@ -51,7 +50,6 @@ public class InferenceDto
       Id = Id,
       Name = Name,
       IsAssumptionAdd = IsAssumptionAdd,
-      IsBasic = IsBasic,
       InferenceArguments = Arguments.Select(a => new InferenceArgument
       {
         InferenceId = Id,

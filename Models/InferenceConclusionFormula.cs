@@ -11,7 +11,7 @@ namespace MathApi.Models;
 /// その自由変数に対する項の代入操作が指定できるよう「代入元・代入先推論規則引数連番」をもつ。
 /// </remarks>
 [PrimaryKey(nameof(InferenceId), nameof(SerialNo))]
-public class InferenceConclusionFormula
+public class InferenceConclusionFormula : IInferenceFormula
 {
   public Inference Inference { get; } = new();
   /// <summary>
@@ -50,13 +50,4 @@ public class InferenceConclusionFormula
   /// 代入先推論規則引数連番
   /// </summary>
   public int? SubstitutionInferenceArgumentToSerialNo { get; set; }
-
-  public Formula? Formula { get; }
-  /// <summary>
-  /// 論理式ID
-  /// </summary>
-  /// <remarks>
-  /// IsBasic=falseの場合に、論理式によって推論規則を定義する際に使用する
-  /// </remarks>
-  public long? FormulaId { get; set; }
 }

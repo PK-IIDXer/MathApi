@@ -24,17 +24,17 @@ public class ProofAssumption
   /// 証明仮定連番
   /// </summary>
   public long SerialNo { get; set; }
-  public Formula Formula { get; } = new();
+  public Formula? Formula { get; }
   /// <summary>
   /// 論理式ID
   /// </summary>
   public long FormulaId { get; set; }
-  public ProofInference AddedProofInference { get; set; } = new();
+  public ProofInference? AddedProofInference { get; set; }
   /// <summary>
   /// 証明仮定を追加した証明推論連番
   /// </summary>
   public long AddedProofInferenceSerialNo { get; set; }
-  public ProofInference LastUsedProofInference { get; set; } = new();
+  public ProofInference? LastUsedProofInference { get; set; }
   /// <summary>
   /// 最後に当該証明仮定を使用した証明推論連番
   /// </summary>

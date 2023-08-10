@@ -221,10 +221,6 @@ public class MathDbContext : DbContext
                      .HasForeignKey(
                        iaf => new { iaf.InferenceId, iaf.SubstitutionInferenceArgumentToSerialNo }
                      );
-        nestedBuilder.HasOne(iaf => iaf.Formula)
-                     .WithMany(f => f.InferenceAssumptionFormulas)
-                     .HasPrincipalKey(f => new { f.Id })
-                     .HasForeignKey(iaf => new { iaf.FormulaId });
       }
     );
     modelBuilder.Entity<InferenceConclusionFormula>(
@@ -270,10 +266,6 @@ public class MathDbContext : DbContext
                      .HasForeignKey(
                        icf => new { icf.InferenceId, icf.SubstitutionInferenceArgumentToSerialNo }
                      );
-        nestedBuilder.HasOne(ict => ict.Formula)
-                     .WithMany(f => f.InferenceConclusionFormulas)
-                     .HasPrincipalKey(f => new { f.Id })
-                     .HasForeignKey(ict => new { ict.FormulaId });
       }
     );
     modelBuilder.Entity<Proof>(
@@ -403,6 +395,7 @@ public class MathDbContext : DbContext
     modelBuilder.Entity<SymbolType>().HasData(
       new { Id = 1L, Name = "free variable", FormulaTypeId = 1L, IsQuantifier = false },
       new { Id = 2L, Name = "bound variable", FormulaTypeId = 1L, IsQuantifier = false },
+      // TODO: 命題変数不要説！
       new { Id = 3L, Name = "proposition variable", FormulaTypeId = 2L, IsQuantifier = false },
       new { Id = 4L, Name = "function", FormulaTypeId = 1L, IsQuantifier = false },
       new { Id = 5L, Name = "predicate", FormulaTypeId = 2L, IsQuantifier = false },

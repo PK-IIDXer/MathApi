@@ -20,18 +20,6 @@ public class Inference
   /// </summary>
   public bool IsAssumptionAdd { get; set; }
   /// <summary>
-  /// 基礎的な推論規則かどうか
-  /// </summary>
-  /// <remarks>
-  /// 基礎的な推論規則とは以下の推論規則のことである:
-  /// ∧導入、∧除去(左)、∧除去(右)、∨導入(左)、∨導入(右)、∨除去、
-  /// →導入、→除去、￢導入、￢除去、背理法、矛盾、
-  /// ∀導入、∀除去、∃導入、∃除去、等号公理、等号規則。
-  /// これら以外の推論規則は論理式によって定義され、各仮定・結論は論理式IDのみを参照する。
-  /// このとき引数は、仮定・結論の論理式に現れるすべての自由変数・命題変数とする。
-  /// </remarks>
-  public bool IsBasic { get; set; }
-  /// <summary>
   /// 証明済みの定理が推論規則として登録されたときに使用。
   /// </summary>
   public Theorem? Theorem { get; set; }
@@ -59,15 +47,14 @@ public class Inference
     Proof proof,
     List<ProofInference> prevProofInferences,
     List<ProofAssumption> proofAssumptions,
-    List<ProofInference> unusedProofInferences,
     List<ProofInferenceArgument> args)
   {
     InferenceResult result = new();
 
     // 基本的なバリデーション
     ValidateProofInference(args);
-    var prevConclusionFormulas = prevProofInferences.Select(ppi => ppi.ConclusionFormula).ToList();
-    if ((prevConclusionFormulas?.Count ?? 0) != InferenceAssumptions.Count)
+
+    if (prevProofInferences.Count != InferenceAssumptions.Count)
       throw new ArgumentException("Inference assumption count mismatch");
 
     // 未解消仮定の解消
@@ -84,7 +71,7 @@ public class Inference
         if (pa.DissolutedProofInference != null)
           continue;
 
-        if (willDissolutable.Equals(pa.Formula))
+        if (willDissolutable.Equals(pa.Formula ?? throw new Exception()))
         {
           pa.DissolutedProofInferenceSerialNo = nextProofInferenceSerialNo;
           pa.LastUsedProofInferenceSerialNo = nextProofInferenceSerialNo;
@@ -111,13 +98,13 @@ public class Inference
     {
       var assumptionFormula = ia.CreateAssumptionFormula(args);
       var checkedFlag = false;
-      foreach (var unusedPi in unusedProofInferences)
+      foreach (var prevPi in prevProofInferences)
       {
-        if (unusedPi.ConclusionFormula.Equals(assumptionFormula))
+        if (prevPi.ConclusionFormula?.Equals(assumptionFormula) ?? throw new Exception())
         {
-          unusedPi.NextProofInferenceSerialNo = nextProofInferenceSerialNo;
+          prevPi.NextProofInferenceSerialNo = nextProofInferenceSerialNo;
 
-          result.UpdatedProofInferences.Add(unusedPi);
+          result.UpdatedProofInferences.Add(prevPi);
           checkedFlag = true;
           break;
         }
@@ -125,9 +112,6 @@ public class Inference
       if (!checkedFlag)
         throw new ArgumentException("Assumption mismatch");
     }
-
-    // 結論論理式の作成
-    var conclusion = CreateConclusionFormula(args);
 
     // 更新対象の返却
     result.ProofInference = new ProofInference
@@ -159,17 +143,17 @@ public class Inference
     {
       if (InferenceArguments[i].InferenceArgumentTypeId == (int)Const.InferenceArgumentType.Term)
       {
-        if (args[i].Formula.FormulaTypeId != (long)Const.FormulaType.Term)
+        if (args[i].Formula?.FormulaTypeId != (long)Const.FormulaType.Term)
           throw new ArgumentException("argument formula mismatch");
       }
       if (InferenceArguments[i].InferenceArgumentTypeId == (int)Const.InferenceArgumentType.Proposition)
       {
-        if (args[i].Formula.FormulaTypeId != (long)Const.FormulaType.Proposition)
+        if (args[i].Formula?.FormulaTypeId != (long)Const.FormulaType.Proposition)
           throw new ArgumentException("argument formula mismatch");
       }
       if (InferenceArguments[i].InferenceArgumentTypeId == (int)Const.InferenceArgumentType.FreeVariable)
       {
-        if (!args[i].Formula.IsFreeVariable)
+        if (!args[i].Formula?.IsFreeVariable ?? throw new Exception())
           throw new ArgumentException("argument formula mismatch");
       }
     }
@@ -235,13 +219,13 @@ public class Inference
       foreach (var iac in ia.InferenceArgumentConstraints)
       {
         // 推論規則制約が存在する推論規則引数には、自由変数のみが許可される
-        if (!arg.Formula.IsFreeVariable)
+        if (!arg.Formula?.IsFreeVariable ?? throw new Exception())
           throw new ArgumentException("only free variable is arrowed, where has Inference argument constraints");
 
         var trgInfArg = args.Find(a => a.SerialNo == iac.ConstraintDestinationInferenceArgumentSerialNo)
           ?? throw new ArgumentException("Proof Argument and Inference Argument are mismatch");
 
-        if (trgInfArg.Formula.HasSymbol(arg.Formula.FormulaStrings[0].Symbol))
+        if (trgInfArg.Formula?.HasSymbol(arg.Formula?.FormulaStrings[0].Symbol ?? throw new Exception()) ?? throw new Exception())
           throw new ArgumentException("Inference Argument Constraint Error");
 
         // 未解消仮定への制約チェック
@@ -249,7 +233,7 @@ public class Inference
         {
           foreach (var lastUsedProofInference in proofAssumptions.Where(pa => pa.LastUsedProofInferenceSerialNo == arg.ProofInference.SerialNo))
           {
-            if (lastUsedProofInference.Formula.HasSymbol(arg.Formula.FormulaStrings[0].Symbol))
+            if (lastUsedProofInference.Formula?.HasSymbol(arg.Formula.FormulaStrings[0].Symbol) ?? throw new Exception())
               throw new ArgumentException("Inference Argument Constraint Error");
           }
         }
@@ -269,105 +253,16 @@ public class Inference
   /// </summary>
   public Formula CreateConclusionFormula(List<ProofInferenceArgument> args)
   {
-    // 基本的な推論規則の場合
-    if (IsBasic)
-    {
-      // 結論の一文字目が記号の場合
-      if (InferenceConclusionFormulas[0].SymbolId != null)
-      {
-        var firstSymbol = InferenceConclusionFormulas[0].Symbol;
-
-        // 一文字目が量化記号の場合
-        // 推論規則結論文字列が[Q][x][A]の並びである前提で組み立てる
-        if (firstSymbol?.IsQuantifier ?? false)
-        {
-          var prop = args[InferenceConclusionFormulas[2].SerialNo].Formula;
-          // 代入操作が指示されている場合、代入を行う
-          if (InferenceConclusionFormulas[2].SubstitutionInferenceArgumentFromSerialNo.HasValue)
-          {
-            int fromSerialNo = InferenceConclusionFormulas[2].SubstitutionInferenceArgumentFromSerialNo ?? throw new Exception(Name);
-            int toSerialNo = InferenceConclusionFormulas[2].SubstitutionInferenceArgumentToSerialNo ?? throw new Exception(Name);
-
-            prop = prop.Substitute(
-              args[fromSerialNo].Formula,
-              args[toSerialNo].Formula
-            );
-          }
-
-          return Util.ProceedFormulaConstruction(
-            firstSymbol,
-            args[InferenceConclusionFormulas[1].SerialNo].Formula,
-            new List<Formula> { prop }
-          );
-        }
-
-        // 一文字目が量化記号以外の場合
-        // 推論規則結論文字列に束縛先変数が現れない前提で組み立てる
-        var argFormulas = new List<Formula>();
-        for (var i = 1; i < InferenceConclusionFormulas.Count; i++)
-        {
-          var prop = args[InferenceConclusionFormulas[i].SerialNo].Formula;
-          // 代入操作が指示されている場合、代入を行う
-          if (InferenceConclusionFormulas[i].SubstitutionInferenceArgumentFromSerialNo.HasValue)
-          {
-            int fromSerialNo = InferenceConclusionFormulas[i].SubstitutionInferenceArgumentFromSerialNo ?? throw new Exception(Name);
-            int toSerialNo = InferenceConclusionFormulas[i].SubstitutionInferenceArgumentToSerialNo ?? throw new Exception(Name);
-
-            prop = prop.Substitute(
-              args[fromSerialNo].Formula,
-              args[toSerialNo].Formula
-            );
-          }
-
-          argFormulas.Add(prop);
-        }
-        return Util.ProceedFormulaConstruction(
-          firstSymbol,
-          null,
-          argFormulas
-        );
-      }
-      // 結論の一文字目が記号でない場合
-      else
-      {
-        // このelse句内では、InferenceConclusionFormulasが命題型のもののみである前提で戻り値を組み立てる
-        var prop = args[InferenceConclusionFormulas[0].SerialNo].Formula;
-        // 代入操作が指示されている場合、代入を行う
-        if (InferenceConclusionFormulas[0].SubstitutionInferenceArgumentFromSerialNo.HasValue)
-        {
-          int fromSerialNo = InferenceConclusionFormulas[0].SubstitutionInferenceArgumentFromSerialNo ?? throw new Exception(Name);
-          int toSerialNo = InferenceConclusionFormulas[0].SubstitutionInferenceArgumentToSerialNo ?? throw new Exception(Name);
-
-          prop = prop.Substitute(
-            args[fromSerialNo].Formula,
-            args[toSerialNo].Formula
-          );
-        }
-        return prop;
-      }
-    }
-    // 基本的な推論規則以外の場合
-    else
-    {
-      // このelse句内では、論理式による推論規則の定義が行われている前提とする
-      var ret = InferenceConclusionFormulas[0].Formula;
-      for (var i = 0; i < args.Count; i++)
-      {
-        var fromFormula = new Formula
-        {
-          FormulaStrings = new List<FormulaString>
-          {
-            new FormulaString
-            {
-              SerialNo = 0,
-              SymbolId = InferenceArguments[i].VariableSymbolId ?? throw new Exception(Name)
-            }
-          }
-        };
-        var toFormula = args[i].Formula;
-        ret = ret?.Substitute(fromFormula, toFormula);
-      }
-      return ret ?? throw new Exception(Name);
-    }
+    return Util.CreateProofInferenceFormula(InferenceConclusionFormulas.Select(icf => icf as IInferenceFormula).ToList(), args);
   }
+}
+
+public interface IInferenceFormula
+{
+  public Symbol? Symbol { get; }
+  public long? SymbolId { get; set; }
+  public int? BoundInferenceArgumentSerialNo { get; set; }
+  public int? InferenceArgumentSerialNo { get; set; }
+  public int? SubstitutionInferenceArgumentFromSerialNo { get; set; }
+  public int? SubstitutionInferenceArgumentToSerialNo { get; set; }
 }
