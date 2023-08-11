@@ -20,11 +20,11 @@ public class Inference
   /// </summary>
   public bool IsAssumptionAdd { get; set; }
   /// <summary>
-  /// 証明済みの定理が推論規則として登録されたときに使用。
+  /// 推論定理の場合、推論規則を定理ヘッダに紐づける
   /// </summary>
   public Theorem? Theorem { get; set; }
   /// <summary>
-  /// 証明済みの定理が推論規則として登録されたときに使用。
+  /// 推論定理の場合、推論規則を定理ヘッダに紐づける
   /// </summary>
   public long? TheoremId { get; set; }
 

@@ -6,6 +6,7 @@ public class TheoremDto
 {
   public long Id { get; set; }
   public string Name { get; set; } = "";
+  public bool IsInference { get; set; } = false;
   public List<TheoremPropositionDto>? Assumptions { get; set; }
   public TheoremPropositionDto Conclusion { get; set; } = new();
   public Theorem CreateModel()
@@ -14,6 +15,7 @@ public class TheoremDto
     {
       Id = Id,
       Name = Name,
+      IsInference = IsInference,
       IsProved = false,
       TheoremAssumptions = Assumptions?.Select(a => new TheoremAssumption{
         TheoremId = Id,
