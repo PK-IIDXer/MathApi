@@ -26,7 +26,7 @@ public class ProofDto
   public class InferenceArgumentFormulaDto
   {
     public long SerialNo { get; set; }
-    public long FormulaId { get; set; }
+    public long? FormulaId { get; set; }
   }
 
   public class AssumingInferenceResultDto

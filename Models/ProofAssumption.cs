@@ -24,11 +24,14 @@ public class ProofAssumption
   /// 証明仮定連番
   /// </summary>
   public long SerialNo { get; set; }
-  public Formula? Formula { get; }
+  public Formula? Formula { get; set; }
   /// <summary>
   /// 論理式ID
   /// </summary>
-  public long FormulaId { get; set; }
+  /// <remarks>
+  /// nullの場合、当該ProofAssumptionは命題を意味する変数と解釈する。
+  /// </remarks>
+  public long? FormulaId { get; set; }
   public ProofInference? AddedProofInference { get; set; }
   /// <summary>
   /// 証明仮定を追加した証明推論連番

@@ -85,7 +85,6 @@ namespace MathApi.Controllers
             && pi.ProofSerialNo == dto.ProofSerialNo)
         .MaxAsync(pi => pi.SerialNo) + 1;
 
-      // TODO: Include
       var proof = await _context.Proofs.FindAsync(dto.TheoremId, dto.ProofSerialNo);
       if (proof == null)
         return BadRequest($"Proof (TheoremId, SerialNo) = (#{dto.TheoremId}, #{dto.ProofSerialNo}) is not found");
@@ -109,13 +108,77 @@ namespace MathApi.Controllers
           && !pa.DissolutedProofInferenceSerialNo.HasValue // 未解消の仮定
       ).ToListAsync();
 
-      // var inferenceResult = inference.Apply(
-      //   nextProofInferenceSerialNo,
-      //   proof,
-      //   prevProofInferences,
-      //   proofAssumptions,
-      // );
+      var argFormulas = await _context.Formulas
+        .Include(f => f.FormulaStrings)
+        .ThenInclude(fs => fs.Symbol)
+        .ThenInclude(s => s.SymbolType)
+        .Include(f => f.FormulaChains)
+        .Where(
+          f => dto.InferenceArgumentFormulas.Select(d => d.FormulaId).Contains(f.Id)
+        ).ToListAsync();
+      var args = dto.InferenceArgumentFormulas.Select(d => {
+        return new ProofInferenceArgument
+        {
+          TheoremId = proof.TheoremId,
+          ProofSerialNo = proof.SerialNo,
+          ProofInferenceSerialNo = nextProofInferenceSerialNo,
+          SerialNo = d.SerialNo,
+          Formula = argFormulas.FirstOrDefault(f => f.Id == d.FormulaId),
+          FormulaId = d.FormulaId,
+        };
+      }).ToList();
 
+      var inferenceResult = inference.Apply(
+        nextProofInferenceSerialNo,
+        prevProofInferences,
+        proofAssumptions,
+        args
+      );
+
+      var pi = new ProofInference
+      {
+        TheoremId = proof.TheoremId,
+        ProofSerialNo = proof.SerialNo,
+        SerialNo = nextProofInferenceSerialNo,
+        InferenceId = inference.Id,
+        ConclusionFormula = inferenceResult.ConclusionFormula,
+        ProofInferenceArguments = args
+      };
+      _context.ProofInferences.Add(pi);
+
+      foreach (var updatedPi in inferenceResult.UpdatedProofInferences)
+      {
+        _context.ProofInferences.Add(updatedPi);
+        _context.Entry(updatedPi).State = EntityState.Modified;
+      }
+
+      foreach (var updatedPa in inferenceResult.UpdatedProofAssumptions)
+      {
+        _context.ProofAssumptions.Add(updatedPa);
+        _context.Entry(updatedPa).State = EntityState.Modified;
+      }
+
+      // TODO: 命題変数を追加する場合の考慮
+      if (inferenceResult.AddedProofAssumption != null)
+      {
+        var nextProofAssumptionSerialNo = await _context
+          .ProofAssumptions
+          .Where(
+            pa =>
+              pa.TheoremId == dto.TheoremId
+              && pa.ProofSerialNo == dto.ProofSerialNo)
+          .MaxAsync(pa => pa.SerialNo) + 1;
+        var pa = new ProofAssumption
+        {
+          TheoremId = proof.TheoremId,
+          ProofSerialNo = proof.SerialNo,
+          SerialNo = nextProofAssumptionSerialNo,
+          Formula = inferenceResult.AddedProofAssumption
+        };
+        _context.ProofAssumptions.Add(pa);
+        _context.Entry(pa).State = EntityState.Added;
+      }
+      await _context.SaveChangesAsync();
       return CreatedAtAction("GetProof", new { id = proof.TheoremId }, proof);
     }
 

@@ -36,7 +36,7 @@ public class Inference
 
   public struct InferenceResult
   {
-    public ProofInference ProofInference { get; set; }
+    public Formula ConclusionFormula { get; set; }
     public List<ProofInference> UpdatedProofInferences { get; set; }
     public List<ProofAssumption> UpdatedProofAssumptions { get; set; }
     public Formula? AddedProofAssumption { get; set; }
@@ -44,7 +44,6 @@ public class Inference
 
   public InferenceResult Apply(
     long nextProofInferenceSerialNo,
-    Proof proof,
     List<ProofInference> prevProofInferences,
     List<ProofAssumption> proofAssumptions,
     List<ProofInferenceArgument> args)
@@ -114,15 +113,7 @@ public class Inference
     }
 
     // 更新対象の返却
-    result.ProofInference = new ProofInference
-    {
-      TheoremId = proof.TheoremId,
-      ProofSerialNo = proof.SerialNo,
-      SerialNo = nextProofInferenceSerialNo,
-      InferenceId = Id,
-      ConclusionFormula = CreateConclusionFormula(args),
-      PreviousProofInferences = prevProofInferences
-    };
+    result.ConclusionFormula = CreateConclusionFormula(args);
     if (IsAssumptionAdd)
     {
       result.AddedProofAssumption = args[0].Formula;

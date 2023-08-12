@@ -51,7 +51,8 @@ public class Theorem
   public List<TheoremAssumption> TheoremAssumptions { get; set; } = new();
   public List<TheoremConclusion> TheoremConclusions { get; set; } = new();
 
-  public Inference? Inference { get; }
+  public Inference? Inference { get; set; }
+  public int? InferenceId { get; set; }
 
   public List<Proof>? Proofs { get; } = new();
 }

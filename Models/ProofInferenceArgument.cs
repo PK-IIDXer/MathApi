@@ -25,9 +25,13 @@ public class ProofInferenceArgument
   /// 証明推論引数連番
   /// </summary>
   public long SerialNo { get; set; }
-  public Formula? Formula { get; }
+  public Formula? Formula { get; set; }
   /// <summary>
   /// 論理式ID
   /// </summary>
-  public long FormulaId { get; set; }
+  /// <remarks>
+  /// 紐づくInferenceArgumentのArgumentTypeが命題以外の場合、nullにはできない（nullの場合は必ず命題を意味する）。
+  /// nullの場合、当該ProofInferenceArgumentは命題を意味する変数と解釈する。
+  /// </remarks>
+  public long? FormulaId { get; set; }
 }

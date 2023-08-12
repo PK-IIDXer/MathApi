@@ -360,6 +360,14 @@ public class MathDbContext : DbContext
                      .HasForeignKey(st => new { st.FormulaTypeId });
       }
     );
+    modelBuilder.Entity<Theorem>(
+      nestedBuilder => {
+        nestedBuilder.HasOne(t => t.Inference)
+                     .WithOne(i => i.Theorem)
+                     .HasPrincipalKey<Inference>(i => i.TheoremId)
+                     .HasForeignKey<Theorem>(t => t.InferenceId);
+      }
+    );
     modelBuilder.Entity<TheoremAssumption>(
       nestedBuilder => {
         nestedBuilder.HasKey(ta => new { ta.TheoremId, ta.SerialNo });
