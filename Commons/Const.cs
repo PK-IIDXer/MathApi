@@ -23,8 +23,18 @@ public enum FormulaType : long {
 }
 
 /// <summary>
+/// 論理式構成タイプ
+/// </summary>
+public enum FormulaLabelType : int {
+  Term = 1,
+  Proposition = 2,
+  FreeVariable = 3
+}
+
+/// <summary>
 /// 推論規則引数タイプ
 /// </summary>
+[Obsolete]
 public enum InferenceArgumentType : int {
   Term = 1,
   Proposition = 2,

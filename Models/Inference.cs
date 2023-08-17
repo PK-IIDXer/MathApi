@@ -39,7 +39,7 @@ public class Inference
     public Formula ConclusionFormula { get; set; }
     public List<ProofInference> UpdatedProofInferences { get; set; }
     public List<ProofAssumption> UpdatedProofAssumptions { get; set; }
-    public Formula? AddedProofAssumption { get; set; }
+    public ProofAssumption? AddedProofAssumption { get; set; }
   }
 
   public InferenceResult Apply(
@@ -60,26 +60,56 @@ public class Inference
     foreach (var ia in InferenceAssumptions)
     {
       var willDissolutable = ia.CreateDissolutableAssumptionFormula(args);
-      if (willDissolutable == null)
-        continue;
 
+      // 仮定論理式の存在確認
+      var assumptionFormula = ia.CreateAssumptionFormula(args);
+      var checkedFlag = false;
       // 解消フラグ（解消必須の仮定が存在しない場合エラーとする処理に使用
       bool dissoluteFlag = false;
-      foreach (var pa in proofAssumptions)
+      foreach (var prevPi in prevProofInferences)
       {
-        if (pa.DissolutedProofInference != null)
+        if (prevPi.NextProofInferenceSerialNo.HasValue)
+          continue;
+        if (prevPi.ConclusionFormula?.Equals(assumptionFormula) ?? throw new Exception())
+        {
+          prevPi.NextProofInferenceSerialNo = nextProofInferenceSerialNo;
+
+          result.UpdatedProofInferences.Add(prevPi);
+          checkedFlag = true;
+        }
+        if (!checkedFlag)
           continue;
 
-        if (willDissolutable.Equals(pa.Formula ?? throw new Exception()))
+        // 仮定の解消
+        if (willDissolutable == null)
+          continue;
+        foreach (var pa in proofAssumptions.Where(p => prevPi.TreeFrom <= p.AddedProofInferenceSerialNo && p.AddedProofInferenceSerialNo <= prevPi.TreeTo))
         {
-          pa.DissolutedProofInferenceSerialNo = nextProofInferenceSerialNo;
-          pa.LastUsedProofInferenceSerialNo = nextProofInferenceSerialNo;
-          dissoluteFlag = true;
+          if (pa.DissolutedProofInference != null)
+            continue;
 
-          result.UpdatedProofAssumptions.Add(pa);
-          break;
+          if (willDissolutable.Equals(pa.Formula ?? throw new Exception()))
+          {
+            pa.DissolutedProofInferenceSerialNo = nextProofInferenceSerialNo;
+            pa.LastUsedProofInferenceSerialNo = nextProofInferenceSerialNo;
+            dissoluteFlag = true;
+
+            result.UpdatedProofAssumptions.Add(pa);
+            break;
+          }
         }
+        // 解消必須の仮定が存在しない場合エラー
+        if (ia.InferenceAssumptionDissolutionTypeId == (int)Const.InferenceAssumptionDissolutionType.Required
+          && dissoluteFlag == false)
+        {
+          throw new ArgumentException("dissolution assumption is required but is not entered.");
+        }
+
+        if (checkedFlag)
+          break;
       }
+      if (!checkedFlag)
+        throw new ArgumentException("Assumption mismatch");
 
       // 解消必須の仮定が存在しない場合エラー
       if (ia.InferenceAssumptionDissolutionTypeId == (int)Const.InferenceAssumptionDissolutionType.Required
@@ -92,31 +122,17 @@ public class Inference
     // 推論規則制約のチェック
     ValidateInferenceConstraint(proofAssumptions, args);
 
-    // 仮定論理式のチェック
-    foreach (var ia in InferenceAssumptions)
-    {
-      var assumptionFormula = ia.CreateAssumptionFormula(args);
-      var checkedFlag = false;
-      foreach (var prevPi in prevProofInferences)
-      {
-        if (prevPi.ConclusionFormula?.Equals(assumptionFormula) ?? throw new Exception())
-        {
-          prevPi.NextProofInferenceSerialNo = nextProofInferenceSerialNo;
-
-          result.UpdatedProofInferences.Add(prevPi);
-          checkedFlag = true;
-          break;
-        }
-      }
-      if (!checkedFlag)
-        throw new ArgumentException("Assumption mismatch");
-    }
-
     // 更新対象の返却
     result.ConclusionFormula = CreateConclusionFormula(args);
     if (IsAssumptionAdd)
     {
-      result.AddedProofAssumption = args[0].Formula;
+      result.AddedProofAssumption = new ProofAssumption()
+      {
+        Formula = args[0].Formula,
+        FormulaId = args[0].FormulaId,
+        AddedProofInferenceSerialNo = nextProofInferenceSerialNo,
+        LastUsedProofInferenceSerialNo = nextProofInferenceSerialNo
+      };
     }
 
     return result;

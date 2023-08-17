@@ -21,6 +21,14 @@ public class ProofInference
   /// 証明推論連番
   /// </summary>
   public long SerialNo { get; set; }
+  /// <summary>
+  /// 証明推論木From
+  /// </summary>
+  public long TreeFrom { get; set; }
+  /// <summary>
+  /// 証明推論木To
+  /// </summary>
+  public long TreeTo { get; set; }
   public Inference? Inference { get; }
   /// <summary>
   /// 推論規則ID
@@ -31,16 +39,6 @@ public class ProofInference
   /// 結論論理式ID
   /// </summary>
   public long ConclusionFormulaId { get; set; }
-
-  public List<ProofInference>? PreviousProofInferences { get; set; }
-  public ProofInference? NextProofInference { get; set; }
-  /// <summary>
-  /// 後続証明推論連番
-  /// </summary>
-  /// <remarks>
-  /// 当該証明推論の結果を使用する証明推論を指定する
-  /// </remarks>
-  public long? NextProofInferenceSerialNo { get; set; }
 
   public List<ProofInferenceArgument>? ProofInferenceArguments { get; set; }
 

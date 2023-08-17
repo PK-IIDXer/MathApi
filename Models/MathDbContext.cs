@@ -85,6 +85,66 @@ public class MathDbContext : DbContext
                      .HasForeignKey<FormulaChain>(fc => new { fc.FormulaId, fc.ToFormulaStringSerialNo });
       }
     );
+    modelBuilder.Entity<FormulaLabel>(
+      nestedBuilder => {
+        nestedBuilder.HasKey(fl => new { fl.Id });
+        nestedBuilder.HasOne(fl => fl.Type)
+                     .WithMany(flt => flt.FormulaLabels)
+                     .HasPrincipalKey(flt => new { flt.Id })
+                     .HasForeignKey(fl => new { fl.TypeId });
+      }
+    );
+    modelBuilder.Entity<FormulaStructArgument>(
+      nestedBuilder => {
+        nestedBuilder.HasKey(fsa => new { fsa.FormulaStructId, fsa.SerialNo });
+        nestedBuilder.HasOne(fsa => fsa.FormulaStruct)
+                     .WithMany(fs => fs.Arguments)
+                     .HasPrincipalKey(fs => new { fs.Id })
+                     .HasForeignKey(fsa => new { fsa.FormulaStructId });
+        nestedBuilder.HasOne(fsa => fsa.Label)
+                     .WithMany(l => l.FormulaStructArguments)
+                     .HasPrincipalKey(l => new { l.Id })
+                     .HasForeignKey(fsa => new { fsa.LabelId });
+      }
+    );
+    modelBuilder.Entity<FormulaStructString>(
+      nestedBuilder => {
+        nestedBuilder.HasKey(fss => new { fss.FormulaStructId, fss.SerialNo });
+        nestedBuilder.HasOne(fss => fss.FormulaStruct)
+                     .WithMany(fs => fs.Strings)
+                     .HasPrincipalKey(fs => new { fs.Id })
+                     .HasForeignKey(fss => new { fss.FormulaStructId });
+        nestedBuilder.HasOne(fss => fss.Symbol)
+                     .WithMany(s => s.FormulaStructStrings)
+                     .HasPrincipalKey(s => new { s.Id })
+                     .HasForeignKey(fss => new { fss.SymbolId });
+        nestedBuilder.HasOne(fss => fss.BoundArgument)
+                     .WithMany(fsa => fsa.StringsToBoundArgument)
+                     .HasPrincipalKey(fsa => new { fsa.FormulaStructId, fsa.SerialNo })
+                     .HasForeignKey(fss => new { fss.FormulaStructId, fss.BoundArgumentSerialNo });
+        nestedBuilder.HasOne(fss => fss.Argument)
+                     .WithMany(fsa => fsa.Strings)
+                     .HasPrincipalKey(fsa => new { fsa.FormulaStructId, fsa.SerialNo })
+                     .HasForeignKey(fss => new { fss.FormulaStructId, fss.ArgumentSerialNo });
+      }
+    );
+    modelBuilder.Entity<FormulaStructStringSubstitution>(
+      nestedBuilder => {
+        nestedBuilder.HasKey(fsss => new { fsss.FormulaStructId, fsss.FormulaStructStringSerialNo, fsss.SerialNo });
+        nestedBuilder.HasOne(fsss => fsss.FormulaStructString)
+                     .WithMany(fss => fss.Substitutions)
+                     .HasPrincipalKey(fss => new { fss.FormulaStructId, fss.SerialNo })
+                     .HasForeignKey(fsss => new { fsss.FormulaStructId, fsss.FormulaStructStringSerialNo });
+        nestedBuilder.HasOne(fsss => fsss.ArgumentFrom)
+                     .WithMany(fsa => fsa.StringsToSubstitutionArgumentFrom)
+                     .HasPrincipalKey(fsa => new { fsa.FormulaStructId, fsa.SerialNo })
+                     .HasForeignKey(fss => new { fss.FormulaStructId, fss.ArgumentFromSerialNo });
+        nestedBuilder.HasOne(fss => fss.ArgumentTo)
+                     .WithMany(fsa => fsa.StringsToSubstitutionArgumentTo)
+                     .HasPrincipalKey(fsa => new { fsa.FormulaStructId, fsa.SerialNo })
+                     .HasForeignKey(fss => new { fss.FormulaStructId, fss.ArgumentToSerialNo });
+      }
+    );
     modelBuilder.Entity<Inference>()
                 .HasOne(i => i.Theorem)
                 .WithOne(t => t.Inference)

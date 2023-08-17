@@ -22,6 +22,7 @@ public class Symbol
   public List<InferenceAssumptionFormula>? InferenceAssumptionFormulas { get; }
   public List<InferenceAssumptionDissolutableAssumptionFormula>? InferenceAssumptionDissolutableAssumptionFormulas { get; }
   public List<InferenceArgument>? InferenceArguments { get; }
+  public List<FormulaStructString>? FormulaStructStrings { get; }
 
   [JsonIgnore]
   [NotMapped]

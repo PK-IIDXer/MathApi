@@ -100,7 +100,10 @@ namespace MathApi.Controllers
           && dto.AssumingInferenceResults
                 .Select(air => air.ProofInferenceSerialNo)
                 .Contains(pi.SerialNo)
+          && !pi.NextProofInferenceSerialNo.HasValue // 未使用のProofInference
       ).ToListAsync();
+      if (prevProofInferences.Count != dto.AssumingInferenceResults.Count)
+        return BadRequest("AssumingInferenceResults may have invalid ProofInferenceSerialNo");
 
       var proofAssumptions = await _context.ProofAssumptions.Where(
         pa => pa.TheoremId == dto.TheoremId
@@ -173,7 +176,9 @@ namespace MathApi.Controllers
           TheoremId = proof.TheoremId,
           ProofSerialNo = proof.SerialNo,
           SerialNo = nextProofAssumptionSerialNo,
-          Formula = inferenceResult.AddedProofAssumption
+          FormulaId = inferenceResult.AddedProofAssumption.FormulaId,
+          AddedProofInferenceSerialNo = nextProofInferenceSerialNo,
+          LastUsedProofInferenceSerialNo = nextProofInferenceSerialNo
         };
         _context.ProofAssumptions.Add(pa);
         _context.Entry(pa).State = EntityState.Added;
