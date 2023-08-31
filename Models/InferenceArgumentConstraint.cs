@@ -36,7 +36,7 @@ public class InferenceArgumentConstraint
   /// </summary>
   public int ConstraintDestinationInferenceArgumentSerialNo { get; set; }
   /// <summary>
-  /// 未解消の仮定に
+  /// 未解消の仮定に対する制約の有無
   /// </summary>
   public bool IsConstraintPredissolvedAssumption { get; set; }
 }

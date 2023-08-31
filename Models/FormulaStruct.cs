@@ -7,18 +7,54 @@ public class FormulaStruct
   public long Id { get; set; }
   public string? Meaning { get; set; }
 
-  public Const.FormulaLabelType? TypeId
+  public Const.FormulaLabelType TypeId
   {
     get
     {
-      if (Arguments.Count == 0) 
-        return null;
-      return Arguments[0].Label.TypeId;
+      var s = Strings[0]
+        ?? throw new ArgumentException("Include FormulaStruct.Strings");
+
+      if (s.SymbolId.HasValue)
+      {
+        if (s.Symbol == null)
+          throw new ArgumentException("Include FormulaStruct.Strings.Symbol");
+
+        return
+          s.Symbol.SymbolTypeId
+        switch
+        {
+            (long)Const.SymbolType.FreeVariable
+              => Const.FormulaLabelType.FreeVariable,
+            (long)Const.SymbolType.Function
+              or (long)Const.SymbolType.TermQuantifier
+              => Const.FormulaLabelType.Term,
+            (long)Const.SymbolType.Predicate
+              or (long)Const.SymbolType.Logic
+              or (long)Const.SymbolType.PropositionQuantifier
+              => Const.FormulaLabelType.Proposition,
+            _ => throw new ArgumentException("想定外"),
+        };
+      }
+
+      if (s.ArgumentSerialNo.HasValue)
+      {
+        if (s.Argument == null)
+          throw new ArgumentException("Include FormulaStruct.Strings.Argument");
+        return s.Argument.Label.TypeId;
+      }
+
+      throw new ArgumentException("想定外");
     }
   }
 
   public List<FormulaStructArgument> Arguments { get; set; } = new();
   public List<FormulaStructString> Strings { get; set; } = new();
+
+  public List<InferenceAssumption> InferenceAssumptions { get; } = new();
+  public List<InferenceAssumptionDissolutableAssumption> InferenceAssumptionDissolutableAssumptions { get; } = new();
+  public List<InferenceConclusion> InferenceConclusions { get; } = new();
+  public List<ProofInference> ProofInferences { get; } = new();
+  public List<ProofInferenceArgument> ProofInferenceArguments { get; } = new();
 
   public Formula Apply(List<Formula> args)
   {
@@ -51,10 +87,10 @@ public class FormulaStruct
             throw new ArgumentException($"Invalid args on #{fsChar.ArgumentSerialNo.Value}");
         }
 
+        var fromVars = new List<Formula>();
         foreach (var sbs in fsChar.Substitutions)
         {
           // 代入操作
-          // TODO: 代入変数の重複チェック
           var fromFsArg = sbs.ArgumentFrom
             ?? throw new ArgumentException("Include FormulaStructString.SubstitutionArgumentFrom");
           if (fromFsArg.Label.TypeId != Const.FormulaLabelType.FreeVariable)
@@ -71,6 +107,11 @@ public class FormulaStruct
             ?? throw new ArgumentException($"Invalid args on #{fsChar.ArgumentSerialNo.Value}");
           if (!toFormula.IsFreeVariable)
             throw new ArgumentException($"Invalid args on #{fsChar.ArgumentSerialNo.Value}");
+          // 代入元変数重複チェック
+          if (fromVars.Any(f => f.Equals(fromFormula)))
+            throw new ArgumentException("from variable duplicate");
+          else
+            fromVars.Add(fromFormula);
 
           formula = formula.Substitute(fromFormula, toFormula);
         }
@@ -86,12 +127,16 @@ public class FormulaStruct
         Formula? boundVar = null;
         if (fsChar.BoundArgumentSerialNo.HasValue)
           boundVar = args[fsChar.BoundArgumentSerialNo.Value];
-        var formula = Util.ProceedFormulaConstruction(symbol, boundVar, tmpFormulas);
-        tmpFormulas.Clear();
+        var arity = symbol.Arity ?? 0;
+        var symbolArgFormulas = tmpFormulas.Take(0..arity).ToList();
+        tmpFormulas.RemoveRange(0, arity);
+        var formula = Util.ProceedFormulaConstruction(symbol, boundVar, symbolArgFormulas);
         tmpFormulas.Add(formula);
       }
     }
 
+    if (tmpFormulas.Count > 1)
+      throw new ArgumentException("Fail to construct a formula");
     return tmpFormulas[0];
   }
 
@@ -180,7 +225,6 @@ public class FormulaStruct
             ?? throw new ArgumentException("想定外");
 
           // 代入テーブル作成
-          // TODO: 代入変数の重複チェック
           var newSbs = new List<FormulaStructStringSubstitution>();
           var newSbsSerialNo = 0;
           foreach (var sbs in str.Substitutions)
@@ -250,8 +294,13 @@ public class FormulaStruct
             ArgumentSerialNo = argArg.SerialNo,
             Substitutions = newSbs
           };
+          var froms = new List<int>();
           foreach (var s in newSbs)
           {
+            if (froms.Any(f => f == s.ArgumentFrom?.Label.Id))
+              throw new ArgumentException("Substitution \"from\" variable is duplicated");
+            else
+              froms.Add(s.ArgumentFromSerialNo);
             s.FormulaStructString = newFss;
           }
           ret.Add(newFss);

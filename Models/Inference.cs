@@ -19,20 +19,16 @@ public class Inference
   /// 仮定を追加するかどうか
   /// </summary>
   public bool IsAssumptionAdd { get; set; }
-  /// <summary>
-  /// 推論定理の場合、推論規則を定理ヘッダに紐づける
-  /// </summary>
-  public Theorem? Theorem { get; set; }
-  /// <summary>
-  /// 推論定理の場合、推論規則を定理ヘッダに紐づける
-  /// </summary>
-  public long? TheoremId { get; set; }
 
-  public List<InferenceArgument> InferenceArguments { get; set; } = new();
-  public List<InferenceAssumption> InferenceAssumptions { get; set; } = new();
-  public List<InferenceConclusionFormula> InferenceConclusionFormulas { get; set; } = new();
+  public List<InferenceArgument> Arguments { get; set; } = new();
+  public List<InferenceAssumption> Assumptions { get; set; } = new();
+  public List<InferenceConclusion> Conclusions { get; set; } = new();
+  public List<InferenceFormulaStructArgumentMapping> FormulaStructArgumentMappings { get; set; } = new();
 
   public List<ProofInference>? ProofInferences { get; }
+
+  public Theorem? Theorem { get; }
+  public long? TheoremId { get; set; }
 
   public struct InferenceResult
   {
@@ -40,6 +36,16 @@ public class Inference
     public List<ProofInference> UpdatedProofInferences { get; set; }
     public List<ProofAssumption> UpdatedProofAssumptions { get; set; }
     public ProofAssumption? AddedProofAssumption { get; set; }
+  }
+
+  public InferenceResult Apply(List<Formula> args)
+  {
+    var assumptions = Assumptions.Select(a => {
+      if (a.FormulaStruct == null)
+        throw new ArgumentException("Include Inference.Assumptions.FormulaStruct");
+
+      return a.FormulaStruct.Apply(args);
+    });
   }
 
   public InferenceResult Apply(
@@ -53,27 +59,24 @@ public class Inference
     // 基本的なバリデーション
     ValidateProofInference(args);
 
-    if (prevProofInferences.Count != InferenceAssumptions.Count)
+    if (prevProofInferences.Count != Assumptions.Count)
       throw new ArgumentException("Inference assumption count mismatch");
 
     // 未解消仮定の解消
-    foreach (var ia in InferenceAssumptions)
+    foreach (var ia in Assumptions)
     {
-      var willDissolutable = ia.CreateDissolutableAssumptionFormula(args);
+      var willDissolutable = ia.DissolutableAssumption.FormulaStruct;
 
       // 仮定論理式の存在確認
-      var assumptionFormula = ia.CreateAssumptionFormula(args);
+      var assumptionFormula = ia.FormulaStruct;
       var checkedFlag = false;
       // 解消フラグ（解消必須の仮定が存在しない場合エラーとする処理に使用
       bool dissoluteFlag = false;
       foreach (var prevPi in prevProofInferences)
       {
-        if (prevPi.NextProofInferenceSerialNo.HasValue)
-          continue;
         if (prevPi.ConclusionFormula?.Equals(assumptionFormula) ?? throw new Exception())
         {
-          prevPi.NextProofInferenceSerialNo = nextProofInferenceSerialNo;
-
+          // TODO: tree noの更新。ここではできないかも（_contextの取得が）
           result.UpdatedProofInferences.Add(prevPi);
           checkedFlag = true;
         }
@@ -81,6 +84,7 @@ public class Inference
           continue;
 
         // 仮定の解消
+        // TODO: 考え方の齟齬：あれば解消。なければ「強制」フラグをみて、強制の場合はエラー。
         if (willDissolutable == null)
           continue;
         foreach (var pa in proofAssumptions.Where(p => prevPi.TreeFrom <= p.AddedProofInferenceSerialNo && p.AddedProofInferenceSerialNo <= prevPi.TreeTo))
@@ -99,7 +103,7 @@ public class Inference
           }
         }
         // 解消必須の仮定が存在しない場合エラー
-        if (ia.InferenceAssumptionDissolutionTypeId == (int)Const.InferenceAssumptionDissolutionType.Required
+        if (ia.DissolutionTypeId == (int)Const.InferenceAssumptionDissolutionType.Required
           && dissoluteFlag == false)
         {
           throw new ArgumentException("dissolution assumption is required but is not entered.");
@@ -112,7 +116,7 @@ public class Inference
         throw new ArgumentException("Assumption mismatch");
 
       // 解消必須の仮定が存在しない場合エラー
-      if (ia.InferenceAssumptionDissolutionTypeId == (int)Const.InferenceAssumptionDissolutionType.Required
+      if (ia.DissolutionTypeId == (int)Const.InferenceAssumptionDissolutionType.Required
         && dissoluteFlag == false)
       {
         throw new ArgumentException("dissolution assumption is required but is not entered.");
@@ -140,7 +144,7 @@ public class Inference
 
   private void ValidateProofInference(List<ProofInferenceArgument> args)
   {
-    if (args.Count != InferenceArguments.Count)
+    if (args.Count != Arguments.Count)
       throw new ArgumentException("args count mismatch");
 
     if (args.Count == 0)
@@ -148,17 +152,17 @@ public class Inference
 
     for (var i = 0; i < args.Count; i++)
     {
-      if (InferenceArguments[i].InferenceArgumentTypeId == (int)Const.InferenceArgumentType.Term)
+      if (Arguments[i].InferenceArgumentTypeId == (int)Const.InferenceArgumentType.Term)
       {
         if (args[i].Formula?.FormulaTypeId != (long)Const.FormulaType.Term)
           throw new ArgumentException("argument formula mismatch");
       }
-      if (InferenceArguments[i].InferenceArgumentTypeId == (int)Const.InferenceArgumentType.Proposition)
+      if (Arguments[i].InferenceArgumentTypeId == (int)Const.InferenceArgumentType.Proposition)
       {
         if (args[i].Formula?.FormulaTypeId != (long)Const.FormulaType.Proposition)
           throw new ArgumentException("argument formula mismatch");
       }
-      if (InferenceArguments[i].InferenceArgumentTypeId == (int)Const.InferenceArgumentType.FreeVariable)
+      if (Arguments[i].InferenceArgumentTypeId == (int)Const.InferenceArgumentType.FreeVariable)
       {
         if (!args[i].Formula?.IsFreeVariable ?? throw new Exception())
           throw new ArgumentException("argument formula mismatch");
@@ -179,7 +183,7 @@ public class Inference
       }
     }
 
-    foreach (var inferenceAssumption in InferenceAssumptions)
+    foreach (var inferenceAssumption in Assumptions)
     {
       // 仮定に関するバリデーション
       var assumptionFormulas = inferenceAssumption.InferenceAssumptionFormulas;
@@ -215,7 +219,7 @@ public class Inference
 
   private void ValidateInferenceConstraint(List<ProofAssumption> proofAssumptions, List<ProofInferenceArgument> args)
   {
-    foreach (var ia in InferenceArguments)
+    foreach (var ia in Arguments)
     {
       if (ia.InferenceArgumentConstraints == null)
         continue;

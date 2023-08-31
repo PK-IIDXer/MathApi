@@ -50,7 +50,7 @@ public class InferenceDto
       Id = Id,
       Name = Name,
       IsAssumptionAdd = IsAssumptionAdd,
-      InferenceArguments = Arguments.Select(a => new InferenceArgument
+      Arguments = Arguments.Select(a => new InferenceArgument
       {
         InferenceId = Id,
         SerialNo = a.SerialNo,
@@ -64,11 +64,11 @@ public class InferenceDto
           IsConstraintPredissolvedAssumption = c.IsConstraintPredissolvedAssumption
         }).ToList()
       }).ToList(),
-      InferenceAssumptions = Assumptions.Select(a => new InferenceAssumption
+      Assumptions = Assumptions.Select(a => new InferenceAssumption
       {
         InferenceId = Id,
         SerialNo = a.SerialNo,
-        InferenceAssumptionDissolutionTypeId = a.DissolutionTypeId,
+        DissolutionTypeId = a.DissolutionTypeId,
         InferenceAssumptionFormulas = a.Formulas.Select(f => new InferenceAssumptionFormula
         {
           InferenceId = Id,

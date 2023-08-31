@@ -27,7 +27,7 @@ public class TheoremDto
       if (Conclusion != null)
         throw new ArgumentException("Use inference if IsInference");
       ret.Inference = Inference.CreateModel();
-      if (!ret.Inference.InferenceArguments.Any(ia => ia.InferenceArgumentTypeId == (int)Const.InferenceArgumentType.Proposition))
+      if (!ret.Inference.Arguments.Any(ia => ia.InferenceArgumentTypeId == (int)Const.InferenceArgumentType.Proposition))
         throw new ArgumentException("Should not use inference if there is no propositional argument");
     }
     else

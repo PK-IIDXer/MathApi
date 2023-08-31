@@ -69,8 +69,6 @@ public class Formula
   public List<ProofInference>? ProofInferences { get; }
   public List<ProofInferenceArgument>? ProofInferenceArguments { get; }
   public List<ProofAssumption>? ProofAssumptions { get; }
-  public List<InferenceAssumptionFormula>? InferenceAssumptionFormulas { get; }
-  public List<InferenceConclusionFormula>? InferenceConclusionFormulas { get; }
 
   /// <summary>
   /// 変数への代入操作

@@ -8,4 +8,5 @@ public class FormulaLabel
   public Const.FormulaLabelType TypeId { get; set; }
 
   public List<FormulaStructArgument> FormulaStructArguments { get; } = new();
+  public InferenceArgument? InferenceArgument { get; }
 }

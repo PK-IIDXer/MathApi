@@ -15,4 +15,5 @@ public class FormulaStructArgument
   public List<FormulaStructString> Strings { get; } = new();
   public List<FormulaStructStringSubstitution> StringsToSubstitutionArgumentFrom { get; } = new();
   public List<FormulaStructStringSubstitution> StringsToSubstitutionArgumentTo { get; } = new();
+  public List<InferenceFormulaStructArgumentMapping> InferenceFormulaStructArgumentMappings { get; } = new();
 }

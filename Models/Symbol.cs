@@ -18,9 +18,6 @@ public class Symbol
 
   public List<FormulaString>? FormulaStrings { get; }
 
-  public List<InferenceConclusionFormula>? InferenceConclusionFormulas { get; }
-  public List<InferenceAssumptionFormula>? InferenceAssumptionFormulas { get; }
-  public List<InferenceAssumptionDissolutableAssumptionFormula>? InferenceAssumptionDissolutableAssumptionFormulas { get; }
   public List<InferenceArgument>? InferenceArguments { get; }
   public List<FormulaStructString>? FormulaStructStrings { get; }
 

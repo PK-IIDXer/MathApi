@@ -171,7 +171,7 @@ namespace MathApi.Controllers
       var assumption_intro = new InferenceAssumption
       {
         SerialNo = 0,
-        InferenceAssumptionDissolutionTypeId = (int)Const.InferenceAssumptionDissolutionType.None,
+        DissolutionTypeId = (int)Const.InferenceAssumptionDissolutionType.None,
         InferenceAssumptionFormulas = assumptionFormula_intro
       };
 
@@ -185,8 +185,8 @@ namespace MathApi.Controllers
       {
         Name = $"Definition of {symbol.Character} Introduction",
         IsAssumptionAdd = false,
-        InferenceArguments = args,
-        InferenceAssumptions = new List<InferenceAssumption>
+        Arguments = args,
+        Assumptions = new List<InferenceAssumption>
         {
           assumption_intro
         },
@@ -199,7 +199,7 @@ namespace MathApi.Controllers
       var assumption_elim = new InferenceAssumption
       {
         SerialNo = 0,
-        InferenceAssumptionDissolutionTypeId = (int)Const.InferenceAssumptionDissolutionType.None,
+        DissolutionTypeId = (int)Const.InferenceAssumptionDissolutionType.None,
         InferenceAssumptionFormulas = new List<InferenceAssumptionFormula>
         {
           new InferenceAssumptionFormula
@@ -232,8 +232,8 @@ namespace MathApi.Controllers
       {
         Name = $"Definition of {symbol.Character} Elimination",
         IsAssumptionAdd = false,
-        InferenceArguments = args,
-        InferenceAssumptions = new List<InferenceAssumption>
+        Arguments = args,
+        Assumptions = new List<InferenceAssumption>
         {
           assumption_elim
         },
@@ -326,7 +326,7 @@ namespace MathApi.Controllers
       {
         Name = $"Definition of ${symbol.Character}",
         IsAssumptionAdd = false,
-        InferenceArguments = args,
+        Arguments = args,
         InferenceConclusionFormulas = conclusions
       };
 

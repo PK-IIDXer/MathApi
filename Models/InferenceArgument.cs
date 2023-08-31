@@ -21,37 +21,16 @@ public class InferenceArgument
   /// 推論規則引数連番
   /// </summary>
   public int SerialNo { get; set; }
-  public InferenceArgumentType? InferenceArgumentType { get; }
   /// <summary>
-  /// 推論規則引数種類ID
+  /// 論理式ラベル
   /// </summary>
-  public int InferenceArgumentTypeId { get; set; }
+  public FormulaLabel? FormulaLabel { get; set; }
   /// <summary>
-  /// IsBasic = falseの場合に、論理式で推論規則を定義する場合に、
-  /// 自由変数・命題変数を保持するために使用
+  /// 論理式ラベルID
   /// </summary>
-  public Symbol? VariableSymbol { get; set; }
-  /// <summary>
-  /// IsBasic = falseの場合に、論理式で推論規則を定義する場合に、
-  /// 自由変数・命題変数を保持するために使用
-  /// </summary>
-  public long? VariableSymbolId { get; set; }
+  public int FormulaLabelId { get; set; }
 
-  public List<InferenceAssumptionDissolutableAssumptionFormula>? InferenceAssumptionDissolutableAssumptionFormulasToBound { get; }
-  public List<InferenceAssumptionDissolutableAssumptionFormula>? InferenceAssumptionDissolutableAssumptionFormulas { get; }
-  public List<InferenceAssumptionDissolutableAssumptionFormula>? InferenceAssumptionDissolutableAssumptionFormulasToSubstitutionInferenceArgumentFrom { get; }
-  public List<InferenceAssumptionDissolutableAssumptionFormula>? InferenceAssumptionDissolutableAssumptionFormulasToSubstitutionInferenceArgumentTo { get; }
-
-  public List<InferenceConclusionFormula>? InferenceConclusionFormulasToBound { get; }
-  public List<InferenceConclusionFormula>? InferenceConclusionFormulas { get; }
-  public List<InferenceConclusionFormula>? InferenceConclusionFormulasToSubstitutionInferenceArgumentFrom { get; }
-  public List<InferenceConclusionFormula>? InferenceConclusionFormulasToSubstitutionInferenceArgumentTo { get; }
-
-  public List<InferenceAssumptionFormula>? InferenceAssumptionFormulasToBound { get; }
-  public List<InferenceAssumptionFormula>? InferenceAssumptionFormulas { get; }
-  public List<InferenceAssumptionFormula>? InferenceAssumptionFormulasToSubstitutionInferenceArgumentFrom { get; }
-  public List<InferenceAssumptionFormula>? InferenceAssumptionFormulasToSubstitutionInferenceArgumentTo { get; }
-
-  public List<InferenceArgumentConstraint>? InferenceArgumentConstraints { get; set; }
-  public List<InferenceArgumentConstraint>? InferenceArgumentConstraintDistinations { get; }
+  public List<InferenceArgumentConstraint> InferenceArgumentConstraints { get; set; } = new();
+  public List<InferenceArgumentConstraint> InferenceArgumentConstraintDistinations { get; } = new();
+  public List<InferenceFormulaStructArgumentMapping> InferenceFormulaStructArgumentMappings { get; } = new();
 }

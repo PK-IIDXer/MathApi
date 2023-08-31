@@ -1,15 +1,14 @@
 using Microsoft.EntityFrameworkCore;
-using MathApi.Commons;
 
 namespace MathApi.Models;
 
 /// <summary>
-/// 推論規則仮定
+/// 推論規則解消可能仮定
 /// </summary>
-[PrimaryKey(nameof(InferenceId), nameof(SerialNo))]
-public class InferenceAssumption
+[PrimaryKey(nameof(InferenceId), nameof(InferenceAssumptionSerialNo))]
+public class InferenceAssumptionDissolutableAssumption
 {
-  public Inference Inference { get; set; } = new();
+  public InferenceAssumption InferenceAssumption { get; } = new();
   /// <summary>
   /// 推論規則ID
   /// </summary>
@@ -17,7 +16,7 @@ public class InferenceAssumption
   /// <summary>
   /// 推論規則仮定連番
   /// </summary>
-  public int SerialNo { get; set; }
+  public int InferenceAssumptionSerialNo { get; set; }
   public FormulaStruct? FormulaStruct { get; set; }
   /// <summary>
   /// 論理式構成ID
@@ -28,6 +27,8 @@ public class InferenceAssumption
   /// 論理式構成-引数マッピング
   /// </summary>
   public int FormulaStructArgumentMappingSerialNo { get; set;}
-
-  public InferenceAssumptionDissolutableAssumption DissolutableAssumption { get; set; } = new();
+  /// <summary>
+  /// 解消が強制か否か
+  /// </summary>
+  public bool IsForce { get; set; }
 }

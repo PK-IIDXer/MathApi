@@ -29,9 +29,10 @@ public class ProofInferenceArgument
   /// <summary>
   /// 論理式ID
   /// </summary>
-  /// <remarks>
-  /// 紐づくInferenceArgumentのArgumentTypeが命題以外の場合、nullにはできない（nullの場合は必ず命題を意味する）。
-  /// nullの場合、当該ProofInferenceArgumentは命題を意味する変数と解釈する。
-  /// </remarks>
   public long? FormulaId { get; set; }
+  public FormulaStruct? FormulaStruct { get; set; }
+  /// <summary>
+  /// 論理式構成ID
+  /// </summary>
+  public int? FormulaStructId { get; set; }  
 }
