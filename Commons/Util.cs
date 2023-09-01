@@ -43,8 +43,7 @@ public static class Util
 
     var fs = new List<FormulaString>
     {
-      new FormulaString
-      {
+      new() {
         SymbolId = symbol.Id
       }
     };
