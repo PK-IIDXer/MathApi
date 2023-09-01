@@ -186,10 +186,10 @@ public class MathDbContext : DbContext
                      .WithMany(fs => fs.InferenceAssumptions)
                      .HasPrincipalKey(fs => new { fs.Id })
                      .HasForeignKey(ia => new { ia.FormulaStructId });
-        nestedBuilder.HasOne(ia => ia.FormulaStructArgumentMapping)
-                     .WithMany(fsam => fsam.InferenceAssumptions)
-                     .HasPrincipalKey(fsam => new { fsam.InferenceId, fsam.SerialNo })
-                     .HasForeignKey(ia => new { ia.InferenceId, ia.FormulaStructArgumentMappingSerialNo });
+        nestedBuilder.HasMany(ia => ia.FormulaStructArgumentMappings)
+                     .WithOne(fsam => fsam.InferenceAssumption)
+                     .HasPrincipalKey(ia => new { ia.InferenceId, ia.FormulaStructArgumentMappingSerialNo })
+                     .HasForeignKey(fsam => new { fsam.InferenceId, fsam.SerialNo });
       }
     );
     modelBuilder.Entity<InferenceAssumptionDissolutableAssumption>(
@@ -203,10 +203,10 @@ public class MathDbContext : DbContext
                      .WithMany(fs => fs.InferenceAssumptionDissolutableAssumptions)
                      .HasPrincipalKey(fs => new { fs.Id })
                      .HasForeignKey(iada => new { iada.FormulaStructId });
-        nestedBuilder.HasOne(iada => iada.FormulaStructArgumentMapping)
-                     .WithMany(fsam => fsam.InferenceAssumptionDissolutableAssumptions)
-                     .HasPrincipalKey(fsam => new { fsam.InferenceId, fsam.SerialNo })
-                     .HasForeignKey(ia => new { ia.InferenceId, ia.FormulaStructArgumentMappingSerialNo });
+        nestedBuilder.HasMany(iada => iada.FormulaStructArgumentMappings)
+                     .WithOne(fsam => fsam.InferenceAssumptionDissolutableAssumption)
+                     .HasPrincipalKey(iada => new { iada.InferenceId, iada.FormulaStructArgumentMappingSerialNo })
+                     .HasForeignKey(fsam => new { fsam.InferenceId, fsam.SerialNo });
       }
     );
     modelBuilder.Entity<InferenceConclusion>(
@@ -220,10 +220,10 @@ public class MathDbContext : DbContext
                      .WithMany(fs => fs.InferenceConclusions)
                      .HasPrincipalKey(fs => new { fs.Id })
                      .HasForeignKey(ic => new { ic.FormulaStructId });
-        nestedBuilder.HasOne(ic => ic.FormulaStructArgumentMapping)
-                     .WithMany(fsam => fsam.InferenceConclusions)
-                     .HasPrincipalKey(fsam => new { fsam.InferenceId, fsam.SerialNo })
-                     .HasForeignKey(ic => new { ic.InferenceId, ic.FormulaStructArgumentMappingSerialNo });
+        nestedBuilder.HasMany(ic => ic.FormulaStructArgumentMappings)
+                     .WithOne(fsam => fsam.InferenceConclusion)
+                     .HasForeignKey(fsam => new { fsam.InferenceId, fsam.SerialNo })
+                     .HasPrincipalKey(ic => new { ic.InferenceId, ic.FormulaStructArgumentMappingSerialNo });
       }
     );
     modelBuilder.Entity<InferenceFormulaStructArgumentMapping>(

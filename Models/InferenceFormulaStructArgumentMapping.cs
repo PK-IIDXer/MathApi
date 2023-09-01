@@ -14,7 +14,7 @@ public class InferenceFormulaStructArgumentMapping
   public InferenceArgument? InferenceArgument { get; set; }
   public int InferenceArgumentSerialNo { get; set; }
 
-  public List<InferenceAssumption> InferenceAssumptions { get; } = new();
-  public List<InferenceAssumptionDissolutableAssumption> InferenceAssumptionDissolutableAssumptions { get; } = new();
-  public List<InferenceConclusion> InferenceConclusions { get; } = new();
+  public InferenceAssumption? InferenceAssumption { get; }
+  public InferenceAssumptionDissolutableAssumption? InferenceAssumptionDissolutableAssumption { get; }
+  public InferenceConclusion? InferenceConclusion { get; }
 }

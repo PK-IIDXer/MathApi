@@ -22,7 +22,7 @@ public class InferenceAssumptionDissolutableAssumption
   /// 論理式構成ID
   /// </summary>
   public int FormulaStructId { get; set; }
-  public InferenceFormulaStructArgumentMapping? FormulaStructArgumentMapping { get; set; }
+  public List<InferenceFormulaStructArgumentMapping> FormulaStructArgumentMappings { get; set; } = new();
   /// <summary>
   /// 論理式構成-引数マッピング
   /// </summary>

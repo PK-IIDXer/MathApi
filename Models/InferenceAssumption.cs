@@ -23,11 +23,11 @@ public class InferenceAssumption
   /// 論理式構成ID
   /// </summary>
   public int FormulaStructId { get; set; }
-  public InferenceFormulaStructArgumentMapping? FormulaStructArgumentMapping { get; set; }
+  public List<InferenceFormulaStructArgumentMapping> FormulaStructArgumentMappings { get; set; } = new();
   /// <summary>
   /// 論理式構成-引数マッピング
   /// </summary>
   public int FormulaStructArgumentMappingSerialNo { get; set;}
 
-  public InferenceAssumptionDissolutableAssumption DissolutableAssumption { get; set; } = new();
+  public InferenceAssumptionDissolutableAssumption? DissolutableAssumption { get; set; }
 }
