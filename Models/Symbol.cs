@@ -4,13 +4,13 @@ using System.Text.Json.Serialization;
 
 namespace MathApi.Models;
 
-[Index(nameof(Character), nameof(SymbolTypeId), IsUnique = true)]
+[Index(nameof(Character), nameof(TypeId), IsUnique = true)]
 public class Symbol
 {
   public long Id { get; set; }
   public string Character { get; set; } = "";
-  public SymbolType? SymbolType { get; }
-  public Const.SymbolType SymbolTypeId { get; set; }
+  public SymbolType? Type { get; }
+  public Const.SymbolType TypeId { get; set; }
   public int? Arity { get; set; }
   public FormulaType? ArityFormulaType { get; }
   public Const.FormulaType? ArityFormulaTypeId { get; set; }
@@ -23,6 +23,6 @@ public class Symbol
   [NotMapped]
   public bool IsQuantifier
   {
-    get => SymbolType?.IsQuantifier ?? throw new ArgumentException("Include SymbolType");
+    get => Type?.IsQuantifier ?? throw new ArgumentException("Include SymbolType");
   }
 }

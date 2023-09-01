@@ -20,7 +20,7 @@ public class FormulaStruct
           throw new ArgumentException("Include FormulaStruct.Strings.Symbol");
 
         return
-          s.Symbol.SymbolTypeId
+          s.Symbol.TypeId
         switch
         {
             Const.SymbolType.FreeVariable

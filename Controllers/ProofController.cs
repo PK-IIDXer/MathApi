@@ -114,7 +114,7 @@ namespace MathApi.Controllers
       var argFormulas = await _context.Formulas
         .Include(f => f.FormulaStrings)
         .ThenInclude(fs => fs.Symbol)
-        .ThenInclude(s => s.SymbolType)
+        .ThenInclude(s => s.Type)
         .Include(f => f.FormulaChains)
         .Where(
           f => dto.InferenceArgumentFormulas.Select(d => d.FormulaId).Contains(f.Id)

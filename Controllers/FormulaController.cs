@@ -256,7 +256,7 @@ namespace MathApi.Controllers
     {
       // 一文字目を取得
       var firstSymbol = await _context.Symbols
-                                      .Include(s => s.SymbolType)
+                                      .Include(s => s.Type)
                                       .Include(s => s.ArityFormulaType)
                                       .FirstAsync(s => s.Id == postParam.FirstSymbolId)
                         ?? throw new InvalidDataException("first symbol is not found");
@@ -266,9 +266,9 @@ namespace MathApi.Controllers
       if (firstSymbol.IsQuantifier)
       {
         boundVariable = await _context.Symbols
-                                      .Include(s => s.SymbolType)
+                                      .Include(s => s.Type)
                                       .Include(s => s.ArityFormulaType)
-                                      .FirstAsync(s => s.SymbolTypeId == (long)Const.SymbolType.BoundVariable)
+                                      .FirstAsync(s => s.TypeId == (long)Const.SymbolType.BoundVariable)
                         ?? throw new InvalidDataException("bound variable is not found");
       }
 
@@ -279,7 +279,7 @@ namespace MathApi.Controllers
         argFormulas = await _context.Formulas
           .Include(f => f.FormulaStrings.OrderBy(fs => fs.SerialNo))
           .ThenInclude(fs => fs.Symbol)
-          .ThenInclude(s => s.SymbolType)
+          .ThenInclude(s => s.Type)
           .Include(f => f.FormulaChains)
           .Where(f => postParam.ArgumentedFormulaIds.Contains(f.Id))
           .ToListAsync();

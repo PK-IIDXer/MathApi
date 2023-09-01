@@ -52,7 +52,7 @@ namespace MathApi.Controllers
       }
 
       // □は編集不可
-      if (symbol.SymbolTypeId == (long)Const.SymbolType.BoundVariable)
+      if (symbol.TypeId == Const.SymbolType.BoundVariable)
       {
         return BadRequest("Cannot modify the bound variable");
       }
@@ -62,7 +62,7 @@ namespace MathApi.Controllers
       {
         var oldSymbol = _context.Symbols?.FirstOrDefault(s => s.Id == id);
         if (oldSymbol != null && (
-          oldSymbol.SymbolTypeId != symbol.SymbolTypeId
+          oldSymbol.TypeId != symbol.TypeId
           || oldSymbol.Arity != symbol.Arity
           || oldSymbol.ArityFormulaTypeId != symbol.ArityFormulaTypeId))
         {
@@ -99,8 +99,8 @@ namespace MathApi.Controllers
       var symbol = symbolDto.CreateModel();
 
       // 束縛変数は一種類のみ登録可能
-      var boundVarCnt = _context.Symbols.Count(x => x.SymbolTypeId == (long)Const.SymbolType.BoundVariable);
-      if (boundVarCnt > 0 && symbol.SymbolTypeId == (long)Const.SymbolType.BoundVariable)
+      var boundVarCnt = _context.Symbols.Count(x => x.TypeId == Const.SymbolType.BoundVariable);
+      if (boundVarCnt > 0 && symbol.TypeId == Const.SymbolType.BoundVariable)
       {
         return BadRequest("Cannot register bound variables more than 2");
       }
@@ -113,8 +113,7 @@ namespace MathApi.Controllers
           Meaning = symbol.Meaning,
           FormulaStrings = new List<FormulaString>
           {
-            new FormulaString
-            {
+            new() {
               SerialNo = 0,
               Symbol = symbol
             }

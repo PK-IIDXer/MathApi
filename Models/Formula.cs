@@ -15,7 +15,7 @@ public class Formula
   /// 論理式が項か命題か
   /// ※FormulaStrings.Symbol.SymbolTypeのインクルードが必要
   /// </summary>
-  public Const.FormulaType? FormulaTypeId => FormulaStrings.Count == 0 ? null : FormulaStrings[0].Symbol.SymbolType?.FormulaTypeId;
+  public Const.FormulaType? FormulaTypeId => FormulaStrings.Count == 0 ? null : FormulaStrings[0].Symbol.Type?.FormulaTypeId;
 
   private List<Symbol>? _FreeAndPropVariables = null;
   /// <summary>
@@ -33,7 +33,7 @@ public class Formula
       _FreeAndPropVariables = new List<Symbol>();
       foreach (var fs in FormulaStrings)
       {
-        if (fs.Symbol.SymbolTypeId != Const.SymbolType.FreeVariable)
+        if (fs.Symbol.TypeId != Const.SymbolType.FreeVariable)
           continue;
         if (_FreeAndPropVariables.Any(s => s.Id == fs.SymbolId))
           continue;
@@ -57,7 +57,7 @@ public class Formula
         return false;
       if (FormulaChains.Count != 0)
         return false;
-      return FormulaStrings[0].Symbol.SymbolTypeId == Const.SymbolType.FreeVariable;
+      return FormulaStrings[0].Symbol.TypeId == Const.SymbolType.FreeVariable;
     }
   }
 
@@ -91,7 +91,7 @@ public class Formula
     if (!FreeAndPropVariables.Any(s => s.Id == fromSymbol.Id))
       return this;
     
-    if (fromSymbol.SymbolTypeId == Const.SymbolType.FreeVariable)
+    if (fromSymbol.TypeId == Const.SymbolType.FreeVariable)
     {
       if (to.FormulaTypeId != Const.FormulaType.Term)
         throw new ArgumentException("substitution destination formula should be term if substitution source symbol is free variable");

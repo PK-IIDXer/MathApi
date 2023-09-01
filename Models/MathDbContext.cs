@@ -309,10 +309,10 @@ public class MathDbContext : DbContext
     );
     modelBuilder.Entity<Symbol>(
       nestedBuilder => {
-        nestedBuilder.HasOne(s => s.SymbolType)
+        nestedBuilder.HasOne(s => s.Type)
                      .WithMany(st => st.Symbols)
                      .HasPrincipalKey(st => new { st.Id })
-                     .HasForeignKey(s => new { s.SymbolTypeId });
+                     .HasForeignKey(s => new { s.TypeId });
         nestedBuilder.HasOne(s => s.ArityFormulaType)
                      .WithMany(f => f.Symbols)
                      .HasPrincipalKey(f => new { f.Id })
@@ -363,32 +363,24 @@ public class MathDbContext : DbContext
     );
 
     modelBuilder.Entity<FormulaType>().HasData(
-      new { Id = 1L, Name = "Term" },
-      new { Id = 2L, Name = "Proposition" }
+      new { Id = 1, Name = "Term" },
+      new { Id = 2, Name = "Proposition" }
     );
 
     modelBuilder.Entity<SymbolType>().HasData(
-      new { Id = 1L, Name = "free variable", FormulaTypeId = 1L, IsQuantifier = false },
-      new { Id = 2L, Name = "bound variable", FormulaTypeId = 1L, IsQuantifier = false },
-      // TODO: 命題変数不要説！
-      new { Id = 3L, Name = "proposition variable", FormulaTypeId = 2L, IsQuantifier = false },
-      new { Id = 4L, Name = "function", FormulaTypeId = 1L, IsQuantifier = false },
-      new { Id = 5L, Name = "predicate", FormulaTypeId = 2L, IsQuantifier = false },
-      new { Id = 6L, Name = "logic", FormulaTypeId = 2L, IsQuantifier = false },
-      new { Id = 7L, Name = "term quantifier", FormulaTypeId = 1L, IsQuantifier = true },
-      new { Id = 8L, Name = "proposition quantifier", FormulaTypeId = 2L, IsQuantifier = true }
+      new { Id = 1, Name = "free variable", FormulaTypeId = Const.FormulaType.Term, IsQuantifier = false },
+      new { Id = 2, Name = "bound variable", FormulaTypeId = Const.FormulaType.Term, IsQuantifier = false },
+      new { Id = 3, Name = "function", FormulaTypeId = Const.FormulaType.Term, IsQuantifier = false },
+      new { Id = 4, Name = "predicate", FormulaTypeId = Const.FormulaType.Proposition, IsQuantifier = false },
+      new { Id = 5, Name = "logic", FormulaTypeId = Const.FormulaType.Proposition, IsQuantifier = false },
+      new { Id = 6, Name = "term quantifier", FormulaTypeId = Const.FormulaType.Term, IsQuantifier = true },
+      new { Id = 7, Name = "proposition quantifier", FormulaTypeId = Const.FormulaType.Proposition, IsQuantifier = true }
     );
 
-    // modelBuilder.Entity<InferenceArgumentType>().HasData(
-    //   new { Id = 1, Name = "term" },
-    //   new { Id = 2, Name = "proposition" },
-    //   new { Id = 3, Name = "free variable" }
-    // );
-
-    // modelBuilder.Entity<InferenceAssumptionDissolutionType>().HasData(
-    //   new { Id = 1, Name = "none" },
-    //   new { Id = 2, Name = "required" },
-    //   new { Id = 3, Name = "necessary" }
-    // );
+    modelBuilder.Entity<FormulaLabelType>().HasData(
+      new { Id = 1, Name = "Term" },
+      new { Id = 2, Name = "Proposition" },
+      new { Id = 3, Name = "Free Variable" }
+    );
   }
 }

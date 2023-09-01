@@ -111,7 +111,7 @@ namespace MathApi.Controllers
       if (symbol == null)
         return NotFound($"Symbol #{dto.SymbolId} is not found");
 
-      if (symbol.SymbolTypeId != (long)Const.SymbolType.Predicate)
+      if (symbol.TypeId != (long)Const.SymbolType.Predicate)
         return BadRequest($"Selected symbol #{dto.SymbolId} is not predicate");
 
       if ((symbol.Arity ?? 0) != (dto.ArgumentSymbolIds?.Count ?? 0))
@@ -120,7 +120,7 @@ namespace MathApi.Controllers
       var formula = await _context.Formulas
                                   .Include(f => f.FormulaStrings)
                                   .ThenInclude(fs => fs.Symbol)
-                                  .ThenInclude(s => s.SymbolType)
+                                  .ThenInclude(s => s.Type)
                                   .FirstAsync(f => f.Id == dto.FormulaId);
       if (formula == null)
         return NotFound($"Formula #{dto.FormulaId} is not found");
@@ -132,7 +132,7 @@ namespace MathApi.Controllers
       var serialNo = 0;
       foreach (var freeVar in formula.FreeAndPropVariables)
       {
-        if (freeVar.SymbolTypeId != (long)Const.SymbolType.FreeVariable)
+        if (freeVar.TypeId != (long)Const.SymbolType.FreeVariable)
           return BadRequest($"Selected formula #{dto.FormulaId} is invalid: proposition variables are contained.");
 
         if (!dto.ArgumentSymbolIds?.Any(item => item == freeVar.Id) ?? true)
@@ -254,7 +254,7 @@ namespace MathApi.Controllers
       if (symbol == null)
         return NotFound($"Symbol #{dto.SymbolId} is not found");
 
-      if (symbol.SymbolTypeId != (long)Const.SymbolType.Function)
+      if (symbol.TypeId != (long)Const.SymbolType.Function)
         return BadRequest($"Selected Symbol #{dto.SymbolId} is not function");
 
       if ((symbol.Arity ?? 0) != (dto.ArgumentSymbolIds?.Count ?? 0))
@@ -265,7 +265,7 @@ namespace MathApi.Controllers
       var formula = await _context.Formulas
                             .Include(f => f.FormulaStrings)
                             .ThenInclude(fs => fs.Symbol)
-                            .ThenInclude(s => s.SymbolType)
+                            .ThenInclude(s => s.Type)
                             .FirstAsync(f => f.Id == dto.FormulaId);
 
       if (formula == null)
@@ -278,7 +278,7 @@ namespace MathApi.Controllers
       var serialNo = 0;
       foreach (var freeVar in formula.FreeAndPropVariables)
       {
-        if (freeVar.SymbolTypeId != (long)Const.SymbolType.FreeVariable)
+        if (freeVar.TypeId != (long)Const.SymbolType.FreeVariable)
           return BadRequest($"Selected formula #{dto.FormulaId} is invalid: proposition variables are contained.");
 
         if (!dto.ArgumentSymbolIds?.Any(item => item == freeVar.Id) ?? true)
