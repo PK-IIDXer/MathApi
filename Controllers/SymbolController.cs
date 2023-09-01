@@ -136,19 +136,6 @@ namespace MathApi.Controllers
         return NotFound();
       }
 
-      // 論理式に使用されているかチェックし、使用されていればエラーとする
-      if (await _context.FormulaStrings.AnyAsync(fs => fs.SymbolId == id))
-        return BadRequest("Cannot delete if the symbol is contained in some Formulas");
-
-      if (await _context.InferenceAssumptionFormulas.AnyAsync(iaf => iaf.SymbolId == id))
-        return BadRequest("Cannot delete if the symbol is contained in some Inferences");
-
-      if (await _context.InferenceAssumptionDissolutableAssumptionFormulas.AnyAsync(iaf => iaf.SymbolId == id))
-        return BadRequest("Cannot delete if the symbol is contained in some Inferences");
-
-      if (await _context.InferenceConclusionFormulas.AnyAsync(iaf => iaf.SymbolId == id))
-        return BadRequest("Cannot delete if the symbol is contained in some Inferences");
-
       _context.Symbols.Remove(symbol);
       await _context.SaveChangesAsync();
 

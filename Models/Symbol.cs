@@ -10,15 +10,13 @@ public class Symbol
   public long Id { get; set; }
   public string Character { get; set; } = "";
   public SymbolType? SymbolType { get; }
-  public long SymbolTypeId { get; set; }
+  public Const.SymbolType SymbolTypeId { get; set; }
   public int? Arity { get; set; }
   public FormulaType? ArityFormulaType { get; }
-  public long? ArityFormulaTypeId { get; set; }
+  public Const.FormulaType? ArityFormulaTypeId { get; set; }
   public string? Meaning { get; set; }
 
   public List<FormulaString>? FormulaStrings { get; }
-
-  public List<InferenceArgument>? InferenceArguments { get; }
   public List<FormulaStructString>? FormulaStructStrings { get; }
 
   [JsonIgnore]

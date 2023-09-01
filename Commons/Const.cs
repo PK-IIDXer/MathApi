@@ -6,13 +6,11 @@ namespace MathApi.Const;
 public enum SymbolType : long {
   FreeVariable = 1,
   BoundVariable = 2,
-  [Obsolete]
-  PropositionVariable = 3,
-  Function = 4,
-  Predicate = 5,
-  Logic = 6,
-  TermQuantifier = 7,
-  PropositionQuantifier = 8
+  Function = 3,
+  Predicate = 4,
+  Logic = 5,
+  TermQuantifier = 6,
+  PropositionQuantifier = 7
 }
 
 /// <summary>

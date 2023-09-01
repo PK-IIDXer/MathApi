@@ -28,7 +28,7 @@ public class AxiomDto
         AxiomId = Id,
         SerialNo = p.SerialNo,
         FormulaId = p.FormulaId,
-        Remarks = p.Remarks
+        Meaning = p.Remarks
       }).ToList()
     };
   }

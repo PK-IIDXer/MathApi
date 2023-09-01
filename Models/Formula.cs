@@ -15,7 +15,7 @@ public class Formula
   /// 論理式が項か命題か
   /// ※FormulaStrings.Symbol.SymbolTypeのインクルードが必要
   /// </summary>
-  public long? FormulaTypeId => FormulaStrings.Count == 0 ? null : FormulaStrings[0].Symbol.SymbolType?.FormulaType.Id;
+  public Const.FormulaType? FormulaTypeId => FormulaStrings.Count == 0 ? null : FormulaStrings[0].Symbol.SymbolType?.FormulaTypeId;
 
   private List<Symbol>? _FreeAndPropVariables = null;
   /// <summary>
@@ -33,9 +33,7 @@ public class Formula
       _FreeAndPropVariables = new List<Symbol>();
       foreach (var fs in FormulaStrings)
       {
-        if (fs.Symbol.SymbolTypeId != (long)Const.SymbolType.FreeVariable)
-          continue;
-        if (fs.Symbol.SymbolTypeId != (long)Const.SymbolType.PropositionVariable)
+        if (fs.Symbol.SymbolTypeId != Const.SymbolType.FreeVariable)
           continue;
         if (_FreeAndPropVariables.Any(s => s.Id == fs.SymbolId))
           continue;
@@ -59,7 +57,7 @@ public class Formula
         return false;
       if (FormulaChains.Count != 0)
         return false;
-      return FormulaStrings[0].Symbol.SymbolTypeId == (long)Const.SymbolType.FreeVariable;
+      return FormulaStrings[0].Symbol.SymbolTypeId == Const.SymbolType.FreeVariable;
     }
   }
 
@@ -68,7 +66,6 @@ public class Formula
   public List<TheoremAssumption>? TheoremAssumptions { get; }
   public List<ProofInference>? ProofInferences { get; }
   public List<ProofInferenceArgument>? ProofInferenceArguments { get; }
-  public List<ProofAssumption>? ProofAssumptions { get; }
 
   /// <summary>
   /// 変数への代入操作
@@ -94,16 +91,10 @@ public class Formula
     if (!FreeAndPropVariables.Any(s => s.Id == fromSymbol.Id))
       return this;
     
-    if (fromSymbol.SymbolTypeId == (long)Const.SymbolType.FreeVariable)
+    if (fromSymbol.SymbolTypeId == Const.SymbolType.FreeVariable)
     {
-      if (to.FormulaTypeId != (long)Const.FormulaType.Term)
+      if (to.FormulaTypeId != Const.FormulaType.Term)
         throw new ArgumentException("substitution destination formula should be term if substitution source symbol is free variable");
-    }
-
-    if (fromSymbol.SymbolTypeId == (long)Const.SymbolType.PropositionVariable)
-    {
-      if (to.FormulaTypeId != (long)Const.FormulaType.Proposition)
-        throw new ArgumentException("substitution destination formula should be proposition if substitution source symbol is proposition variable");
     }
 
     var fs = CreateFormulaStringOnSubstitution(fromSymbol, to);
@@ -256,14 +247,5 @@ public class Formula
     }
 
     return true;
-  }
-
-  /// <summary>
-  /// ※以下のインクルードが必要
-  /// ・FormulaStrings
-  /// </summary>
-  public bool HasSymbol(Symbol symbol)
-  {
-    return FormulaStrings.Any(s => s.SymbolId == symbol.Id);
   }
 }

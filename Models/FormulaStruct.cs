@@ -23,14 +23,14 @@ public class FormulaStruct
           s.Symbol.SymbolTypeId
         switch
         {
-            (long)Const.SymbolType.FreeVariable
+            Const.SymbolType.FreeVariable
               => Const.FormulaLabelType.FreeVariable,
-            (long)Const.SymbolType.Function
-              or (long)Const.SymbolType.TermQuantifier
+            Const.SymbolType.Function
+              or Const.SymbolType.TermQuantifier
               => Const.FormulaLabelType.Term,
-            (long)Const.SymbolType.Predicate
-              or (long)Const.SymbolType.Logic
-              or (long)Const.SymbolType.PropositionQuantifier
+            Const.SymbolType.Predicate
+              or Const.SymbolType.Logic
+              or Const.SymbolType.PropositionQuantifier
               => Const.FormulaLabelType.Proposition,
             _ => throw new ArgumentException("想定外"),
         };
@@ -73,12 +73,12 @@ public class FormulaStruct
           ?? throw new ArgumentException(null, nameof(args));
         if (fsArg.Label.TypeId == Const.FormulaLabelType.Term)
         {
-          if (formula.FormulaTypeId != (int)Const.FormulaType.Term)
+          if (formula.FormulaTypeId != Const.FormulaType.Term)
             throw new ArgumentException($"Invalid args on #{fsChar.ArgumentSerialNo.Value}");
         }
         if (fsArg.Label.TypeId == Const.FormulaLabelType.Proposition)
         {
-          if (formula.FormulaTypeId != (int)Const.FormulaType.Proposition)
+          if (formula.FormulaTypeId != Const.FormulaType.Proposition)
             throw new ArgumentException($"Invalid args on #{fsChar.ArgumentSerialNo.Value}");
         }
         if (fsArg.Label.TypeId == Const.FormulaLabelType.FreeVariable)

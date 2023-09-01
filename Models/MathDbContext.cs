@@ -304,7 +304,7 @@ public class MathDbContext : DbContext
         nestedBuilder.HasOne(pia => pia.FormulaStruct)
                      .WithMany(fs => fs.ProofInferenceArguments)
                      .HasPrincipalKey(fs => new { fs.Id })
-                     .HasForeignKey(pia => new { pia.FormulaId });
+                     .HasForeignKey(pia => new { pia.FormulaStructId });
       }
     );
     modelBuilder.Entity<Symbol>(
