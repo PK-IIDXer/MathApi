@@ -29,12 +29,10 @@ public class InferenceDto
   {
     public int SerialNo { get; set; }
     public int FormulaStructId { get; set; } = new();
-    public List<ArgumentMappingDto> FormulaStructArgumentMappings { get; set; } = new();
     public DissolutableDto? DissolutableAssumption { get; set; }
     public class DissolutableDto
     {
       public int FormulaStructId { get; set; }
-      public List<ArgumentMappingDto> FormulaStructArgumentMappings { get; set; } = new();
       public bool IsForce { get; set; }
     }
   }
@@ -42,15 +40,7 @@ public class InferenceDto
   public class ConclusionDto
   {
     public int FormulaStructId { get; set; }
-    public List<ArgumentMappingDto> FormulaStructArgumentMappings { get; set; } = new();
     public bool AddAssumption { get; set; } = false;
-  }
-
-  public class ArgumentMappingDto
-  {
-    public int SerialNo { get; set; }
-    public int FormulaStructArgumentSerialNo { get; set; }
-    public int InferenceArgumentSerialNo { get; set; }
   }
 
   public Inference CreateModel()
@@ -75,30 +65,17 @@ public class InferenceDto
       {
         SerialNo = a.SerialNo,
         FormulaStructId = a.FormulaStructId,
-        FormulaStructArgumentMappings = a.FormulaStructArgumentMappings.Select(m => new InferenceFormulaStructArgumentMapping
+        DissolutableAssumption = a.DissolutableAssumption == null ? null : new InferenceAssumptionDissolutableAssumption
         {
-          SerialNo = m.SerialNo,
-          FormulaStructId = a.FormulaStructId,
-          FormulaStructArgumentSerialNo = m.FormulaStructArgumentSerialNo,
-          InferenceArgumentSerialNo = m.InferenceArgumentSerialNo
-        }).ToList()
+          InferenceAssumptionSerialNo = a.SerialNo,
+          FormulaStructId = a.DissolutableAssumption.FormulaStructId,
+          IsForce = a.DissolutableAssumption.IsForce
+        }
       }).ToList(),
       Conclusions = new List<InferenceConclusion> { new() {
         FormulaStructId = Conclusion.FormulaStructId,
-        FormulaStructArgumentMappings = Conclusion.FormulaStructArgumentMappings.Select(m => new InferenceFormulaStructArgumentMapping {
-          SerialNo = m.SerialNo,
-          FormulaStructId = Conclusion.FormulaStructId,
-          FormulaStructArgumentSerialNo = m.FormulaStructArgumentSerialNo,
-          InferenceArgumentSerialNo = m.InferenceArgumentSerialNo
-        }).ToList()
+        AddAssumption = Conclusion.AddAssumption
       }}
     };
   }
-}
-
-public class DefineSymbolDto
-{
-  public long SymbolId { get; set; }
-  public long FormulaId { get; set; }
-  public List<long>? ArgumentSymbolIds { get; set; }
 }

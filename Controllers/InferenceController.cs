@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MathApi.Models;
+using System.Numerics;
 
 namespace MathApi.Controllers
 {
@@ -41,43 +42,13 @@ namespace MathApi.Controllers
       return inference;
     }
 
-    // PUT: api/Inference/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutInference(long id, Inference inference)
-    {
-      if (id != inference.Id)
-      {
-        return BadRequest();
-      }
-
-      _context.Entry(inference).State = EntityState.Modified;
-
-      try
-      {
-        await _context.SaveChangesAsync();
-      }
-      catch (DbUpdateConcurrencyException)
-      {
-        if (!InferenceExists(id))
-        {
-          return NotFound();
-        }
-        else
-        {
-          throw;
-        }
-      }
-
-      return NoContent();
-    }
-
     // POST: api/Inference
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
     public async Task<ActionResult<Inference>> PostInference(InferenceDto inferenceDto)
     {
       var inference = inferenceDto.CreateModel();
+      SetMappingSerialNo(inference);
       _context.Inferences.Add(inference);
       await _context.SaveChangesAsync();
 
@@ -104,9 +75,84 @@ namespace MathApi.Controllers
       return NoContent();
     }
 
-    private bool InferenceExists(long id)
+    private async void SetMappingSerialNo(Inference inference)
     {
-      return (_context.Inferences?.Any(e => e.Id == id)).GetValueOrDefault();
+      int serialNo = 0;
+      var mappings = new List<InferenceFormulaStructArgumentMapping>();
+      var tmpLabelIds = new List<int>();
+
+      // 仮定
+      foreach (var assumption in inference.Assumptions)
+      {
+        var formulaStructArgs = await _context.FormulaStructArguments
+                                              .Where(
+                                                fsa => fsa.FormulaStructId == assumption.FormulaStructId
+                                              ).ToListAsync();
+        foreach (var fsa in formulaStructArgs)
+        {
+          var infArgs = inference.Arguments.Where(a => a.FormulaLabelId == fsa.LabelId);
+          if (infArgs.Count() != 1)
+            throw new ArgumentException("invalid FormulaLabelId in inference.Arguments");
+          var infArg = infArgs.First();
+          mappings.Add(new InferenceFormulaStructArgumentMapping
+          {
+            SerialNo = serialNo,
+            FormulaStructId = fsa.FormulaStructId,
+            FormulaStructArgumentSerialNo = fsa.SerialNo,
+            InferenceArgumentSerialNo = infArg.SerialNo
+          });
+        }
+        assumption.FormulaStructArgumentMappingSerialNo = serialNo++;
+
+        // 解消可能仮定
+        if (assumption.DissolutableAssumption == null)
+          continue;
+        var disFormulaStructArgs = await _context.FormulaStructArguments
+                                                 .Where(
+                                                   fsa => fsa.FormulaStructId == assumption.DissolutableAssumption.FormulaStructId
+                                                 ).ToListAsync();
+        foreach (var fsa in disFormulaStructArgs)
+        {
+          var infArgs = inference.Arguments.Where(a => a.FormulaLabelId == fsa.LabelId);
+          if (infArgs.Count() != 1)
+            throw new ArgumentException("invalid FormulaLabelId in inference.Arguments");
+          var infArg = infArgs.First();
+          mappings.Add(new InferenceFormulaStructArgumentMapping
+          {
+            SerialNo = serialNo,
+            FormulaStructId = fsa.FormulaStructId,
+            FormulaStructArgumentSerialNo = fsa.SerialNo,
+            InferenceArgumentSerialNo = infArg.SerialNo
+          });
+        }
+        assumption.DissolutableAssumption.FormulaStructArgumentMappingSerialNo = serialNo++;
+      }
+
+      // 結論
+      foreach (var conclusion in inference.Conclusions)
+      {
+        var formulaStructArgs = await _context.FormulaStructArguments
+                                              .Where(
+                                                fsa => fsa.FormulaStructId == conclusion.FormulaStructId
+                                              ).ToListAsync();
+        foreach (var fsa in formulaStructArgs)
+        {
+          var infArgs = inference.Arguments.Where(a => a.FormulaLabelId == fsa.LabelId);
+          if (infArgs.Count() != 1)
+            throw new ArgumentException("invalid FormulaLabelId in inference.Arguments");
+          var infArg = infArgs.First();
+          mappings.Add(new InferenceFormulaStructArgumentMapping
+          {
+            SerialNo = serialNo,
+            FormulaStructId = fsa.FormulaStructId,
+            FormulaStructArgumentSerialNo = fsa.SerialNo,
+            InferenceArgumentSerialNo = infArg.SerialNo
+          });
+        }
+        conclusion.FormulaStructArgumentMappingSerialNo = serialNo++;
+      }
+
+      inference.FormulaStructArgumentMappings = mappings;
     }
   }
 }
