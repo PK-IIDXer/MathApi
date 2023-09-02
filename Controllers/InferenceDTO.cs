@@ -47,14 +47,17 @@ public class InferenceDto
   {
     return new Inference
     {
+      Id = Id,
       Name = Name,
       IsAssumptionAdd = IsAssumptionAdd,
       Arguments = Arguments.Select(a => new InferenceArgument
       {
+        InferenceId = Id,
         SerialNo = a.SerialNo,
         FormulaLabelId = a.FormulaLabelId,
         InferenceArgumentConstraints = a.Constraints?.Select(c => new InferenceArgumentConstraint
         {
+          InferenceId = Id,
           InferenceArgumentSerialNo = a.SerialNo,
           SerialNo = c.SerialNo,
           ConstraintDestinationInferenceArgumentSerialNo = c.DestinationArgumentSerialNo,
@@ -63,16 +66,19 @@ public class InferenceDto
       }).ToList(),
       Assumptions = Assumptions.Select(a => new InferenceAssumption
       {
+        InferenceId = Id,
         SerialNo = a.SerialNo,
         FormulaStructId = a.FormulaStructId,
         DissolutableAssumption = a.DissolutableAssumption == null ? null : new InferenceAssumptionDissolutableAssumption
         {
+          InferenceId = Id,
           InferenceAssumptionSerialNo = a.SerialNo,
           FormulaStructId = a.DissolutableAssumption.FormulaStructId,
           IsForce = a.DissolutableAssumption.IsForce
         }
       }).ToList(),
       Conclusions = new List<InferenceConclusion> { new() {
+        InferenceId = Id,
         FormulaStructId = Conclusion.FormulaStructId,
         AddAssumption = Conclusion.AddAssumption
       }}

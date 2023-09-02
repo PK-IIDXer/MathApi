@@ -41,43 +41,19 @@ namespace MathApi.Controllers
       return theorem;
     }
 
-    // PUT: api/Theorem/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutTheorem(long id, Theorem theorem)
-    {
-      if (id != theorem.Id)
-      {
-        return BadRequest();
-      }
-
-      _context.Entry(theorem).State = EntityState.Modified;
-
-      try
-      {
-        await _context.SaveChangesAsync();
-      }
-      catch (DbUpdateConcurrencyException)
-      {
-        if (!TheoremExists(id))
-        {
-          return NotFound();
-        }
-        else
-        {
-          throw;
-        }
-      }
-
-      return NoContent();
-    }
-
     // POST: api/Theorem
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
     public async Task<ActionResult<Theorem>> PostTheorem(TheoremDto theoremDto)
     {
       var theorem = theoremDto.CreateModel();
+      if (theorem.Inference != null)
+      {
+        var labelIds = theorem.Inference.Arguments.Select(a => a.FormulaLabelId);
+        var labels = await _context.FormulaLabels.Where(fl => labelIds.Contains(fl.Id)).ToListAsync();
+        if (!labels.Any(ia => ia.TypeId == Const.FormulaLabelType.Proposition))
+          throw new ArgumentException("Should not use inference if there is no propositional argument");
+      }
       _context.Theorems.Add(theorem);
       await _context.SaveChangesAsync();
 
@@ -98,11 +74,6 @@ namespace MathApi.Controllers
       await _context.SaveChangesAsync();
 
       return NoContent();
-    }
-
-    private bool TheoremExists(long id)
-    {
-      return (_context.Theorems?.Any(e => e.Id == id)).GetValueOrDefault();
     }
   }
 }

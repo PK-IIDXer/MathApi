@@ -7,7 +7,6 @@ public class Theorem
 {
   public long Id { get; set; }
   public string Name { get; set; } = "";
-  public bool IsInference { get; set; } = false;
   public bool IsProved { get; set; } = false;
 
   public List<TheoremAssumption> TheoremAssumptions { get; set; } = new();

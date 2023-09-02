@@ -6,7 +6,6 @@ public class TheoremDto
 {
   public long Id { get; set; }
   public string Name { get; set; } = "";
-  public bool IsInference { get; set; } = false;
   public List<TheoremPropositionDto>? Assumptions { get; set; }
   public TheoremPropositionDto? Conclusion { get; set; }
   public InferenceDto? Inference { get; set; }
@@ -16,19 +15,17 @@ public class TheoremDto
     {
       Id = Id,
       Name = Name,
-      IsInference = IsInference,
       IsProved = false
     };
 
-    if (IsInference)
+    if (Inference != null)
     {
-      if (Inference == null)
-        throw new ArgumentException("Input inference if IsInference");
+      if (Assumptions != null && Assumptions.Count > 0)
+        throw new ArgumentException("Use inference if Inference is not null");
       if (Conclusion != null)
-        throw new ArgumentException("Use inference if IsInference");
+        throw new ArgumentException("Use inference if Inference is not null");
       ret.Inference = Inference.CreateModel();
-      if (!ret.Inference.Arguments.Any(ia => ia.InferenceArgumentTypeId == (int)Const.InferenceArgumentType.Proposition))
-        throw new ArgumentException("Should not use inference if there is no propositional argument");
+      ret.Inference.TheoremId = Id;
     }
     else
     {
@@ -42,8 +39,7 @@ public class TheoremDto
         FormulaId = a.FormulaId
       }).ToList() ?? new List<TheoremAssumption>();
       ret.TheoremConclusions = new List<TheoremConclusion> {
-        new TheoremConclusion
-        {
+        new() {
           TheoremId = Id,
           SerialNo = Conclusion.SerialNo,
           FormulaId = Conclusion.FormulaId
