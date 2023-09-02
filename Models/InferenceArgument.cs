@@ -31,6 +31,6 @@ public class InferenceArgument
   public int FormulaLabelId { get; set; }
 
   public List<InferenceArgumentConstraint> InferenceArgumentConstraints { get; set; } = new();
-  public List<InferenceArgumentConstraint> InferenceArgumentConstraintDistinations { get; } = new();
+  public List<InferenceArgumentConstraint> InferenceArgumentConstraintDestinations { get; } = new();
   public List<InferenceFormulaStructArgumentMapping> InferenceFormulaStructArgumentMappings { get; } = new();
 }

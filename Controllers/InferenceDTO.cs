@@ -9,12 +9,12 @@ public class InferenceDto
   public bool IsAssumptionAdd { get; set; } = false;
   public List<ArgumentDto> Arguments { get; set; } = new();
   public List<AssumptionDto> Assumptions { get; set; } = new();
-  public List<InferenceFormulaDto> Conclusions { get; set; } = new(); 
+  public ConclusionDto Conclusion { get; set; } = new();
 
   public class ArgumentDto
   {
     public int SerialNo { get; set; }
-    public int InferenceArgumentTypeId { get; set; }
+    public int FormulaLabelId { get; set; }
     public List<ConstraintDto>? Constraints { get; set; }
 
     public class ConstraintDto
@@ -28,80 +28,70 @@ public class InferenceDto
   public class AssumptionDto
   {
     public int SerialNo { get; set; }
-    public int DissolutionTypeId { get; set; }
-    public List<InferenceFormulaDto> Formulas { get; set; } = new();
-    public List<InferenceFormulaDto>? DissolutableAssumptionFormulas { get; set; }
+    public int FormulaStructId { get; set; } = new();
+    public List<ArgumentMappingDto> FormulaStructArgumentMappings { get; set; } = new();
+    public DissolutableDto? DissolutableAssumption { get; set; }
+    public class DissolutableDto
+    {
+      public int FormulaStructId { get; set; }
+      public List<ArgumentMappingDto> FormulaStructArgumentMappings { get; set; } = new();
+      public bool IsForce { get; set; }
+    }
   }
 
-  public class InferenceFormulaDto
+  public class ConclusionDto
+  {
+    public int FormulaStructId { get; set; }
+    public List<ArgumentMappingDto> FormulaStructArgumentMappings { get; set; } = new();
+    public bool AddAssumption { get; set; } = false;
+  }
+
+  public class ArgumentMappingDto
   {
     public int SerialNo { get; set; }
-    public long? SymbolId { get; set; }
-    public int? BoundArgumentSerialNo { get; set; }
-    public int? ArgumentSerialNo { get; set; }
-    public int? SubstitutionArgumentFromSerialNo { get; set; }
-    public int? SubstitutionArgumentToSerialNo { get; set; }
+    public int FormulaStructArgumentSerialNo { get; set; }
+    public int InferenceArgumentSerialNo { get; set; }
   }
 
   public Inference CreateModel()
   {
     return new Inference
     {
-      Id = Id,
       Name = Name,
       IsAssumptionAdd = IsAssumptionAdd,
       Arguments = Arguments.Select(a => new InferenceArgument
       {
-        InferenceId = Id,
         SerialNo = a.SerialNo,
-        InferenceArgumentTypeId = a.InferenceArgumentTypeId,
+        FormulaLabelId = a.FormulaLabelId,
         InferenceArgumentConstraints = a.Constraints?.Select(c => new InferenceArgumentConstraint
         {
-          InferenceId = Id,
           InferenceArgumentSerialNo = a.SerialNo,
           SerialNo = c.SerialNo,
           ConstraintDestinationInferenceArgumentSerialNo = c.DestinationArgumentSerialNo,
           IsConstraintPredissolvedAssumption = c.IsConstraintPredissolvedAssumption
-        }).ToList()
+        }).ToList() ?? new()
       }).ToList(),
       Assumptions = Assumptions.Select(a => new InferenceAssumption
       {
-        InferenceId = Id,
         SerialNo = a.SerialNo,
-        DissolutionTypeId = a.DissolutionTypeId,
-        InferenceAssumptionFormulas = a.Formulas.Select(f => new InferenceAssumptionFormula
+        FormulaStructId = a.FormulaStructId,
+        FormulaStructArgumentMappings = a.FormulaStructArgumentMappings.Select(m => new InferenceFormulaStructArgumentMapping
         {
-          InferenceId = Id,
-          InferenceAssumptionSerialNo = a.SerialNo,
-          SerialNo = f.SerialNo,
-          SymbolId = f.SymbolId,
-          BoundInferenceArgumentSerialNo = f.BoundArgumentSerialNo,
-          InferenceArgumentSerialNo = f.ArgumentSerialNo,
-          SubstitutionInferenceArgumentFromSerialNo = f.SubstitutionArgumentFromSerialNo,
-          SubstitutionInferenceArgumentToSerialNo = f.SubstitutionArgumentToSerialNo
-        }).ToList(),
-        InferenceAssumptionDissolutableAssumptionFormulas = a.DissolutableAssumptionFormulas?.Select(f => new InferenceAssumptionDissolutableAssumptionFormula
-        {
-          InferenceId = Id,
-          InferenceAssumptionSerialNo = a.SerialNo,
-          SerialNo = f.SerialNo,
-          SymbolId = f.SymbolId,
-          BoundInferenceArgumentSerialNo = f.BoundArgumentSerialNo,
-          InferenceArgumentSerialNo = f.ArgumentSerialNo,
-          SubstitutionInferenceArgumentFromSerialNo = f.SubstitutionArgumentFromSerialNo,
-          SubstitutionInferenceArgumentToSerialNo = f.SubstitutionArgumentToSerialNo
+          SerialNo = m.SerialNo,
+          FormulaStructId = a.FormulaStructId,
+          FormulaStructArgumentSerialNo = m.FormulaStructArgumentSerialNo,
+          InferenceArgumentSerialNo = m.InferenceArgumentSerialNo
         }).ToList()
       }).ToList(),
-      InferenceConclusionFormulas = Conclusions.Select(f => new InferenceConclusionFormula
-      {
-        InferenceId = Id,
-        SerialNo = f.SerialNo,
-        SymbolId = f.SymbolId,
-        BoundInferenceArgumentSerialNo = f.BoundArgumentSerialNo,
-        InferenceArgumentSerialNo = f.ArgumentSerialNo,
-        SubstitutionInferenceArgumentFromSerialNo = f.SubstitutionArgumentFromSerialNo,
-        SubstitutionInferenceArgumentToSerialNo = f.SubstitutionArgumentToSerialNo
-      }).ToList()
+      Conclusions = new List<InferenceConclusion> { new() {
+        FormulaStructId = Conclusion.FormulaStructId,
+        FormulaStructArgumentMappings = Conclusion.FormulaStructArgumentMappings.Select(m => new InferenceFormulaStructArgumentMapping {
+          SerialNo = m.SerialNo,
+          FormulaStructId = Conclusion.FormulaStructId,
+          FormulaStructArgumentSerialNo = m.FormulaStructArgumentSerialNo,
+          InferenceArgumentSerialNo = m.InferenceArgumentSerialNo
+        }).ToList()
+      }}
     };
   }
 }

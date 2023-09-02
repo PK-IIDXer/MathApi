@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using MathApi.Commons;
 
 namespace MathApi.Models;
 

@@ -170,7 +170,7 @@ public class MathDbContext : DbContext
                      .HasPrincipalKey(ia => new { ia.InferenceId, ia.SerialNo })
                      .HasForeignKey(iac => new { iac.InferenceId, iac.InferenceArgumentSerialNo });
         nestedBuilder.HasOne(iac => iac.ConstraintDestinationInferenceArgument)
-                     .WithMany(ia => ia.InferenceArgumentConstraintDistinations)
+                     .WithMany(ia => ia.InferenceArgumentConstraintDestinations)
                      .HasPrincipalKey(ia => new { ia.InferenceId, ia.SerialNo })
                      .HasForeignKey(iac => new { iac.InferenceId, iac.ConstraintDestinationInferenceArgumentSerialNo });
       }
