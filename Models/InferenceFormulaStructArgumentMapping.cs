@@ -9,7 +9,7 @@ public class InferenceFormulaStructArgumentMapping
   public long InferenceId { get; set; }
   public int SerialNo { get; set; }
   public FormulaStructArgument? FormulaStructArgument { get; set; }
-  public int FormulaStructId { get; set; }
+  public long FormulaStructId { get; set; }
   public int FormulaStructArgumentSerialNo { get; set; }
   public InferenceArgument? InferenceArgument { get; set; }
   public int InferenceArgumentSerialNo { get; set; }
