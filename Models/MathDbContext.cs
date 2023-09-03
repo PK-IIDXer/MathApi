@@ -46,6 +46,7 @@ public class MathDbContext : DbContext
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
+    modelBuilder.Entity<Axiom>().Navigation(a => a.AxiomPropositions).AutoInclude();
     modelBuilder.Entity<AxiomProposition>(
       nestedBuilder => {
         nestedBuilder.HasKey(ap => new { ap.AxiomId, ap.SerialNo });
@@ -57,6 +58,14 @@ public class MathDbContext : DbContext
                      .WithMany(f => f.AxiomPropositions)
                      .HasPrincipalKey(f => new { f.Id })
                      .HasForeignKey(p => new { p.FormulaId });
+        nestedBuilder.Navigation(ap => ap.Axiom).AutoInclude();
+        nestedBuilder.Navigation(ap => ap.Formula).AutoInclude();
+      }
+    );
+    modelBuilder.Entity<Formula>(
+      nestedBuilder => {
+        nestedBuilder.Navigation(f => f.FormulaStrings).AutoInclude();
+        nestedBuilder.Navigation(f => f.FormulaChains).AutoInclude();
       }
     );
     modelBuilder.Entity<FormulaChain>(
@@ -74,6 +83,9 @@ public class MathDbContext : DbContext
                      .WithOne(fs => fs.FormulaChainAtTo)
                      .HasPrincipalKey<FormulaString>(fs => new { fs.FormulaId, fs.SerialNo })
                      .HasForeignKey<FormulaChain>(fc => new { fc.FormulaId, fc.ToFormulaStringSerialNo });
+        nestedBuilder.Navigation(fc => fc.Formula).AutoInclude();
+        nestedBuilder.Navigation(fc => fc.FromFormulaString).AutoInclude();
+        nestedBuilder.Navigation(fc => fc.ToFormulaString).AutoInclude();
       }
     );
     modelBuilder.Entity<FormulaLabel>(
@@ -83,6 +95,7 @@ public class MathDbContext : DbContext
                      .WithMany(flt => flt.FormulaLabels)
                      .HasPrincipalKey(flt => new { flt.Id })
                      .HasForeignKey(fl => new { fl.TypeId });
+        nestedBuilder.Navigation(fl => fl.Type);
       }
     );
     modelBuilder.Entity<FormulaString>(
@@ -96,6 +109,14 @@ public class MathDbContext : DbContext
                      .WithMany(f => f.FormulaStrings)
                      .HasPrincipalKey(f => new { f.Id })
                      .HasForeignKey(fs => new { fs.SymbolId });
+        nestedBuilder.Navigation(fs => fs.Formula).AutoInclude();
+        nestedBuilder.Navigation(fs => fs.Symbol).AutoInclude();
+      }
+    );
+    modelBuilder.Entity<FormulaStruct>(
+      nestedBuilder => {
+        nestedBuilder.Navigation(fs => fs.Arguments).AutoInclude();
+        nestedBuilder.Navigation(fs => fs.Strings).AutoInclude();
       }
     );
     modelBuilder.Entity<FormulaStructArgument>(
@@ -109,6 +130,8 @@ public class MathDbContext : DbContext
                      .WithMany(l => l.FormulaStructArguments)
                      .HasPrincipalKey(l => new { l.Id })
                      .HasForeignKey(fsa => new { fsa.LabelId });
+        nestedBuilder.Navigation(fsa => fsa.FormulaStruct).AutoInclude();
+        nestedBuilder.Navigation(fsa => fsa.Label).AutoInclude();
       }
     );
     modelBuilder.Entity<FormulaStructString>(
@@ -130,6 +153,11 @@ public class MathDbContext : DbContext
                      .WithMany(fsa => fsa.Strings)
                      .HasPrincipalKey(fsa => new { fsa.FormulaStructId, fsa.SerialNo })
                      .HasForeignKey(fss => new { fss.FormulaStructId, fss.ArgumentSerialNo });
+        nestedBuilder.Navigation(fss => fss.FormulaStruct).AutoInclude();
+        nestedBuilder.Navigation(fss => fss.Symbol).AutoInclude();
+        nestedBuilder.Navigation(fss => fss.BoundArgument).AutoInclude();
+        nestedBuilder.Navigation(fss => fss.Argument).AutoInclude();
+        nestedBuilder.Navigation(fss => fss.Substitutions).AutoInclude();
       }
     );
     modelBuilder.Entity<FormulaStructStringSubstitution>(
@@ -147,6 +175,17 @@ public class MathDbContext : DbContext
                      .WithMany(fsa => fsa.StringsToSubstitutionArgumentTo)
                      .HasPrincipalKey(fsa => new { fsa.FormulaStructId, fsa.SerialNo })
                      .HasForeignKey(fss => new { fss.FormulaStructId, fss.ArgumentToSerialNo });
+        nestedBuilder.Navigation(fsss => fsss.FormulaStructString).AutoInclude();
+        nestedBuilder.Navigation(fsss => fsss.ArgumentFrom).AutoInclude();
+        nestedBuilder.Navigation(fsss => fsss.ArgumentTo).AutoInclude();
+      }
+    );
+    modelBuilder.Entity<Inference>(
+      nestedBuilder => {
+        nestedBuilder.Navigation(i => i.Arguments).AutoInclude();
+        nestedBuilder.Navigation(i => i.Assumptions).AutoInclude();
+        nestedBuilder.Navigation(i => i.Conclusions).AutoInclude();
+        nestedBuilder.Navigation(i => i.FormulaStructArgumentMappings).AutoInclude();
       }
     );
     modelBuilder.Entity<InferenceArgument>(
@@ -160,6 +199,9 @@ public class MathDbContext : DbContext
                      .WithOne(fl => fl.InferenceArgument)
                      .HasPrincipalKey<FormulaLabel>(fl => new { fl.Id })
                      .HasForeignKey<InferenceArgument>(ia => new { ia.FormulaLabelId });
+        nestedBuilder.Navigation(ia => ia.Inference).AutoInclude();
+        nestedBuilder.Navigation(ia => ia.FormulaLabel).AutoInclude();
+        nestedBuilder.Navigation(ia => ia.InferenceArgumentConstraints).AutoInclude();
       }
     );
     modelBuilder.Entity<InferenceArgumentConstraint>(
@@ -173,6 +215,8 @@ public class MathDbContext : DbContext
                      .WithMany(ia => ia.InferenceArgumentConstraintDestinations)
                      .HasPrincipalKey(ia => new { ia.InferenceId, ia.SerialNo })
                      .HasForeignKey(iac => new { iac.InferenceId, iac.ConstraintDestinationInferenceArgumentSerialNo });
+        nestedBuilder.Navigation(iac => iac.InferenceArgument).AutoInclude();
+        nestedBuilder.Navigation(iac => iac.ConstraintDestinationInferenceArgument).AutoInclude();
       }
     );
     modelBuilder.Entity<InferenceAssumption>(
@@ -190,6 +234,10 @@ public class MathDbContext : DbContext
                      .WithOne(fsam => fsam.InferenceAssumption)
                      .HasPrincipalKey(ia => new { ia.InferenceId, ia.FormulaStructArgumentMappingSerialNo })
                      .HasForeignKey(fsam => new { fsam.InferenceId, fsam.SerialNo });
+        nestedBuilder.Navigation(ia => ia.Inference).AutoInclude();
+        nestedBuilder.Navigation(ia => ia.FormulaStruct).AutoInclude();
+        nestedBuilder.Navigation(ia => ia.FormulaStructArgumentMappings).AutoInclude();
+        nestedBuilder.Navigation(ia => ia.DissolutableAssumption).AutoInclude();
       }
     );
     modelBuilder.Entity<InferenceAssumptionDissolutableAssumption>(
@@ -207,6 +255,9 @@ public class MathDbContext : DbContext
                      .WithOne(fsam => fsam.InferenceAssumptionDissolutableAssumption)
                      .HasPrincipalKey(iada => new { iada.InferenceId, iada.FormulaStructArgumentMappingSerialNo })
                      .HasForeignKey(fsam => new { fsam.InferenceId, fsam.SerialNo });
+        nestedBuilder.Navigation(iada => iada.InferenceAssumption).AutoInclude();
+        nestedBuilder.Navigation(iada => iada.FormulaStruct).AutoInclude();
+        nestedBuilder.Navigation(iada => iada.FormulaStructArgumentMappings).AutoInclude();
       }
     );
     modelBuilder.Entity<InferenceConclusion>(
@@ -224,6 +275,9 @@ public class MathDbContext : DbContext
                      .WithOne(fsam => fsam.InferenceConclusion)
                      .HasForeignKey(fsam => new { fsam.InferenceId, fsam.SerialNo })
                      .HasPrincipalKey(ic => new { ic.InferenceId, ic.FormulaStructArgumentMappingSerialNo });
+        nestedBuilder.Navigation(ic => ic.Inference).AutoInclude();
+        nestedBuilder.Navigation(ic => ic.FormulaStruct).AutoInclude();
+        nestedBuilder.Navigation(ic => ic.FormulaStructArgumentMappings).AutoInclude();
       }
     );
     modelBuilder.Entity<InferenceFormulaStructArgumentMapping>(
@@ -241,6 +295,9 @@ public class MathDbContext : DbContext
                      .WithMany(ia => ia.InferenceFormulaStructArgumentMappings)
                      .HasPrincipalKey(ia => new { ia.InferenceId, ia.SerialNo })
                      .HasForeignKey(ifsam => new { ifsam.InferenceId, ifsam.InferenceArgumentSerialNo });
+        nestedBuilder.Navigation(ifsam => ifsam.Inference).AutoInclude();
+        nestedBuilder.Navigation(ifsam => ifsam.FormulaStructArgument).AutoInclude();
+        nestedBuilder.Navigation(ifsam => ifsam.InferenceArgument).AutoInclude();
       }
     );
     modelBuilder.Entity<Proof>(
@@ -250,13 +307,16 @@ public class MathDbContext : DbContext
                      .WithMany(t => t.Proofs)
                      .HasPrincipalKey(t => new { t.Id })
                      .HasForeignKey(p => new { p.TheoremId });
+        nestedBuilder.Navigation(p => p.Theorem).AutoInclude();
+        nestedBuilder.Navigation(p => p.Inferences).AutoInclude();
+        nestedBuilder.Navigation(p => p.Assumptions).AutoInclude();
       }
     );
     modelBuilder.Entity<ProofAssumption>(
       nestedBuilder => {
         nestedBuilder.HasKey(pa => new { pa.TheoremId, pa.ProofSerialNo, pa.SerialNo });
         nestedBuilder.HasOne(pa => pa.Proof)
-                     .WithMany(p => p.ProofAssumptions)
+                     .WithMany(p => p.Assumptions)
                      .HasPrincipalKey(p => new { p.TheoremId, p.SerialNo })
                      .HasForeignKey(pa => new { pa.TheoremId, pa.ProofSerialNo });
         nestedBuilder.HasOne(pa => pa.AddedProofInference)
@@ -267,13 +327,16 @@ public class MathDbContext : DbContext
                      .WithOne(pi => pi.DissolutingAssumption)
                      .HasPrincipalKey<ProofInference>(pi => new { pi.TheoremId, pi.ProofSerialNo, pi.SerialNo })
                      .HasForeignKey<ProofAssumption>(pa => new { pa.TheoremId, pa.ProofSerialNo, pa.DissolutedProofInferenceSerialNo });
+        nestedBuilder.Navigation(pa => pa.Proof).AutoInclude();
+        nestedBuilder.Navigation(pa => pa.AddedProofInference).AutoInclude();
+        nestedBuilder.Navigation(pa => pa.DissolutedProofInference).AutoInclude();
       }
     );
     modelBuilder.Entity<ProofInference>(
       nestedBuilder => {
         nestedBuilder.HasKey(pi => new { pi.TheoremId, pi.ProofSerialNo, pi.SerialNo });
         nestedBuilder.HasOne(pi => pi.Proof)
-                     .WithMany(p => p.ProofInferences)
+                     .WithMany(p => p.Inferences)
                      .HasPrincipalKey(p => new { p.TheoremId, p.SerialNo })
                      .HasForeignKey(pi => new { pi.TheoremId, pi.ProofSerialNo });
         nestedBuilder.HasOne(pi => pi.Inference)
@@ -288,6 +351,11 @@ public class MathDbContext : DbContext
                      .WithMany(fs => fs.ProofInferences)
                      .HasPrincipalKey(fs => new { fs.Id })
                      .HasForeignKey(pi => new { pi.ConclusionFormulaStructId });
+        nestedBuilder.Navigation(pi => pi.Proof).AutoInclude();
+        nestedBuilder.Navigation(pi => pi.Inference).AutoInclude();
+        nestedBuilder.Navigation(pi => pi.ConclusionFormula).AutoInclude();
+        nestedBuilder.Navigation(pi => pi.ConclusionFormulaStruct).AutoInclude();
+        nestedBuilder.Navigation(pi => pi.ProofInferenceArguments).AutoInclude();
       }
     );
     modelBuilder.Entity<ProofInferenceArgument>(
@@ -305,6 +373,9 @@ public class MathDbContext : DbContext
                      .WithMany(fs => fs.ProofInferenceArguments)
                      .HasPrincipalKey(fs => new { fs.Id })
                      .HasForeignKey(pia => new { pia.FormulaStructId });
+        nestedBuilder.Navigation(pia => pia.ProofInference).AutoInclude();
+        nestedBuilder.Navigation(pia => pia.Formula).AutoInclude();
+        nestedBuilder.Navigation(pia => pia.FormulaStruct).AutoInclude();
       }
     );
     modelBuilder.Entity<Symbol>(
@@ -317,6 +388,8 @@ public class MathDbContext : DbContext
                      .WithMany(f => f.Symbols)
                      .HasPrincipalKey(f => new { f.Id })
                      .HasForeignKey(s => new { s.ArityFormulaTypeId });
+        nestedBuilder.Navigation(s => s.Type).AutoInclude();
+        nestedBuilder.Navigation(s => s.ArityFormulaType).AutoInclude();
       }
     );
     modelBuilder.Entity<SymbolType>(
@@ -325,6 +398,7 @@ public class MathDbContext : DbContext
                      .WithMany(ft => ft.SymbolTypes)
                      .HasPrincipalKey(ft => new { ft.Id })
                      .HasForeignKey(st => new { st.FormulaTypeId });
+        nestedBuilder.Navigation(st => st.FormulaType).AutoInclude();
       }
     );
     modelBuilder.Entity<Theorem>(
@@ -333,32 +407,39 @@ public class MathDbContext : DbContext
                      .WithOne(i => i.Theorem)
                      .HasPrincipalKey<Inference>(i => i.TheoremId)
                      .HasForeignKey<Theorem>(t => t.InferenceId);
+        nestedBuilder.Navigation(t => t.Assumptions).AutoInclude();
+        nestedBuilder.Navigation(t => t.Conclusions).AutoInclude();
+        nestedBuilder.Navigation(t => t.Inference).AutoInclude();
       }
     );
     modelBuilder.Entity<TheoremAssumption>(
       nestedBuilder => {
         nestedBuilder.HasKey(ta => new { ta.TheoremId, ta.SerialNo });
         nestedBuilder.HasOne(ta => ta.Theorem)
-                     .WithMany(t => t.TheoremAssumptions)
+                     .WithMany(t => t.Assumptions)
                      .HasPrincipalKey(t => new { t.Id })
                      .HasForeignKey(ta => new { ta.TheoremId });
         nestedBuilder.HasOne(ta => ta.Formula)
                      .WithMany(f => f.TheoremAssumptions)
                      .HasPrincipalKey(f => new { f.Id })
                      .HasForeignKey(ta => new { ta.FormulaId });
+        nestedBuilder.Navigation(ta => ta.Theorem).AutoInclude();
+        nestedBuilder.Navigation(ta => ta.Formula).AutoInclude();
       }
     );
     modelBuilder.Entity<TheoremConclusion>(
       nestedBuilder => {
         nestedBuilder.HasKey(tc => new { tc.TheoremId, tc.SerialNo });
         nestedBuilder.HasOne(tc => tc.Theorem)
-                     .WithMany(t => t.TheoremConclusions)
+                     .WithMany(t => t.Conclusions)
                      .HasPrincipalKey(t => new { t.Id })
                      .HasForeignKey(tc => new { tc.TheoremId });
         nestedBuilder.HasOne(tc => tc.Formula)
                      .WithMany(f => f.TheoremConclusions)
                      .HasPrincipalKey(f => new { f.Id })
                      .HasForeignKey(tc => new { tc.FormulaId });
+        nestedBuilder.Navigation(tc => tc.Theorem).AutoInclude();
+        nestedBuilder.Navigation(tc => tc.Formula).AutoInclude();
       }
     );
 

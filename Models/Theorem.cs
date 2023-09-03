@@ -9,8 +9,8 @@ public class Theorem
   public string Name { get; set; } = "";
   public bool IsProved { get; set; } = false;
 
-  public List<TheoremAssumption> TheoremAssumptions { get; set; } = new();
-  public List<TheoremConclusion> TheoremConclusions { get; set; } = new();
+  public List<TheoremAssumption> Assumptions { get; set; } = new();
+  public List<TheoremConclusion> Conclusions { get; set; } = new();
 
   public Inference? Inference { get; set; }
   public int? InferenceId { get; set; }

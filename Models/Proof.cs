@@ -18,6 +18,6 @@ public class Proof
   /// </summary>
   public long SerialNo { get; set; }
 
-  public List<ProofInference> ProofInferences { get; set; } = new();
-  public List<ProofAssumption> ProofAssumptions { get; set; } = new();
+  public List<ProofInference> Inferences { get; set; } = new();
+  public List<ProofAssumption> Assumptions { get; set; } = new();
 }
