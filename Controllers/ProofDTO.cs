@@ -17,21 +17,16 @@ public class ProofDto
   /// <summary>
   /// 当InferenceIdの推論規則の引数にアサインする論理式
   /// </summary>
-  public List<InferenceArgumentFormulaDto> InferenceArgumentFormulas { get; set; } = new();
+  public List<InferenceArgumentFormulaDto> InferenceArguments { get; set; } = new();
   /// <summary>
   /// 当InferenceIdの推論規則の仮定にアサインする論理式を導いたProofInferenceSerialNo
   /// </summary>
-  public List<AssumingInferenceResultDto> AssumingInferenceResults { get; set; } = new();
+  public List<long> ProofInferenceSerialNos { get; set; } = new();
 
   public class InferenceArgumentFormulaDto
   {
     public long SerialNo { get; set; }
     public long? FormulaId { get; set; }
-  }
-
-  public class AssumingInferenceResultDto
-  {
-    public long ProofInferenceSerialNo { get; set; }
-    public long? DissolutingFormulaId { get; set; }
+    public long? FormulaStructId { get; set; }
   }
 }

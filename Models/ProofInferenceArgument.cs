@@ -34,5 +34,5 @@ public class ProofInferenceArgument
   /// <summary>
   /// 論理式構成ID
   /// </summary>
-  public int? FormulaStructId { get; set; }  
+  public long? FormulaStructId { get; set; }  
 }

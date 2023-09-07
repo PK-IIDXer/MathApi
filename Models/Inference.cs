@@ -13,10 +13,6 @@ public class Inference
   /// 推論規則名称
   /// </summary>
   public string Name { get; set;} = "";
-  /// <summary>
-  /// 仮定を追加するかどうか
-  /// </summary>
-  public bool IsAssumptionAdd { get; set; }
 
   public List<InferenceArgument> Arguments { get; set; } = new();
   public List<InferenceAssumption> Assumptions { get; set; } = new();
@@ -36,6 +32,7 @@ public class Inference
     {
       public Formula Formula { get; set; }
       public Formula? Dissolutable { get; set; }
+      public bool IsDissoluteForce { get; set; }
     }
   }
 
@@ -47,6 +44,7 @@ public class Inference
     {
       public FormulaStruct FormulaStruct { get; set; }
       public FormulaStruct? DissolutableStruct { get; set; }
+      public bool IsDissoluteForce { get; set; }
     }
   }
 
@@ -88,6 +86,13 @@ public class Inference
       if (asmp.DissolutableAssumption.FormulaStruct == null)
         throw new ArgumentException("Include Inference.Assumptions.DissolutableAssumption.FormulaStruct");
       assumption.Dissolutable = asmp.DissolutableAssumption.FormulaStruct.Apply(asmpArg);
+      assumption.IsDissoluteForce = asmp.DissolutableAssumption.IsForce;
+      // TODO: 不要？
+      // if (asmp.DissolutableAssumption.IsForce)
+      // {
+      //   if (assumption.Dissolutable == null)
+      //     throw new ArgumentException("There is no Dissolutable in spite of IsForce");
+      // }
 
       result.AssumptionFormulas.Add(assumption);
     }
@@ -149,6 +154,13 @@ public class Inference
       if (asmp.DissolutableAssumption.FormulaStruct == null)
         throw new ArgumentException("Include Inference.Assumptions.DissolutableAssumption.FormulaStruct");
       assumption.DissolutableStruct = asmp.DissolutableAssumption.FormulaStruct.Apply(asmpArg);
+      assumption.IsDissoluteForce = asmp.DissolutableAssumption.IsForce;
+      // TODO: 不要？
+      // if (asmp.DissolutableAssumption.IsForce)
+      // {
+      //   if (assumption.DissolutableStruct == null)
+      //     throw new ArgumentException("There is no DissolutableStruct in spite of IsForce");
+      // }
 
       result.AssumptionFormulaStructs.Add(assumption);
     }

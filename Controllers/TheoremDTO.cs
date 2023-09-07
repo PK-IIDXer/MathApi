@@ -33,12 +33,12 @@ public class TheoremDto
         throw new ArgumentException("Can't Input inference if not IsInference");
       if (Conclusion == null)
         throw new ArgumentException("Input Conclusion if not IsInference");
-      ret.TheoremAssumptions = Assumptions?.Select(a => new TheoremAssumption{
+      ret.Assumptions = Assumptions?.Select(a => new TheoremAssumption{
         TheoremId = Id,
         SerialNo = a.SerialNo,
         FormulaId = a.FormulaId
       }).ToList() ?? new List<TheoremAssumption>();
-      ret.TheoremConclusions = new List<TheoremConclusion> {
+      ret.Conclusions = new List<TheoremConclusion> {
         new() {
           TheoremId = Id,
           SerialNo = Conclusion.SerialNo,

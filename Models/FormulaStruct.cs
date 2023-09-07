@@ -310,4 +310,66 @@ public class FormulaStruct
 
     return ret;
   }
+
+  public bool Equals(FormulaStruct formulaStruct)
+  {
+    if (Strings.Count != formulaStruct.Strings.Count)
+      return false;
+    for (int i = 0; i < Strings.Count; i++)
+    {
+      var str = Strings.Find(a => a.SerialNo == i) ?? throw new ArgumentException("想定外");
+      var fsStr = formulaStruct.Strings.Find(a => a.SerialNo == i) ?? throw new ArgumentException("想定外");
+
+      if (str.SymbolId != fsStr.SymbolId)
+        return false;
+
+      if (str.BoundArgument?.LabelId != fsStr.BoundArgument?.LabelId)
+        return false;
+
+      if (str.Argument?.LabelId != fsStr.Argument?.LabelId)
+        return false;
+
+      if (str.Substitutions.Count != fsStr.Substitutions.Count)
+        return false;
+
+      foreach (var sb in str.Substitutions)
+      {
+        if (sb.ArgumentFrom == null)
+          throw new ArgumentException("Include FormulaStruct.Substitutions.ArgumentFrom");
+        if (sb.ArgumentTo == null)
+          throw new ArgumentException("Include FormulaStruct.Substitutions.ArgumentTo");
+        var fsSb = fsStr.Substitutions.FirstOrDefault(s =>
+        {
+          if (s.ArgumentFrom == null)
+            throw new ArgumentException("Include FormulaStruct.Substitutions.ArgumentFrom");
+          if (s.ArgumentTo == null)
+            throw new ArgumentException("Include FormulaStruct.Substitutions.ArgumentFrom");
+          return s.ArgumentFrom.LabelId == sb.ArgumentFrom.LabelId
+            && s.ArgumentTo.LabelId == sb.ArgumentTo.LabelId;
+        });
+        if (fsSb == null)
+          return false;
+      }
+      foreach (var fsSb in fsStr.Substitutions)
+      {
+        if (fsSb.ArgumentFrom == null)
+          throw new ArgumentException("Include FormulaStruct.Substitutions.ArgumentFrom");
+        if (fsSb.ArgumentTo == null)
+          throw new ArgumentException("Include FormulaStruct.Substitutions.ArgumentTo");
+        var sb = fsStr.Substitutions.FirstOrDefault(s =>
+        {
+          if (s.ArgumentFrom == null)
+            throw new ArgumentException("Include FormulaStruct.Substitutions.ArgumentFrom");
+          if (s.ArgumentTo == null)
+            throw new ArgumentException("Include FormulaStruct.Substitutions.ArgumentFrom");
+          return s.ArgumentFrom.LabelId == fsSb.ArgumentFrom.LabelId
+            && s.ArgumentTo.LabelId == fsSb.ArgumentTo.LabelId;
+        });
+        if (sb == null)
+          return false;
+      }
+    }
+
+    return true;
+  }
 }
