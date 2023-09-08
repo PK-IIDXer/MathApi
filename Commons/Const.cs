@@ -3,7 +3,7 @@ namespace MathApi.Const;
 /// <summary>
 /// 文字タイプ
 /// </summary>
-public enum SymbolType : int {
+public enum SymbolTypeEnum : int {
   FreeVariable = 1,
   BoundVariable = 2,
   Function = 3,
@@ -16,7 +16,7 @@ public enum SymbolType : int {
 /// <summary>
 /// 論理式タイプ
 /// </summary>
-public enum FormulaType : int {
+public enum FormulaTypeEnum : int {
   Term = 1,
   Proposition = 2
 }
@@ -24,25 +24,16 @@ public enum FormulaType : int {
 /// <summary>
 /// 論理式構成タイプ
 /// </summary>
-public enum FormulaLabelType : int {
+public enum FormulaLabelTypeEnum : int {
   Term = 1,
   Proposition = 2,
   FreeVariable = 3
 }
 
 /// <summary>
-/// 推論規則仮定解消タイプ
-/// </summary>
-public enum InferenceAssumptionDissolutionType : int {
-  None = 1,
-  Required = 2,
-  Necessary = 3
-}
-
-/// <summary>
 /// 基礎的な記号ID
 /// </summary>
-public enum BasicSymbol : long {
+public enum BasicSymbolEnum : long {
   BoundVariable = 0,
   Equals = 1,
   Contradiction = 2,

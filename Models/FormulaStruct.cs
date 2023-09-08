@@ -7,7 +7,7 @@ public class FormulaStruct
   public long Id { get; set; }
   public string? Meaning { get; set; }
 
-  public Const.FormulaLabelType TypeId
+  public Const.FormulaLabelTypeEnum TypeId
   {
     get
     {
@@ -23,15 +23,15 @@ public class FormulaStruct
           s.Symbol.TypeId
         switch
         {
-            Const.SymbolType.FreeVariable
-              => Const.FormulaLabelType.FreeVariable,
-            Const.SymbolType.Function
-              or Const.SymbolType.TermQuantifier
-              => Const.FormulaLabelType.Term,
-            Const.SymbolType.Predicate
-              or Const.SymbolType.Logic
-              or Const.SymbolType.PropositionQuantifier
-              => Const.FormulaLabelType.Proposition,
+            Const.SymbolTypeEnum.FreeVariable
+              => Const.FormulaLabelTypeEnum.FreeVariable,
+            Const.SymbolTypeEnum.Function
+              or Const.SymbolTypeEnum.TermQuantifier
+              => Const.FormulaLabelTypeEnum.Term,
+            Const.SymbolTypeEnum.Predicate
+              or Const.SymbolTypeEnum.Logic
+              or Const.SymbolTypeEnum.PropositionQuantifier
+              => Const.FormulaLabelTypeEnum.Proposition,
             _ => throw new ArgumentException("想定外"),
         };
       }
@@ -71,17 +71,17 @@ public class FormulaStruct
           ?? throw new ArgumentException("Include FormulaStructString.Argument");
         var formula = args[fsChar.ArgumentSerialNo.Value]
           ?? throw new ArgumentException(null, nameof(args));
-        if (fsArg.Label.TypeId == Const.FormulaLabelType.Term)
+        if (fsArg.Label.TypeId == Const.FormulaLabelTypeEnum.Term)
         {
-          if (formula.FormulaTypeId != Const.FormulaType.Term)
+          if (formula.FormulaTypeId != Const.FormulaTypeEnum.Term)
             throw new ArgumentException($"Invalid args on #{fsChar.ArgumentSerialNo.Value}");
         }
-        if (fsArg.Label.TypeId == Const.FormulaLabelType.Proposition)
+        if (fsArg.Label.TypeId == Const.FormulaLabelTypeEnum.Proposition)
         {
-          if (formula.FormulaTypeId != Const.FormulaType.Proposition)
+          if (formula.FormulaTypeId != Const.FormulaTypeEnum.Proposition)
             throw new ArgumentException($"Invalid args on #{fsChar.ArgumentSerialNo.Value}");
         }
-        if (fsArg.Label.TypeId == Const.FormulaLabelType.FreeVariable)
+        if (fsArg.Label.TypeId == Const.FormulaLabelTypeEnum.FreeVariable)
         {
           if (!formula.IsFreeVariable)
             throw new ArgumentException($"Invalid args on #{fsChar.ArgumentSerialNo.Value}");
@@ -93,7 +93,7 @@ public class FormulaStruct
           // 代入操作
           var fromFsArg = sbs.ArgumentFrom
             ?? throw new ArgumentException("Include FormulaStructString.SubstitutionArgumentFrom");
-          if (fromFsArg.Label.TypeId != Const.FormulaLabelType.FreeVariable)
+          if (fromFsArg.Label.TypeId != Const.FormulaLabelTypeEnum.FreeVariable)
             throw new ArgumentException("Invalid FormulaStruct data");
           var fromFormula = args[sbs.ArgumentFromSerialNo]
             ?? throw new ArgumentException($"Invalid args on #{fsChar.ArgumentSerialNo.Value}");
@@ -101,7 +101,7 @@ public class FormulaStruct
             throw new ArgumentException($"Invalid args on #{fsChar.ArgumentSerialNo.Value}");
           var toFsArg = sbs.ArgumentTo
             ?? throw new ArgumentException("Include FormulaStructString.SubstitutionArgumentTo");
-          if (toFsArg.Label.TypeId != Const.FormulaLabelType.FreeVariable)
+          if (toFsArg.Label.TypeId != Const.FormulaLabelTypeEnum.FreeVariable)
             throw new ArgumentException("Invalid FormulaStruct data");
           var toFormula = args[sbs.ArgumentToSerialNo]
             ?? throw new ArgumentException($"Invalid args on #{fsChar.ArgumentSerialNo.Value}");

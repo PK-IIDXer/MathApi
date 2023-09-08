@@ -71,7 +71,7 @@ public static class Util
         // その文字を□に置き換えて、先頭の文字(量化記号)と鎖で結ぶ
         if (boundVariable?.FormulaStrings[0].SymbolId == s.SymbolId)
         {
-          symbolId = (long)BasicSymbol.BoundVariable;
+          symbolId = (long)BasicSymbolEnum.BoundVariable;
           fc.Add(new FormulaChain
           {
             FromFormulaStringSerialNo = 0,

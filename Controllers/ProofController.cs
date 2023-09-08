@@ -168,6 +168,8 @@ namespace MathApi.Controllers
     {
       if (dto.ProofAssumptionSerialNo.HasValue)
       {
+        if (!ValidateOnUsingAssumptionReassume(dto))
+          throw new ArgumentException("Invalid request params where ProofAssumptionSerialNo is null");
         var arg = await _context.ProofAssumptions.FindAsync(dto.TheoremId, dto.ProofSerialNo, dto.ProofAssumptionSerialNo)
           ?? throw new ArgumentException($"ProofAssumption is not found: (TheoremId, ProofSerialNo, SerialNo)=({dto.TheoremId},{dto.ProofSerialNo},{dto.ProofAssumptionSerialNo})");
         if (arg.AddedProofInference == null)
@@ -426,6 +428,25 @@ namespace MathApi.Controllers
       });
       _context.ProofInferenceArguments.AddRange(arguments);
       return null;
+    }
+
+    private static bool ValidateOnUsingAssumptionReassume(ProofDto dto)
+    {
+      if (!dto.ProofAssumptionSerialNo.HasValue)
+        return true;
+
+      // TODO: 基本的な推論規則のIDを定数化
+      if (dto.InferenceId != 1)  // 推論規則ID=1:仮定
+      {
+        return false;
+      }
+
+      if (dto.InferenceArguments.Count > 0)
+      {
+        return false;
+      }
+
+      return true;
     }
   }
 }

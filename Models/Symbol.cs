@@ -10,10 +10,10 @@ public class Symbol
   public long Id { get; set; }
   public string Character { get; set; } = "";
   public SymbolType? Type { get; }
-  public Const.SymbolType TypeId { get; set; }
+  public Const.SymbolTypeEnum TypeId { get; set; }
   public int? Arity { get; set; }
   public FormulaType? ArityFormulaType { get; }
-  public Const.FormulaType? ArityFormulaTypeId { get; set; }
+  public Const.FormulaTypeEnum? ArityFormulaTypeId { get; set; }
   public string? Meaning { get; set; }
 
   public List<FormulaString>? FormulaStrings { get; }

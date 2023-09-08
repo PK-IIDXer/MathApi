@@ -52,7 +52,7 @@ namespace MathApi.Controllers
       }
 
       // □は編集不可
-      if (symbol.TypeId == Const.SymbolType.BoundVariable)
+      if (symbol.TypeId == Const.SymbolTypeEnum.BoundVariable)
       {
         return BadRequest("Cannot modify the bound variable");
       }
@@ -99,8 +99,8 @@ namespace MathApi.Controllers
       var symbol = symbolDto.CreateModel();
 
       // 束縛変数は一種類のみ登録可能
-      var boundVarCnt = _context.Symbols.Count(x => x.TypeId == Const.SymbolType.BoundVariable);
-      if (boundVarCnt > 0 && symbol.TypeId == Const.SymbolType.BoundVariable)
+      var boundVarCnt = _context.Symbols.Count(x => x.TypeId == Const.SymbolTypeEnum.BoundVariable);
+      if (boundVarCnt > 0 && symbol.TypeId == Const.SymbolTypeEnum.BoundVariable)
       {
         return BadRequest("Cannot register bound variables more than 2");
       }

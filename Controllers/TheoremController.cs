@@ -51,7 +51,7 @@ namespace MathApi.Controllers
       {
         var labelIds = theorem.Inference.Arguments.Select(a => a.FormulaLabelId);
         var labels = await _context.FormulaLabels.Where(fl => labelIds.Contains(fl.Id)).ToListAsync();
-        if (!labels.Any(ia => ia.TypeId == Const.FormulaLabelType.Proposition))
+        if (!labels.Any(ia => ia.TypeId == Const.FormulaLabelTypeEnum.Proposition))
           throw new ArgumentException("Should not use inference if there is no propositional argument");
       }
       _context.Theorems.Add(theorem);
