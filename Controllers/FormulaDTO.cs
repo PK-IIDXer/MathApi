@@ -1,5 +1,3 @@
-using MathApi.Models;
-
 namespace MathApi.Controllers;
 
 public class FormulaDto

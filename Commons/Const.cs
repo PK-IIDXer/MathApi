@@ -3,40 +3,44 @@ namespace MathApi.Const;
 /// <summary>
 /// 文字タイプ
 /// </summary>
-public enum SymbolType : long {
+public enum SymbolTypeEnum : int {
   FreeVariable = 1,
   BoundVariable = 2,
-  PropositionVariable = 3,
-  Constant = 4,
-  Function = 5,
-  Predicate = 6,
-  Logic = 7,
-  TermQuantifier = 8,
-  PropositionQuantifier = 9
+  Function = 3,
+  Predicate = 4,
+  Logic = 5,
+  TermQuantifier = 6,
+  PropositionQuantifier = 7
 }
 
 /// <summary>
 /// 論理式タイプ
 /// </summary>
-public enum FormulaType : long {
+public enum FormulaTypeEnum : int {
   Term = 1,
   Proposition = 2
 }
 
 /// <summary>
-/// 推論規則引数タイプ
+/// 論理式構成タイプ
 /// </summary>
-public enum InferenceArgumentType : int {
+public enum FormulaLabelTypeEnum : int {
   Term = 1,
   Proposition = 2,
   FreeVariable = 3
 }
 
 /// <summary>
-/// 推論規則仮定解消タイプ
+/// 基礎的な記号ID
 /// </summary>
-public enum InferenceAssumptionDissolutionType : int {
-  None = 1,
-  Required = 2,
-  Necessary = 3
+public enum BasicSymbolEnum : long {
+  BoundVariable = 0,
+  Equals = 1,
+  Contradiction = 2,
+  Denial = 3,
+  And = 4,
+  Or = 5,
+  Implication = 6,
+  Forall = 7,
+  Exists = 8
 }

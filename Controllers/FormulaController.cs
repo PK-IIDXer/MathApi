@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MathApi.Models;
+using MathApi.Commons;
 
 namespace MathApi.Controllers
 {
@@ -116,137 +117,6 @@ namespace MathApi.Controllers
     }
 
     /// <summary>
-    /// POSTパラメータからFormulaStringリストを作成する
-    /// </summary>
-    /// <param name="firstSymbol">一文字目</param>
-    /// <param name="argFormulaIds">POSTで渡された論理式IDのリスト</param>
-    /// <param name="argFormulas">引数論理式のオブジェクトリスト</param>
-    /// <param name="isQuant">一文字目が量化記号かどうか</param>
-    /// <param name="boundVariable">束縛変数文字オブジェクト</param>
-    /// <param name="boundId">束縛する自由変数のFormulaID</param>
-    /// <returns>FormulaStringのリスト</returns>
-    /// <exception cref="InvalidDataException">
-    /// 量化記号を使うのに束縛変数記号がDBに登録されてないときにThrow
-    /// </exception>
-    private static List<FormulaString> CreateFormulaStringFromPostParam(
-      Symbol firstSymbol,
-      List<long> argFormulaIds,
-      List<Formula> argFormulas,
-      bool isQuant,
-      Symbol? boundVariable,
-      long? boundId
-    )
-    {
-      long serialNo = 0;
-
-      // 一文字目をセット
-      var strings = new List<FormulaString>
-      {
-        new FormulaString
-        {
-          SerialNo = serialNo++,
-          SymbolId = firstSymbol.Id,
-          Symbol = firstSymbol
-        }
-      };
-
-      // 引数の論理式を一文字ずつバラシてstringsに追加する
-      foreach (var argFormulaId in argFormulaIds)
-      {
-        var argFormulaItem = argFormulas.First(f => f.Id == argFormulaId);
-        var argFormulaStrings = argFormulaItem.FormulaStrings;
-        foreach (var argFormulaString in argFormulaStrings)
-        {
-          // 量化する場合、対象の自由変数を束縛変数に変換する。
-          if (isQuant && argFormulaString.SymbolId == boundId)
-          {
-            if (boundVariable == null)
-            {
-              throw new InvalidDataException("Not Found bound variable. Register bound variable symbol");
-            }
-            strings.Add(
-              new FormulaString
-              {
-                SerialNo = serialNo++,
-                SymbolId = boundVariable.Id
-              }
-            );
-          }
-          // 量化しない場合
-          else
-          {
-            strings.Add(
-              new FormulaString
-              {
-                SerialNo = serialNo++,
-                SymbolId = argFormulaString.SymbolId
-              }
-            );
-          }
-        }
-      }
-      return strings;
-    }
-
-    /// <summary>
-    /// POSTパラメータからFormulaChainを作成
-    /// </summary>
-    /// <param name="argFormulaIds">POSTで渡された論理式IDのリスト</param>
-    /// <param name="argFormulas">引数論理式のオブジェクトリスト</param>
-    /// <param name="isQuant">一文字目が量化記号かどうか</param>
-    /// <param name="boundId">束縛する自由変数のFormulaID</param>
-    /// <returns></returns>
-    private static List<FormulaChain> CreateFormulaChainFromPostParam(
-      List<long> argFormulaIds,
-      List<Formula> argFormulas,
-      bool isQuant,
-      long? boundId
-    )
-    {
-      // 戻り値
-      var ret = new List<FormulaChain>();
-      // 新規FormulaChainのserialNo
-      long serialNo = 0;
-      // カウント中の文字の位置。一文字目が量化記号の場合に新たに追加するChainを作成するために使用する
-      long symbolCount = 0;
-      // 論理式の長さの和
-      long formulaLength = 1;
-      foreach (var argFormulaId in argFormulaIds)
-      {
-        var argFormula = argFormulas.First(f => f.Id == argFormulaId);
-        // 一文字目が量化記号の場合、新たなChainを追加する
-        if (isQuant)
-        {
-          foreach (var argFormulaString in argFormula.FormulaStrings)
-          {
-            symbolCount++;
-            if (argFormulaString.SymbolId != boundId) continue;
-            ret.Add(new FormulaChain
-            {
-              SerialNo = serialNo++,
-              FromFormulaStringSerialNo = 0,
-              ToFormulaStringSerialNo = symbolCount
-            });
-          }
-        }
-
-        // 引数の論理式のChainは、From/Toをそれぞれ直前までの文字列の長さを足して作成する
-        foreach (var argFormulaChain in argFormula.FormulaChains ?? new List<FormulaChain>())
-        {
-          ret.Add(new FormulaChain
-          {
-            SerialNo = serialNo++,
-            FromFormulaStringSerialNo = argFormulaChain.FromFormulaStringSerialNo + formulaLength,
-            ToFormulaStringSerialNo = argFormulaChain.ToFormulaStringSerialNo + formulaLength
-          });
-        }
-        formulaLength += argFormula.Length;
-      }
-
-      return ret;
-    }
-
-    /// <summary>
     /// POSTパラメータからFormulaオブジェクトを作成
     /// </summary>
     /// <param name="postParam">POSTパラメータ</param>
@@ -256,24 +126,30 @@ namespace MathApi.Controllers
     {
       // 一文字目を取得
       var firstSymbol = await _context.Symbols
-                                      .Include(s => s.SymbolType)
+                                      .Include(s => s.Type)
                                       .Include(s => s.ArityFormulaType)
                                       .FirstAsync(s => s.Id == postParam.FirstSymbolId)
                         ?? throw new InvalidDataException("first symbol is not found");
 
-      // 一文字目が量化記号かどうかを取得
-      var isQuant = firstSymbol.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
-                 || firstSymbol.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier;
-
       // 一文字目が量化記号のとき、束縛変数を取得
-      Symbol? boundVariable = null;
-      if (isQuant)
+      Formula? boundVariable = null;
+      if (firstSymbol.IsQuantifier)
       {
-        boundVariable = await _context.Symbols
-                                      .Include(s => s.SymbolType)
-                                      .Include(s => s.ArityFormulaType)
-                                      .FirstAsync(s => s.SymbolTypeId == (long)Const.SymbolType.BoundVariable)
-                        ?? throw new InvalidDataException("bound variable is not found");
+        var boundVarSymbl = await _context.Symbols
+                                          .Include(s => s.Type)
+                                          .Include(s => s.ArityFormulaType)
+                                          .FirstAsync(s => s.Id == postParam.BoundVariableId)
+                            ?? throw new InvalidDataException("bound variable is not found");
+        boundVariable = new Formula
+        {
+          FormulaStrings = new List<FormulaString> {
+            new() {
+              SerialNo = 0,
+              Symbol = boundVarSymbl,
+              SymbolId = boundVarSymbl.Id
+            }
+          }
+        };
       }
 
       // 引数の論理式を取得
@@ -283,44 +159,19 @@ namespace MathApi.Controllers
         argFormulas = await _context.Formulas
           .Include(f => f.FormulaStrings.OrderBy(fs => fs.SerialNo))
           .ThenInclude(fs => fs.Symbol)
-          .ThenInclude(s => s.SymbolType)
+          .ThenInclude(s => s.Type)
           .Include(f => f.FormulaChains)
           .Where(f => postParam.ArgumentedFormulaIds.Contains(f.Id))
           .ToListAsync();
       }
 
-      // 論理式文字列を構成
-      var strings = CreateFormulaStringFromPostParam(
-        firstSymbol,
-        postParam.ArgumentedFormulaIds,
-        argFormulas,
-        isQuant,
-        boundVariable,
-        postParam.BoundVariableId
-      );
-
-      // 論理式鎖を構成
-      var chains = CreateFormulaChainFromPostParam(
-        postParam.ArgumentedFormulaIds,
-        argFormulas,
-        isQuant,
-        postParam.BoundVariableId
-      );
-
       // 戻り値作成
-      var ret = new Formula
-      {
-        Meaning = postParam.Meaning,
-        FormulaStrings = strings,
-        FormulaChains = chains
-      };
-
-      // バリデーション
-      var valid = PostValidation(ret, argFormulas);
-      if (valid != null)
-      {
-        throw new ArgumentException(valid);
-      }
+      var ret = Util.ProceedFormulaConstruction(
+        firstSymbol,
+        boundVariable,
+        argFormulas
+      );
+      ret.Meaning = postParam.Meaning;
 
       _context.Entry(ret).State = EntityState.Added;
       foreach (var fs in ret.FormulaStrings)
@@ -332,37 +183,6 @@ namespace MathApi.Controllers
         _context.Entry(fc).State = EntityState.Added;
       }
       return ret;
-    }
-
-    /// <summary>
-    /// POST時のバリデーション
-    /// </summary>
-    /// <param name="formula">POSTパラメータから作成したFormulaオブジェクト</param>
-    /// <param name="argFormulas">引数にとる論理式オブジェクト</param>
-    /// <returns>エラーなしならnull。エラーありならメッセージ</returns>
-    private static string? PostValidation(Formula formula, List<Formula> argFormulas)
-    {
-      var firstSymbol = formula.FormulaStrings[0].Symbol;
-      if (firstSymbol == null)
-      {
-        return "first symbol is not found";
-      }
-
-      if (firstSymbol.Arity != argFormulas.Count)
-      {
-        return "Invalid Argument Formula Count";
-      }
-
-      int argCnt = 0;
-      foreach (var argFormula in argFormulas)
-      {
-        argCnt++;
-        if (argFormula.FormulaTypeId != firstSymbol.ArityFormulaTypeId)
-        {
-          return $"Invalid Argument Formula Type on #{argCnt}";
-        }
-      }
-      return null;
     }
   }
 }

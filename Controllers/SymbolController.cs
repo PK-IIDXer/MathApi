@@ -52,7 +52,7 @@ namespace MathApi.Controllers
       }
 
       // □は編集不可
-      if (symbol.SymbolTypeId == (long)Const.SymbolType.BoundVariable)
+      if (symbol.TypeId == Const.SymbolTypeEnum.BoundVariable)
       {
         return BadRequest("Cannot modify the bound variable");
       }
@@ -62,7 +62,7 @@ namespace MathApi.Controllers
       {
         var oldSymbol = _context.Symbols?.FirstOrDefault(s => s.Id == id);
         if (oldSymbol != null && (
-          oldSymbol.SymbolTypeId != symbol.SymbolTypeId
+          oldSymbol.TypeId != symbol.TypeId
           || oldSymbol.Arity != symbol.Arity
           || oldSymbol.ArityFormulaTypeId != symbol.ArityFormulaTypeId))
         {
@@ -97,15 +97,10 @@ namespace MathApi.Controllers
     public async Task<ActionResult<Symbol>> PostSymbol(SymbolDto symbolDto)
     {
       var symbol = symbolDto.CreateModel();
-      var valid = Validate(symbol);
-      if (valid != null)
-      {
-        return BadRequest(valid);
-      }
 
       // 束縛変数は一種類のみ登録可能
-      var boundVarCnt = _context.Symbols.Count(x => x.SymbolTypeId == (long)Const.SymbolType.BoundVariable);
-      if (boundVarCnt > 0 && symbol.SymbolTypeId == (long)Const.SymbolType.BoundVariable)
+      var boundVarCnt = _context.Symbols.Count(x => x.TypeId == Const.SymbolTypeEnum.BoundVariable);
+      if (boundVarCnt > 0 && symbol.TypeId == Const.SymbolTypeEnum.BoundVariable)
       {
         return BadRequest("Cannot register bound variables more than 2");
       }
@@ -118,8 +113,7 @@ namespace MathApi.Controllers
           Meaning = symbol.Meaning,
           FormulaStrings = new List<FormulaString>
           {
-            new FormulaString
-            {
+            new() {
               SerialNo = 0,
               Symbol = symbol
             }
@@ -141,19 +135,6 @@ namespace MathApi.Controllers
         return NotFound();
       }
 
-      // 論理式に使用されているかチェックし、使用されていればエラーとする
-      if (await _context.FormulaStrings.AnyAsync(fs => fs.SymbolId == id))
-        return BadRequest("Cannot delete if the symbol is contained in some Formulas");
-
-      if (await _context.InferenceAssumptionFormulas.AnyAsync(iaf => iaf.SymbolId == id))
-        return BadRequest("Cannot delete if the symbol is contained in some Inferences");
-
-      if (await _context.InferenceAssumptionDissolutableAssumptionFormula.AnyAsync(iaf => iaf.SymbolId == id))
-        return BadRequest("Cannot delete if the symbol is contained in some Inferences");
-
-      if (await _context.InferenceConclusionFormulas.AnyAsync(iaf => iaf.SymbolId == id))
-        return BadRequest("Cannot delete if the symbol is contained in some Inferences");
-
       _context.Symbols.Remove(symbol);
       await _context.SaveChangesAsync();
 
@@ -165,32 +146,9 @@ namespace MathApi.Controllers
       return (_context.Symbols?.Any(e => e.Id == id)).GetValueOrDefault();
     }
 
-    private static string? Validate(Symbol symbol)
-    {
-      if (symbol.SymbolTypeId == (long)Const.SymbolType.TermQuantifier
-        || symbol.SymbolTypeId == (long)Const.SymbolType.PropositionQuantifier)
-      {
-        if (symbol.Arity == 0)
-        {
-          return "Cannot set Arity = 0 if it is Quantifier";
-        }
-      }
-      return null;
-    }
-
     private static bool SaveToFormula(Symbol symbol)
     {
-      if (symbol.SymbolTypeId == (long)Const.SymbolType.FreeVariable
-        || symbol.SymbolTypeId == (long)Const.SymbolType.BoundVariable
-        || symbol.SymbolTypeId == (long)Const.SymbolType.PropositionVariable
-        || symbol.SymbolTypeId == (long)Const.SymbolType.Constant)
-      {
-        return true;
-      }
-
-      if (symbol.SymbolTypeId != (long)Const.SymbolType.TermQuantifier
-        && symbol.SymbolTypeId != (long)Const.SymbolType.PropositionQuantifier
-        && symbol.Arity == 0)
+      if (!symbol.Arity.HasValue || symbol.Arity == 0)
       {
         return true;
       }

@@ -41,129 +41,23 @@ namespace MathApi.Controllers
       return theorem;
     }
 
-    // PUT: api/Theorem/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutTheorem(long id, Theorem theorem)
-    {
-      if (id != theorem.Id)
-      {
-        return BadRequest();
-      }
-
-      _context.Entry(theorem).State = EntityState.Modified;
-
-      try
-      {
-        await _context.SaveChangesAsync();
-      }
-      catch (DbUpdateConcurrencyException)
-      {
-        if (!TheoremExists(id))
-        {
-          return NotFound();
-        }
-        else
-        {
-          throw;
-        }
-      }
-
-      return NoContent();
-    }
-
     // POST: api/Theorem
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
     public async Task<ActionResult<Theorem>> PostTheorem(TheoremDto theoremDto)
     {
       var theorem = theoremDto.CreateModel();
+      if (theorem.Inference != null)
+      {
+        var labelIds = theorem.Inference.Arguments.Select(a => a.FormulaLabelId);
+        var labels = await _context.FormulaLabels.Where(fl => labelIds.Contains(fl.Id)).ToListAsync();
+        if (!labels.Any(ia => ia.TypeId == Const.FormulaLabelTypeEnum.Proposition))
+          throw new ArgumentException("Should not use inference if there is no propositional argument");
+      }
       _context.Theorems.Add(theorem);
       await _context.SaveChangesAsync();
 
       return CreatedAtAction("GetTheorem", new { id = theorem.Id }, theorem);
-    }
-
-    [HttpGet("{id}/createInference")]
-    public async Task<ActionResult<Inference>> PostInference(long id)
-    {
-      if (await _context.Inferences.AnyAsync(i => i.TheoremId == id))
-        return BadRequest($"Already exists inference induced by the theorem #{id}");
-
-      var theorem = await _context.Theorems
-                                  .Include(t => t.TheoremAssumptions)
-                                  .ThenInclude(ta => ta.Formula)
-                                  .ThenInclude(f => f.FormulaStrings)
-                                  .ThenInclude(fs => fs.Symbol)
-                                  .Include(t => t.TheoremConclusions)
-                                  .ThenInclude(tc => tc.Formula)
-                                  .ThenInclude(f => f.FormulaStrings)
-                                  .ThenInclude(fs => fs.Symbol)
-                                  .FirstAsync(t => t.Id == id);
-      if (theorem == null) return NotFound();
-
-      if (!theorem.IsProved)
-        return BadRequest($"The theorem #{id} is not proved.");
-
-      // 推論規則引数の構築
-      var inferenceArguments = new List<InferenceArgument>();
-      for (var i = 0; i < theorem.FreeAndPropVariables.Count; i++)
-      {
-        var inferenceArgumentType = (int)Const.InferenceArgumentType.Term;
-        if (theorem.FreeAndPropVariables[i].SymbolTypeId == (int)Const.SymbolType.PropositionVariable)
-          inferenceArgumentType = (int)Const.InferenceArgumentType.Proposition;
-
-        inferenceArguments.Add(new InferenceArgument
-        {
-          SerialNo = i,
-          InferenceArgumentTypeId = inferenceArgumentType,
-          VariableSymbolId = theorem.FreeAndPropVariables[i].Id
-        });
-      }
-
-      // 推論規則仮定の構築
-      var inferenceAssumptions = new List<InferenceAssumption>();
-      for (var i = 0; i < theorem.TheoremAssumptions.Count; i++)
-      {
-        inferenceAssumptions.Add(new InferenceAssumption
-        {
-          SerialNo = i,
-          InferenceAssumptionDissolutionTypeId = (int)Const.InferenceAssumptionDissolutionType.None,
-          InferenceAssumptionFormulas = new List<InferenceAssumptionFormula>
-          {
-            new InferenceAssumptionFormula
-            {
-              InferenceAssumptionSerialNo = i,
-              SerialNo = 0,
-              FormulaId = theorem.TheoremAssumptions[i].FormulaId
-            }
-          }
-        });
-      }
-
-      // 推論規則結論の構築
-      var inferenceConclusions = new List<InferenceConclusionFormula>
-      {
-        new InferenceConclusionFormula
-        {
-          SerialNo = 0,
-          FormulaId = theorem.TheoremConclusions[0].FormulaId
-        }
-      };
-
-      var inference = new Inference {
-        Name = theorem.Name,
-        IsAssumptionAdd = false,
-        TheoremId = theorem.Id,
-        InferenceArguments = inferenceArguments,
-        InferenceAssumptions = inferenceAssumptions,
-        InferenceConclusionFormulas = inferenceConclusions
-      };
-
-      _context.Inferences.Add(inference);
-      await _context.SaveChangesAsync();
-
-      return CreatedAtAction("GetInference", new { id = inference.Id }, inference);
     }
 
     // DELETE: api/Theorem/5
@@ -180,11 +74,6 @@ namespace MathApi.Controllers
       await _context.SaveChangesAsync();
 
       return NoContent();
-    }
-
-    private bool TheoremExists(long id)
-    {
-      return (_context.Theorems?.Any(e => e.Id == id)).GetValueOrDefault();
     }
   }
 }

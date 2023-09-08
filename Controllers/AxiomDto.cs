@@ -13,7 +13,7 @@ public class AxiomDto
   {
     public long SerialNo { get; set; }
     public long FormulaId { get; set; }
-    public string? Remarks { get; set; }
+    public string? Meanings { get; set; }
   }
 
   public Axiom CreateModel()
@@ -28,7 +28,7 @@ public class AxiomDto
         AxiomId = Id,
         SerialNo = p.SerialNo,
         FormulaId = p.FormulaId,
-        Remarks = p.Remarks
+        Meaning = p.Meanings
       }).ToList()
     };
   }
