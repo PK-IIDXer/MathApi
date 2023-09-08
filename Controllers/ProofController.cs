@@ -30,9 +30,9 @@ namespace MathApi.Controllers
 
     // GET: api/Proof/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Proof>> GetProof(long id)
+    public async Task<ActionResult<Proof>> GetProof(long theoremId, long serialNo)
     {
-      var proof = await _context.Proofs.FindAsync(id);
+      var proof = await _context.Proofs.FindAsync(theoremId, serialNo);
 
       if (proof == null)
       {
@@ -54,6 +54,8 @@ namespace MathApi.Controllers
             pi.TheoremId == dto.TheoremId
             && pi.ProofSerialNo == dto.ProofSerialNo)
         .MaxAsync(pi => pi.SerialNo) + 1;
+
+      var proof = await CheckAndGetProof(dto);
 
       var theorem = await _context.Theorems.FindAsync(dto.TheoremId);
       if (theorem == null)
@@ -100,67 +102,33 @@ namespace MathApi.Controllers
 
       if (isStruct)
       {
-        var formulaStructs = inferenceArguments.Select(ia => ia.FormulaStruct ?? throw new Exception("想定外")).ToList();
-        var inferenceResult = inference.Apply(formulaStructs);
-        if (inferenceResult.AssumptionFormulaStructs.Count != assumptionPis.Count)
-          return BadRequest("Assumption count mismatch");
-        foreach (var asmp in assumptionPis)
-        {
-          if (!inferenceResult.AssumptionFormulaStructs.Any(a => a.Equals(asmp)))
-            return BadRequest($"Illegal ProofInferenceSerialNo is set: #{asmp.SerialNo}");
-        }
-        foreach (var infAsmp in inferenceResult.AssumptionFormulaStructs)
-        {
-          var asmpPi = assumptionPis.Find(a => a.ConclusionFormulaStruct?.Equals(infAsmp.FormulaStruct) ?? false);
-          if (asmpPi == null)
-            return BadRequest($"Some InferenceArgument is not enough");
-          var pas = proofAssumptions.Where(pa => pa.AddedProofInference.ConclusionFormulaStruct.Equals(infAsmp.DissolutableStruct));
-          if (infAsmp.IsDissoluteForce && !pas.Any())
-            return BadRequest("There is no ProofAssumption in spite of IsDissoluteForce");
-          foreach (var pa in pas)
-          {
-            var pi = pa.AddedProofInference;
-            if (!assumptionPis.All(aPi => aPi.TreeFrom < pi.TreeFrom && pi.TreeTo < aPi.TreeTo))
-              return BadRequest("There is dissoluting ProofAssumption of assumed at not argumented assumptions");
-            pa.DissolutedProofInferenceSerialNo = nextProofInferenceSerialNo;
-
-            _context.ProofAssumptions.Add(pa);
-          }
-        }
-        var proofInference = new ProofInference
-        {
-          TheoremId = dto.TheoremId,
-          ProofSerialNo = dto.ProofSerialNo,
-          SerialNo = nextProofInferenceSerialNo,
-          InferenceId = dto.InferenceId,
-          ConclusionFormulaStruct = inferenceResult.ConclusionFormulaStructs[0],
-          TreeFrom = newTreeFrom,
-          TreeTo = newTreeTo
-        };
-        _context.ProofInferences.Add(proofInference);
-
-        if (inference.Conclusions[0].AddAssumption)
-        {
-          var proofAssumption = new ProofAssumption
-          {
-            TheoremId = dto.TheoremId,
-            ProofSerialNo = dto.ProofSerialNo,
-            SerialNo = proofAssumptions.Max(a => a.ProofSerialNo) + 1,
-            AddedProofInferenceSerialNo = nextProofInferenceSerialNo
-          };
-          _context.ProofAssumptions.Add(proofAssumption);
-        }
-
-        var argumentSerialNo = 0;
-        var arguments = dto.InferenceArguments.Select(a => new ProofInferenceArgument
-        {
-          TheoremId = dto.TheoremId,
-          ProofSerialNo = dto.ProofSerialNo,
-          ProofInferenceSerialNo = nextProofInferenceSerialNo,
-          SerialNo = argumentSerialNo++,
-          FormulaStructId = a.FormulaStructId
-        });
-        _context.ProofInferenceArguments.AddRange(arguments);
+        var ret = CreateProofDataOnIsStruct(
+          dto,
+          inferenceArguments,
+          inference,
+          assumptionPis,
+          proofAssumptions,
+          nextProofInferenceSerialNo,
+          newTreeFrom,
+          newTreeTo
+        );
+        if (ret != null)
+          return ret;
+      }
+      else
+      {
+        var ret = CreateProofDataOnIsNotStruct(
+          dto,
+          inferenceArguments,
+          inference,
+          assumptionPis,
+          proofAssumptions,
+          nextProofInferenceSerialNo,
+          newTreeFrom,
+          newTreeTo
+        );
+        if (ret != null)
+          return ret;
       }
 
       await _context
@@ -176,104 +144,8 @@ namespace MathApi.Controllers
           .SetProperty(pi => pi.TreeFrom, pi => pi.TreeFrom + 2)
           .SetProperty(pi => pi.TreeTo, pi => pi.TreeTo + 2));
 
-      // var proof = await _context.Proofs.FindAsync(dto.TheoremId, dto.ProofSerialNo);
-      // if (proof == null)
-      //   return BadRequest($"Proof (TheoremId, SerialNo) = (#{dto.TheoremId}, #{dto.ProofSerialNo}) is not found");
-
-      // var inference = await _context.Inferences.FindAsync(dto.InferenceId);
-      // if (inference == null)
-      //   return BadRequest($"Inference #{dto.InferenceId} is not found");
-
-      // var prevProofInferences = await _context.ProofInferences.Where(
-      //   pi => pi.TheoremId == dto.TheoremId
-      //     && dto.AssumingInferenceResults
-      //           .Select(air => air.ProofInferenceSerialNo)
-      //           .Contains(pi.SerialNo)
-      //     && !pi.NextProofInferenceSerialNo.HasValue // 未使用のProofInference
-      // ).ToListAsync();
-      // if (prevProofInferences.Count != dto.AssumingInferenceResults.Count)
-      //   return BadRequest("AssumingInferenceResults may have invalid ProofInferenceSerialNo");
-
-      // var proofAssumptions = await _context.ProofAssumptions.Where(
-      //   pa => pa.TheoremId == dto.TheoremId
-      //     && pa.ProofSerialNo == dto.ProofSerialNo
-      //     && !pa.DissolutedProofInferenceSerialNo.HasValue // 未解消の仮定
-      // ).ToListAsync();
-
-      // var argFormulas = await _context.Formulas
-      //   .Include(f => f.FormulaStrings)
-      //   .ThenInclude(fs => fs.Symbol)
-      //   .ThenInclude(s => s.Type)
-      //   .Include(f => f.FormulaChains)
-      //   .Where(
-      //     f => dto.InferenceArgumentFormulas.Select(d => d.FormulaId).Contains(f.Id)
-      //   ).ToListAsync();
-      // var args = dto.InferenceArgumentFormulas.Select(d => {
-      //   return new ProofInferenceArgument
-      //   {
-      //     TheoremId = proof.TheoremId,
-      //     ProofSerialNo = proof.SerialNo,
-      //     ProofInferenceSerialNo = nextProofInferenceSerialNo,
-      //     SerialNo = d.SerialNo,
-      //     Formula = argFormulas.FirstOrDefault(f => f.Id == d.FormulaId),
-      //     FormulaId = d.FormulaId,
-      //   };
-      // }).ToList();
-
-      // var inferenceResult = inference.Apply(
-      //   nextProofInferenceSerialNo,
-      //   prevProofInferences,
-      //   proofAssumptions,
-      //   args
-      // );
-
-      // var pi = new ProofInference
-      // {
-      //   TheoremId = proof.TheoremId,
-      //   ProofSerialNo = proof.SerialNo,
-      //   SerialNo = nextProofInferenceSerialNo,
-      //   InferenceId = inference.Id,
-      //   ConclusionFormula = inferenceResult.ConclusionFormula,
-      //   ProofInferenceArguments = args
-      // };
-      // _context.ProofInferences.Add(pi);
-
-      // foreach (var updatedPi in inferenceResult.UpdatedProofInferences)
-      // {
-      //   _context.ProofInferences.Add(updatedPi);
-      //   _context.Entry(updatedPi).State = EntityState.Modified;
-      // }
-
-      // foreach (var updatedPa in inferenceResult.UpdatedProofAssumptions)
-      // {
-      //   _context.ProofAssumptions.Add(updatedPa);
-      //   _context.Entry(updatedPa).State = EntityState.Modified;
-      // }
-
-      // // TODO: 命題変数を追加する場合の考慮
-      // if (inferenceResult.AddedProofAssumption != null)
-      // {
-      //   var nextProofAssumptionSerialNo = await _context
-      //     .ProofAssumptions
-      //     .Where(
-      //       pa =>
-      //         pa.TheoremId == dto.TheoremId
-      //         && pa.ProofSerialNo == dto.ProofSerialNo)
-      //     .MaxAsync(pa => pa.SerialNo) + 1;
-      //   var pa = new ProofAssumption
-      //   {
-      //     TheoremId = proof.TheoremId,
-      //     ProofSerialNo = proof.SerialNo,
-      //     SerialNo = nextProofAssumptionSerialNo,
-      //     FormulaId = inferenceResult.AddedProofAssumption.FormulaId,
-      //     AddedProofInferenceSerialNo = nextProofInferenceSerialNo,
-      //     LastUsedProofInferenceSerialNo = nextProofInferenceSerialNo
-      //   };
-      //   _context.ProofAssumptions.Add(pa);
-      //   _context.Entry(pa).State = EntityState.Added;
-      // }
       await _context.SaveChangesAsync();
-      return CreatedAtAction("GetProof", new { id = proof.TheoremId }, proof);
+      return CreatedAtAction("GetProof", new { theoremId = proof.TheoremId, serialNo = proof.SerialNo }, proof);
     }
 
     // DELETE: api/Proof/5
@@ -359,6 +231,178 @@ namespace MathApi.Controllers
       }
 
       return await _context.Proofs.FirstAsync(p => p.TheoremId == dto.TheoremId && p.SerialNo == dto.ProofSerialNo);
+    }
+
+    private ObjectResult? CreateProofDataOnIsStruct(
+      ProofDto dto,
+      List<ProofInferenceArgument> inferenceArguments,
+      Inference inference,
+      List<ProofInference> assumptionPis,
+      List<ProofAssumption> proofAssumptions,
+      long nextProofInferenceSerialNo,
+      long newTreeFrom,
+      long newTreeTo
+    )
+    {
+      var formulaStructs = inferenceArguments.Select(ia => ia.FormulaStruct ?? throw new Exception("想定外")).ToList();
+      var inferenceResult = inference.Apply(formulaStructs);
+      if (inferenceResult.AssumptionFormulaStructs.Count != assumptionPis.Count)
+        return BadRequest("Assumption count mismatch");
+      foreach (var asmp in assumptionPis)
+      {
+        if (!inferenceResult.AssumptionFormulaStructs.Any(a => a.Equals(asmp)))
+          return BadRequest($"Illegal ProofInferenceSerialNo is set: #{asmp.SerialNo}");
+      }
+      foreach (var infAsmp in inferenceResult.AssumptionFormulaStructs)
+      {
+        var asmpPi = assumptionPis.Find(a => a.ConclusionFormulaStruct?.Equals(infAsmp.FormulaStruct) ?? false);
+        if (asmpPi == null)
+          return BadRequest($"Some InferenceArgument is not enough");
+        var pas = proofAssumptions.Where(pa =>
+        {
+          if (pa.AddedProofInference == null)
+            return false;
+          if (pa.AddedProofInference.ConclusionFormulaStruct == null)
+            return false;
+          if (infAsmp.DissolutableStruct == null)
+            return false;
+          return pa.AddedProofInference.ConclusionFormulaStruct.Equals(infAsmp.DissolutableStruct);
+        });
+        if (infAsmp.IsDissoluteForce && !pas.Any())
+          return BadRequest("There is no ProofAssumption in spite of IsDissoluteForce");
+        foreach (var pa in pas)
+        {
+          var pi = pa.AddedProofInference;
+          if (pi == null)
+            return BadRequest("Include ProofAssumption.AddedProofInference");
+          if (!assumptionPis.All(aPi => aPi.TreeFrom < pi.TreeFrom && pi.TreeTo < aPi.TreeTo))
+            return BadRequest("There is dissoluting ProofAssumption of assumed at not argumented assumptions");
+          pa.DissolutedProofInferenceSerialNo = nextProofInferenceSerialNo;
+
+          _context.ProofAssumptions.Add(pa);
+        }
+      }
+      var proofInference = new ProofInference
+      {
+        TheoremId = dto.TheoremId,
+        ProofSerialNo = dto.ProofSerialNo,
+        SerialNo = nextProofInferenceSerialNo,
+        InferenceId = dto.InferenceId,
+        ConclusionFormulaStruct = inferenceResult.ConclusionFormulaStructs[0],
+        TreeFrom = newTreeFrom,
+        TreeTo = newTreeTo
+      };
+      _context.ProofInferences.Add(proofInference);
+
+      if (inference.Conclusions[0].AddAssumption)
+      {
+        var proofAssumption = new ProofAssumption
+        {
+          TheoremId = dto.TheoremId,
+          ProofSerialNo = dto.ProofSerialNo,
+          SerialNo = proofAssumptions.Max(a => a.ProofSerialNo) + 1,
+          AddedProofInferenceSerialNo = nextProofInferenceSerialNo
+        };
+        _context.ProofAssumptions.Add(proofAssumption);
+      }
+
+      var argumentSerialNo = 0;
+      var arguments = dto.InferenceArguments.Select(a => new ProofInferenceArgument
+      {
+        TheoremId = dto.TheoremId,
+        ProofSerialNo = dto.ProofSerialNo,
+        ProofInferenceSerialNo = nextProofInferenceSerialNo,
+        SerialNo = argumentSerialNo++,
+        FormulaStructId = a.FormulaStructId
+      });
+      _context.ProofInferenceArguments.AddRange(arguments);
+      return null;
+    }
+
+    private ObjectResult? CreateProofDataOnIsNotStruct(
+      ProofDto dto,
+      List<ProofInferenceArgument> inferenceArguments,
+      Inference inference,
+      List<ProofInference> assumptionPis,
+      List<ProofAssumption> proofAssumptions,
+      long nextProofInferenceSerialNo,
+      long newTreeFrom,
+      long newTreeTo
+    )
+    {
+      var formulas = inferenceArguments.Select(ia => ia.Formula ?? throw new Exception("想定外")).ToList();
+      var inferenceResult = inference.Apply(formulas);
+      if (inferenceResult.AssumptionFormulas.Count != assumptionPis.Count)
+        return BadRequest("Assumption count mismatch");
+      foreach (var asmp in assumptionPis)
+      {
+        if (!inferenceResult.AssumptionFormulas.Any(a => a.Equals(asmp)))
+          return BadRequest($"Illegal ProofInferenceSerialNo is set: #{asmp.SerialNo}");
+      }
+      foreach (var infAsmp in inferenceResult.AssumptionFormulas)
+      {
+        var asmpPi = assumptionPis.Find(a => a.ConclusionFormula?.Equals(infAsmp.Formula) ?? false);
+        if (asmpPi == null)
+          return BadRequest($"Some InferenceArgument is not enough");
+        var pas = proofAssumptions.Where(pa =>
+        {
+          if (pa.AddedProofInference == null)
+            return false;
+          if (pa.AddedProofInference.ConclusionFormula == null)
+            return false;
+          if (infAsmp.Dissolutable == null)
+            return false;
+          return pa.AddedProofInference.ConclusionFormula.Equals(infAsmp.Dissolutable);
+        });
+        if (infAsmp.IsDissoluteForce && !pas.Any())
+          return BadRequest("There is no ProofAssumption in spite of IsDissoluteForce");
+        foreach (var pa in pas)
+        {
+          var pi = pa.AddedProofInference;
+          if (pi == null)
+            return BadRequest("Include ProofAssumption.AddedProofInference");
+          if (!assumptionPis.All(aPi => aPi.TreeFrom < pi.TreeFrom && pi.TreeTo < aPi.TreeTo))
+            return BadRequest("There is dissoluting ProofAssumption of assumed at not argumented assumptions");
+          pa.DissolutedProofInferenceSerialNo = nextProofInferenceSerialNo;
+
+          _context.ProofAssumptions.Add(pa);
+        }
+      }
+      var proofInference = new ProofInference
+      {
+        TheoremId = dto.TheoremId,
+        ProofSerialNo = dto.ProofSerialNo,
+        SerialNo = nextProofInferenceSerialNo,
+        InferenceId = dto.InferenceId,
+        ConclusionFormula = inferenceResult.ConclusionFormulas[0],
+        TreeFrom = newTreeFrom,
+        TreeTo = newTreeTo
+      };
+      _context.ProofInferences.Add(proofInference);
+
+      if (inference.Conclusions[0].AddAssumption)
+      {
+        var proofAssumption = new ProofAssumption
+        {
+          TheoremId = dto.TheoremId,
+          ProofSerialNo = dto.ProofSerialNo,
+          SerialNo = proofAssumptions.Max(a => a.ProofSerialNo) + 1,
+          AddedProofInferenceSerialNo = nextProofInferenceSerialNo
+        };
+        _context.ProofAssumptions.Add(proofAssumption);
+      }
+
+      var argumentSerialNo = 0;
+      var arguments = dto.InferenceArguments.Select(a => new ProofInferenceArgument
+      {
+        TheoremId = dto.TheoremId,
+        ProofSerialNo = dto.ProofSerialNo,
+        ProofInferenceSerialNo = nextProofInferenceSerialNo,
+        SerialNo = argumentSerialNo++,
+        FormulaStructId = a.FormulaStructId
+      });
+      _context.ProofInferenceArguments.AddRange(arguments);
+      return null;
     }
   }
 }
