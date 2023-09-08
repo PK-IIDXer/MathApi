@@ -22,6 +22,7 @@ public class ProofDto
   /// 当InferenceIdの推論規則の仮定にアサインする論理式を導いたProofInferenceSerialNo
   /// </summary>
   public List<long> ProofInferenceSerialNos { get; set; } = new();
+  public long? ProofAssumptionSerialNo { get; set; }
 
   public class InferenceArgumentFormulaDto
   {

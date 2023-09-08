@@ -166,6 +166,27 @@ namespace MathApi.Controllers
 
     private async Task<List<ProofInferenceArgument>> CreateProofInferenceArguments(ProofDto dto)
     {
+      if (dto.ProofAssumptionSerialNo.HasValue)
+      {
+        var arg = await _context.ProofAssumptions.FindAsync(dto.TheoremId, dto.ProofSerialNo, dto.ProofAssumptionSerialNo)
+          ?? throw new ArgumentException($"ProofAssumption is not found: (TheoremId, ProofSerialNo, SerialNo)=({dto.TheoremId},{dto.ProofSerialNo},{dto.ProofAssumptionSerialNo})");
+        if (arg.AddedProofInference == null)
+          throw new ArgumentException("Include ProofAssumption.AddedProofInference");
+        return new List<ProofInferenceArgument>
+        {
+          new()
+          {
+            TheoremId = dto.TheoremId,
+            ProofInferenceSerialNo = dto.ProofSerialNo,
+            SerialNo = 0,
+            FormulaId = arg.AddedProofInference.ConclusionFormulaId,
+            Formula = arg.AddedProofInference.ConclusionFormula,
+            FormulaStructId = arg.AddedProofInference.ConclusionFormulaStructId,
+            FormulaStruct = arg.AddedProofInference.ConclusionFormulaStruct
+          }
+        };
+      }
+
       var formulas = await _context.Formulas.Where(f => dto.InferenceArguments.Select(d => d.FormulaId).Contains(f.Id)).ToListAsync();
       var formulaStructs = await _context.FormulaStructs.Where(fs => dto.InferenceArguments.Select(d => d.FormulaStructId).Contains(fs.Id)).ToListAsync();
 
@@ -289,12 +310,13 @@ namespace MathApi.Controllers
         SerialNo = nextProofInferenceSerialNo,
         InferenceId = dto.InferenceId,
         ConclusionFormulaStruct = inferenceResult.ConclusionFormulaStructs[0],
+        ProofAssumptionSerialNo = dto.ProofAssumptionSerialNo,
         TreeFrom = newTreeFrom,
         TreeTo = newTreeTo
       };
       _context.ProofInferences.Add(proofInference);
 
-      if (inference.Conclusions[0].AddAssumption)
+      if (inference.Conclusions[0].AddAssumption && !dto.ProofAssumptionSerialNo.HasValue)
       {
         var proofAssumption = new ProofAssumption
         {
@@ -375,12 +397,13 @@ namespace MathApi.Controllers
         SerialNo = nextProofInferenceSerialNo,
         InferenceId = dto.InferenceId,
         ConclusionFormula = inferenceResult.ConclusionFormulas[0],
+        ProofAssumptionSerialNo = dto.ProofAssumptionSerialNo,
         TreeFrom = newTreeFrom,
         TreeTo = newTreeTo
       };
       _context.ProofInferences.Add(proofInference);
 
-      if (inference.Conclusions[0].AddAssumption)
+      if (inference.Conclusions[0].AddAssumption && !dto.ProofAssumptionSerialNo.HasValue)
       {
         var proofAssumption = new ProofAssumption
         {

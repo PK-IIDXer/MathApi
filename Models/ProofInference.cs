@@ -36,6 +36,14 @@ public class ProofInference
   /// 結論論理式構成ID
   /// </summary>
   public long? ConclusionFormulaStructId { get; set; }
+  public ProofAssumption? ProofAssumption { get; set; }
+  /// <summary>
+  /// 証明仮定連番
+  /// </summary>
+  /// <remarks>
+  /// 証明仮定を仮定する推論を使用する際に使用する
+  /// </remarks>
+  public long? ProofAssumptionSerialNo { get; set; }
   /// <summary>
   /// 証明推論木From
   /// </summary>

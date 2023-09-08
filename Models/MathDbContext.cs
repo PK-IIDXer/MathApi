@@ -351,11 +351,16 @@ public class MathDbContext : DbContext
                      .WithMany(fs => fs.ProofInferences)
                      .HasPrincipalKey(fs => new { fs.Id })
                      .HasForeignKey(pi => new { pi.ConclusionFormulaStructId });
+        nestedBuilder.HasOne(pi => pi.ProofAssumption)
+                     .WithMany(pa => pa.ProofInferences)
+                     .HasPrincipalKey(pa => new { pa.TheoremId, pa.ProofSerialNo, pa.SerialNo })
+                     .HasForeignKey(pi => new { pi.TheoremId, pi.ProofSerialNo, pi.ProofAssumptionSerialNo });
         nestedBuilder.Navigation(pi => pi.Proof).AutoInclude();
         nestedBuilder.Navigation(pi => pi.Inference).AutoInclude();
         nestedBuilder.Navigation(pi => pi.ConclusionFormula).AutoInclude();
         nestedBuilder.Navigation(pi => pi.ConclusionFormulaStruct).AutoInclude();
         nestedBuilder.Navigation(pi => pi.ProofInferenceArguments).AutoInclude();
+        nestedBuilder.Navigation(pi => pi.ProofAssumption).AutoInclude();
       }
     );
     modelBuilder.Entity<ProofInferenceArgument>(

@@ -34,4 +34,6 @@ public class ProofAssumption
   /// 当該証明仮定を解消した証明推論連番
   /// </summary>
   public long? DissolutedProofInferenceSerialNo { get; set; }
+
+  public List<ProofInference> ProofInferences { get; } = new();
 }
