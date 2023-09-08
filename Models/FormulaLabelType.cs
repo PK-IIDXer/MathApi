@@ -11,7 +11,7 @@ public class FormulaLabelType
   /// <summary>
   /// 論理式ラベル種類ID
   /// </summary>
-  public int Id { get; set; }
+  public Const.FormulaLabelType Id { get; set; }
   /// <summary>
   /// 論理式ラベル種類名称
   /// </summary>

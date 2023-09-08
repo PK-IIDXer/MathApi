@@ -2,7 +2,7 @@ namespace MathApi.Models;
 
 public class SymbolType
 {
-  public int Id { get; set; }
+  public Const.SymbolType Id { get; set; }
   public string Name { get; set; } = "";
   public FormulaType FormulaType { get; } = new();
   public Const.FormulaType FormulaTypeId { get; set; }

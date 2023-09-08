@@ -49,7 +49,6 @@ public class InferenceDto
     {
       Id = Id,
       Name = Name,
-      IsAssumptionAdd = IsAssumptionAdd,
       Arguments = Arguments.Select(a => new InferenceArgument
       {
         InferenceId = Id,

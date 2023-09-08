@@ -449,24 +449,24 @@ public class MathDbContext : DbContext
     );
 
     modelBuilder.Entity<FormulaType>().HasData(
-      new { Id = 1, Name = "Term" },
-      new { Id = 2, Name = "Proposition" }
+      new { Id = Const.FormulaType.Term, Name = "Term" },
+      new { Id = Const.FormulaType.Proposition, Name = "Proposition" }
     );
 
     modelBuilder.Entity<SymbolType>().HasData(
-      new { Id = 1, Name = "free variable", FormulaTypeId = Const.FormulaType.Term, IsQuantifier = false },
-      new { Id = 2, Name = "bound variable", FormulaTypeId = Const.FormulaType.Term, IsQuantifier = false },
-      new { Id = 3, Name = "function", FormulaTypeId = Const.FormulaType.Term, IsQuantifier = false },
-      new { Id = 4, Name = "predicate", FormulaTypeId = Const.FormulaType.Proposition, IsQuantifier = false },
-      new { Id = 5, Name = "logic", FormulaTypeId = Const.FormulaType.Proposition, IsQuantifier = false },
-      new { Id = 6, Name = "term quantifier", FormulaTypeId = Const.FormulaType.Term, IsQuantifier = true },
-      new { Id = 7, Name = "proposition quantifier", FormulaTypeId = Const.FormulaType.Proposition, IsQuantifier = true }
+      new { Id = Const.SymbolType.FreeVariable, Name = "free variable", FormulaTypeId = Const.FormulaType.Term, IsQuantifier = false },
+      new { Id = Const.SymbolType.BoundVariable, Name = "bound variable", FormulaTypeId = Const.FormulaType.Term, IsQuantifier = false },
+      new { Id = Const.SymbolType.Function, Name = "function", FormulaTypeId = Const.FormulaType.Term, IsQuantifier = false },
+      new { Id = Const.SymbolType.Predicate, Name = "predicate", FormulaTypeId = Const.FormulaType.Proposition, IsQuantifier = false },
+      new { Id = Const.SymbolType.Logic, Name = "logic", FormulaTypeId = Const.FormulaType.Proposition, IsQuantifier = false },
+      new { Id = Const.SymbolType.TermQuantifier, Name = "term quantifier", FormulaTypeId = Const.FormulaType.Term, IsQuantifier = true },
+      new { Id = Const.SymbolType.PropositionQuantifier, Name = "proposition quantifier", FormulaTypeId = Const.FormulaType.Proposition, IsQuantifier = true }
     );
 
     modelBuilder.Entity<FormulaLabelType>().HasData(
-      new { Id = 1, Name = "Term" },
-      new { Id = 2, Name = "Proposition" },
-      new { Id = 3, Name = "Free Variable" }
+      new { Id = Const.FormulaLabelType.Term, Name = "Term" },
+      new { Id = Const.FormulaLabelType.Proposition, Name = "Proposition" },
+      new { Id = Const.FormulaLabelType.FreeVariable, Name = "Free Variable" }
     );
   }
 }

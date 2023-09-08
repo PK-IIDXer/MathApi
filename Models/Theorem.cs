@@ -13,7 +13,7 @@ public class Theorem
   public List<TheoremConclusion> Conclusions { get; set; } = new();
 
   public Inference? Inference { get; set; }
-  public int? InferenceId { get; set; }
+  public long? InferenceId { get; set; }
 
   public List<Proof>? Proofs { get; } = new();
 }
