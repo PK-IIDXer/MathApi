@@ -289,7 +289,6 @@ namespace MathApi.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<long?>("TheoremId")
-                        .IsRequired()
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -1142,8 +1141,7 @@ namespace MathApi.Migrations
                 {
                     b.HasOne("MathApi.Models.Inference", "Inference")
                         .WithOne("Theorem")
-                        .HasForeignKey("MathApi.Models.Theorem", "InferenceId")
-                        .HasPrincipalKey("MathApi.Models.Inference", "TheoremId");
+                        .HasForeignKey("MathApi.Models.Theorem", "InferenceId");
 
                     b.Navigation("Inference");
                 });

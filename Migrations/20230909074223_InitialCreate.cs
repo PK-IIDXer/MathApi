@@ -99,12 +99,11 @@ namespace MathApi.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    TheoremId = table.Column<long>(type: "bigint", nullable: false)
+                    TheoremId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Inferences", x => x.Id);
-                    table.UniqueConstraint("AK_Inferences_TheoremId", x => x.TheoremId);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -254,7 +253,7 @@ namespace MathApi.Migrations
                         name: "FK_Theorems_Inferences_InferenceId",
                         column: x => x.InferenceId,
                         principalTable: "Inferences",
-                        principalColumn: "TheoremId");
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 

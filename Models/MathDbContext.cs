@@ -182,6 +182,10 @@ public class MathDbContext : DbContext
     );
     modelBuilder.Entity<Inference>(
       nestedBuilder => {
+        nestedBuilder.HasOne(i => i.Theorem)
+                     .WithOne(t => t.Inference)
+                     .HasPrincipalKey<Theorem>(t => new { t.Id })
+                     .HasForeignKey<Inference>(i => new { i.TheoremId });
         nestedBuilder.Navigation(i => i.Arguments).AutoInclude();
         nestedBuilder.Navigation(i => i.Assumptions).AutoInclude();
         nestedBuilder.Navigation(i => i.Conclusions).AutoInclude();
@@ -410,8 +414,8 @@ public class MathDbContext : DbContext
       nestedBuilder => {
         nestedBuilder.HasOne(t => t.Inference)
                      .WithOne(i => i.Theorem)
-                     .HasPrincipalKey<Inference>(i => i.TheoremId)
-                     .HasForeignKey<Theorem>(t => t.InferenceId);
+                     .HasPrincipalKey<Inference>(i => new { i.Id })
+                     .HasForeignKey<Theorem>(t => new { t.InferenceId });
         nestedBuilder.Navigation(t => t.Assumptions).AutoInclude();
         nestedBuilder.Navigation(t => t.Conclusions).AutoInclude();
         nestedBuilder.Navigation(t => t.Inference).AutoInclude();
