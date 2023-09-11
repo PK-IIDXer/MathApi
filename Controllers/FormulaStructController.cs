@@ -102,9 +102,11 @@ namespace MathApi.Controllers
           var arg = formulaStruct.Arguments.Find(a => a.SerialNo == str.ArgumentSerialNo);
           if (arg == null)
             return BadRequest($"ArgumentSerialNo mismatch (StringsSerialNo={str.SerialNo})");
+
           var label = labels.Find(l => l.Id == arg.LabelId);
           if (label == null)
             return BadRequest($"LabelId#{arg.LabelId} is not found (StringsSerialNo={str.SerialNo})");
+
           if (str.Substitutions.Count > 0)
           {
             if (label.TypeId != Const.FormulaLabelTypeEnum.Proposition)
@@ -116,22 +118,27 @@ namespace MathApi.Controllers
             var argFr = formulaStruct.Arguments.Find(a => a.SerialNo == ss.ArgumentFromSerialNo);
             if (argFr == null)
               return BadRequest($"Substitution ArgumentFromSerialNo mismatch (StringsSerialNo={str.SerialNo})");
+
             var labelFr = labels.Find(l => l.Id == argFr.LabelId);
             if (labelFr == null)
               return BadRequest($"(Substitution) LabelId#{arg.LabelId} is not found (StringsSerialNo={str.SerialNo})");
+
             if (labelFr.TypeId != Const.FormulaLabelTypeEnum.FreeVariable)
               return BadRequest("Substitution From must be FreeVariable (StringsSerialNo={str.SerialNo})");
+
             var argTo = formulaStruct.Arguments.Find(a => a.SerialNo == ss.ArgumentToSerialNo);
             if (argTo == null)
               return BadRequest($"Substitution ArgumentToSerialNo mismatch (StringsSerialNo={str.SerialNo})");
+
             var labelTo = labels.Find(l => l.Id == argTo.LabelId);
             if (labelTo == null)
               return BadRequest($"(Substitution) LabelId#{arg.LabelId} is not found (StringsSerialNo={str.SerialNo})");
+
             if (labelTo.TypeId != Const.FormulaLabelTypeEnum.FreeVariable && labelTo.TypeId != Const.FormulaLabelTypeEnum.Term)
               return BadRequest("Substitution From must be FreeVariable or Term (StringsSerialNo={str.SerialNo})");
           }
 
-          tmpStructStrings.Add(formulaStruct.Strings[i]);
+          tmpStructStrings.Insert(0, formulaStruct.Strings[i]);
         }
         else
         {
@@ -161,23 +168,67 @@ namespace MathApi.Controllers
 
           foreach (var tmpFss in tmpStructStrings)
           {
+            var dummy = tmpFss.Symbol;
+            if (dummy != null)
+            {
+              if (symbol.ArityFormulaTypeId == Const.FormulaTypeEnum.Term)
+              {
+                switch (dummy.TypeId)
+                {
+                  case Const.SymbolTypeEnum.Logic:
+                  case Const.SymbolTypeEnum.Predicate:
+                  case Const.SymbolTypeEnum.PropositionQuantifier:
+                    return BadRequest($"ArityType mismatch (StringsSerialNo={str.SerialNo})");
+                  default:
+                    throw new NotImplementedException();
+                }
+              }
+
+              if (symbol.ArityFormulaTypeId == Const.FormulaTypeEnum.Proposition)
+              {
+                switch (dummy.TypeId)
+                {
+                  case Const.SymbolTypeEnum.FreeVariable:
+                  case Const.SymbolTypeEnum.Function:
+                  case Const.SymbolTypeEnum.TermQuantifier:
+                    return BadRequest($"ArityType mismatch (StringsSerialNo={str.SerialNo})");
+                  default:
+                    throw new NotImplementedException();
+                }
+              }
+              continue;
+            }
+
             var arg = formulaStruct.Arguments.Find(a => a.SerialNo == tmpFss.ArgumentSerialNo);
             if (arg == null)
               return BadRequest($"ArgumentSerialNo mismatch (StringsSerialNo={str.SerialNo})");
+
             var label = labels.Find(l => l.Id == arg.LabelId);
             if (label == null)
               return BadRequest($"LabelId#{arg.LabelId} is not found (StringsSerialNo={str.SerialNo})");
+
             if (symbol.ArityFormulaTypeId == Const.FormulaTypeEnum.Term)
             {
               if (label.TypeId != Const.FormulaLabelTypeEnum.Term)
                 return BadRequest($"ArityType mismatch (StringsSerialNo={str.SerialNo})");
             }
+
             if (symbol.ArityFormulaTypeId == Const.FormulaTypeEnum.Proposition)
             {
               if (label.TypeId != Const.FormulaLabelTypeEnum.Proposition)
                 return BadRequest($"ArityType mismatch (StringsSerialNo={str.SerialNo})");
             }
           }
+
+          tmpStructStrings.Clear();
+          tmpStructStrings.Add(new FormulaStructString
+          {
+            Symbol = new Symbol
+            {
+              Character = "DUMMY",
+              TypeId = symbol.TypeId
+            }
+          });
         }
       }
 
