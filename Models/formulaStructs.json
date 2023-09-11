@@ -1,0 +1,74 @@
+[
+  {
+    "meaning": "φ",
+    "arguments": [
+      {
+        "serialNo": 0,
+        "labelId": 1
+      }
+    ],
+    "strings": [
+      {
+        "serialNo": 0,
+        "argumentSerialNo": 0
+      }
+    ]
+  },
+  {
+    "meaning": "∧φψ",
+    "arguments": [
+      {
+        "serialNo": 0,
+        "labelId": 1
+      },
+      {
+        "serialNo": 1,
+        "labelId": 2
+      }
+    ],
+    "strings": [
+      {
+        "serialNo": 0,
+        "symbolId": 5
+      },
+      {
+        "serialNo": 1,
+        "argumentSerialNo": 0
+      },
+      {
+        "serialNo": 2,
+        "argumentSerialNo": 1
+      }
+    ]
+  },
+  {
+    "meaning": "φ[y/x]",
+    "arguments": [
+      {
+        "serialNo": 0,
+        "labelId": 1
+      },
+      {
+        "serialNo": 1,
+        "labelId": 4
+      },
+      {
+        "serialNo": 2,
+        "labelId": 5
+      }
+    ],
+    "strings": [
+      {
+        "serialNo": 0,
+        "argumentSerialNo": 0,
+        "substitutions": [
+          {
+            "serialNo": 0,
+            "argumentFromSerialNo": 1,
+            "argumentToSerialNo": 2
+          }
+        ]
+      }
+    ]
+  }
+]

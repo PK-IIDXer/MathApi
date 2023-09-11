@@ -94,7 +94,7 @@ namespace MathApi.Controllers
       var labels = await _context.FormulaLabels.Where(l => formulaStruct.Arguments.Select(a => a.LabelId).Contains(l.Id)).ToListAsync();
 
       var tmpStructStrings = new List<FormulaStructString>();
-      for (var i = formulaStruct.Strings.Count; i >= 0; i--)
+      for (var i = formulaStruct.Strings.Count - 1; i >= 0; i--)
       {
         var str = formulaStruct.Strings[i];
         if (!str.SymbolId.HasValue)
@@ -146,7 +146,7 @@ namespace MathApi.Controllers
           if (symbol == null)
             return BadRequest($"SymbolId#{str.SymbolId} (StringsSerialNo={str.SerialNo}) is not found");
 
-          if (symbol.Arity != tmpStructStrings.Count)
+          if (symbol.Arity > tmpStructStrings.Count)
             return BadRequest($"argument count of symbol#{symbol.Id} (StringsSerialNo={str.SerialNo}) is invalid");
 
           if (symbol.IsQuantifier)
@@ -166,35 +166,36 @@ namespace MathApi.Controllers
               return BadRequest($"BoundVariable must be FreeVariable (StringsSerialNo={str.SerialNo})");
           }
 
-          foreach (var tmpFss in tmpStructStrings)
+          for (var j = 0; j < symbol.Arity; j++)
           {
+            var tmpFss = tmpStructStrings[j];
             var dummy = tmpFss.Symbol;
             if (dummy != null)
             {
               if (symbol.ArityFormulaTypeId == Const.FormulaTypeEnum.Term)
               {
-                switch (dummy.TypeId)
+                return
+                  dummy.TypeId
+                switch
                 {
-                  case Const.SymbolTypeEnum.Logic:
-                  case Const.SymbolTypeEnum.Predicate:
-                  case Const.SymbolTypeEnum.PropositionQuantifier:
-                    return BadRequest($"ArityType mismatch (StringsSerialNo={str.SerialNo})");
-                  default:
-                    throw new NotImplementedException();
-                }
+                  Const.SymbolTypeEnum.Logic
+                    or Const.SymbolTypeEnum.Predicate
+                    or Const.SymbolTypeEnum.PropositionQuantifier
+                      => BadRequest($"ArityType mismatch (StringsSerialNo={str.SerialNo})"),
+                  _ => throw new NotImplementedException(),
+                };
               }
 
               if (symbol.ArityFormulaTypeId == Const.FormulaTypeEnum.Proposition)
               {
-                switch (dummy.TypeId)
+                return dummy.TypeId switch
                 {
-                  case Const.SymbolTypeEnum.FreeVariable:
-                  case Const.SymbolTypeEnum.Function:
-                  case Const.SymbolTypeEnum.TermQuantifier:
-                    return BadRequest($"ArityType mismatch (StringsSerialNo={str.SerialNo})");
-                  default:
-                    throw new NotImplementedException();
-                }
+                  Const.SymbolTypeEnum.FreeVariable
+                    or Const.SymbolTypeEnum.Function
+                    or Const.SymbolTypeEnum.TermQuantifier
+                      => BadRequest($"ArityType mismatch (StringsSerialNo={str.SerialNo})"),
+                  _ => throw new NotImplementedException(),
+                };
               }
               continue;
             }
@@ -220,8 +221,8 @@ namespace MathApi.Controllers
             }
           }
 
-          tmpStructStrings.Clear();
-          tmpStructStrings.Add(new FormulaStructString
+          tmpStructStrings.RemoveRange(0, symbol.Arity ?? 0);
+          tmpStructStrings.Insert(0, new FormulaStructString
           {
             Symbol = new Symbol
             {

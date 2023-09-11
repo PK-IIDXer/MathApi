@@ -40,6 +40,8 @@ public class FormulaStruct
       {
         if (s.Argument == null)
           throw new ArgumentException("Include FormulaStruct.Strings.Argument");
+        if (s.Argument.Label == null)
+          throw new ArgumentException("Include FormulaStruct.Strings.Argument.Label");
         return s.Argument.Label.TypeId;
       }
 
@@ -71,6 +73,8 @@ public class FormulaStruct
           ?? throw new ArgumentException("Include FormulaStructString.Argument");
         var formula = args[fsChar.ArgumentSerialNo.Value]
           ?? throw new ArgumentException(null, nameof(args));
+        if (fsArg.Label == null)
+          throw new ArgumentException("Include FormulaStruct.Strings.Argument.Label");
         if (fsArg.Label.TypeId == Const.FormulaLabelTypeEnum.Term)
         {
           if (formula.FormulaTypeId != Const.FormulaTypeEnum.Term)
@@ -93,6 +97,8 @@ public class FormulaStruct
           // 代入操作
           var fromFsArg = sbs.ArgumentFrom
             ?? throw new ArgumentException("Include FormulaStructString.SubstitutionArgumentFrom");
+          if (fromFsArg.Label == null)
+            throw new ArgumentException("Include FormulaStruct.Strings.Argument.Label");
           if (fromFsArg.Label.TypeId != Const.FormulaLabelTypeEnum.FreeVariable)
             throw new ArgumentException("Invalid FormulaStruct data");
           var fromFormula = args[sbs.ArgumentFromSerialNo]
@@ -101,6 +107,8 @@ public class FormulaStruct
             throw new ArgumentException($"Invalid args on #{fsChar.ArgumentSerialNo.Value}");
           var toFsArg = sbs.ArgumentTo
             ?? throw new ArgumentException("Include FormulaStructString.SubstitutionArgumentTo");
+          if (toFsArg.Label == null)
+            throw new ArgumentException("Include FormulaStruct.Strings.Argument.Label");
           if (toFsArg.Label.TypeId != Const.FormulaLabelTypeEnum.FreeVariable)
             throw new ArgumentException("Invalid FormulaStruct data");
           var toFormula = args[sbs.ArgumentToSerialNo]
@@ -217,6 +225,8 @@ public class FormulaStruct
         var fsArg = Arguments[str.ArgumentSerialNo ?? throw new ArgumentException("Invalid FormulaStructString data")]
           ?? throw new ArgumentException("Invalid FormulaStructString data");
         var arg = args[str.ArgumentSerialNo ?? throw new ArgumentException("Invalid FormulaStructString data")];
+        if (fsArg.Label == null)
+          throw new ArgumentException("Include FormulaStruct.Arguments.Label");
         if (arg.TypeId != fsArg.Label.TypeId)
           throw new ArgumentException("Argument type mismatch");
         foreach (var argStr in arg.Strings)
@@ -297,7 +307,9 @@ public class FormulaStruct
           var froms = new List<int>();
           foreach (var s in newSbs)
           {
-            if (froms.Any(f => f == s.ArgumentFrom?.Label.Id))
+            if (s.ArgumentFrom != null && s.ArgumentFrom.Label == null)
+              throw new ArgumentException("Include FormulaStructStringSubstitution.ArgumentFrom.Label");
+            if (froms.Any(f => f == s.ArgumentFrom?.Label?.Id))
               throw new ArgumentException("Substitution \"from\" variable is duplicated");
             else
               froms.Add(s.ArgumentFromSerialNo);
