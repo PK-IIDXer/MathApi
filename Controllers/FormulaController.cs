@@ -78,11 +78,118 @@ namespace MathApi.Controllers
     // POST: api/Formula
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<Formula>> PostFormula(FormulaDto postParam)
+    public async Task<ActionResult<Formula>> PostFormula(FormulaDto dto)
     {
       try
       {
-        var formula = await CreateFormulaFromPostParam(postParam);
+        var formula = dto.CreateModel();
+        var symbols = await _context.Symbols.Where(s => formula.FormulaStrings.Select(st => st.SymbolId).Contains(s.Id)).ToListAsync();
+
+        // FormulaStringチェック
+        var tmpSymbols = new List<Symbol>();
+        for (var i = formula.FormulaStrings.Count - 1; i >= 0; i--)
+        {
+          var str = formula.FormulaStrings[i];
+          var symbol = symbols.Find(s => s.Id == str.SymbolId);
+          if (symbol == null)
+            return BadRequest($"Symbol#{str.SymbolId} is not found");
+
+          if (!symbol.Arity.HasValue || symbol.Arity == 0)
+          {
+            tmpSymbols.Insert(0, symbol);
+          }
+          else
+          {
+            if (symbol.Arity > tmpSymbols.Count)
+              return BadRequest($"argument count of symbol#{symbol.Id} (StringsSerialNo={str.SerialNo}) is invalid");
+
+            for (var j = 0; j < symbol.Arity; j++)
+            {
+              var tmpSymbol = tmpSymbols[j];
+              if (tmpSymbol.Type == null)
+              {
+                if (symbol.ArityFormulaTypeId == Const.FormulaTypeEnum.Term)
+                {
+                  switch (tmpSymbol.TypeId)
+                  {
+                    case Const.SymbolTypeEnum.FreeVariable:
+                    case Const.SymbolTypeEnum.Function:
+                    case Const.SymbolTypeEnum.TermQuantifier:
+                      continue;
+                    case Const.SymbolTypeEnum.Logic:
+                    case Const.SymbolTypeEnum.Predicate:
+                    case Const.SymbolTypeEnum.PropositionQuantifier:
+                      return BadRequest($"ArityType mismatch (StringsSerialNo={str.SerialNo})");
+                    default:
+                      throw new NotImplementedException();
+                  }
+                }
+
+                if (symbol.ArityFormulaTypeId == Const.FormulaTypeEnum.Proposition)
+                {
+                  switch (tmpSymbol.TypeId)
+                  {
+                    case Const.SymbolTypeEnum.FreeVariable:
+                    case Const.SymbolTypeEnum.Function:
+                    case Const.SymbolTypeEnum.TermQuantifier:
+                      return BadRequest($"ArityType mismatch (StringsSerialNo={str.SerialNo})");
+                    case Const.SymbolTypeEnum.Logic:
+                    case Const.SymbolTypeEnum.Predicate:
+                    case Const.SymbolTypeEnum.PropositionQuantifier:
+                      continue;
+                    default:
+                      throw new NotImplementedException();
+                  }
+                }
+                continue;
+              }
+
+              if (symbol.ArityFormulaTypeId != tmpSymbol.Type.FormulaTypeId)
+                return BadRequest($"ArityType mismatch (StringsSerialNo={str.SerialNo})");
+            }
+
+            tmpSymbols.RemoveRange(0, symbol.Arity ?? 0);
+            tmpSymbols.Insert(0, new Symbol
+            {
+              Character = "DUMMY",
+              TypeId = symbol.TypeId
+            });
+          }
+        }
+
+        // FormulaChainチェック
+        foreach (var chain in formula.FormulaChains)
+        {
+          var fromStr = formula.FormulaStrings.Find(s => s.SerialNo == chain.FromFormulaStringSerialNo);
+          if (fromStr == null)
+            return BadRequest($"FormulaChain.FromFormulaStringSerialNo is not related with FormulaString");
+          var fromSym = symbols.Find(s => s.Id == fromStr.SymbolId);
+          if (fromSym == null)
+            return BadRequest($"Symbol#{fromStr.SymbolId} is not found");
+          var toStr = formula.FormulaStrings.Find(s => s.SerialNo == chain.ToFormulaStringSerialNo);
+          if (toStr == null)
+            return BadRequest($"FormulaChain.ToFormulaStringSerialNo is not related with FormulaString");
+          var toSym = symbols.Find(s => s.Id == toStr.SymbolId);
+          if (toSym == null)
+            return BadRequest($"Symbol#{toStr.SymbolId} is not found");
+
+          if (!fromSym.IsQuantifier)
+            return BadRequest($"Chain FromSymbol must be quantifier");
+          if (toSym.TypeId != Const.SymbolTypeEnum.BoundVariable)
+            return BadRequest($"Chain ToSymbol must be BoundVariable");
+        }
+
+        foreach (var str in formula.FormulaStrings)
+        {
+          var symbol = symbols.Find(s => s.Id == str.SymbolId);
+          if (symbol == null)
+            return BadRequest($"Symbol#{str.SymbolId} is not found");
+
+          var chain = formula.FormulaChains.Find(c => c.ToFormulaStringSerialNo == str.SerialNo);
+          if (symbol.TypeId == Const.SymbolTypeEnum.BoundVariable && chain == null)
+            return BadRequest("There is a bound variable not relating FormulaChain");
+        }
+
         _context.Formulas.Add(formula);
         await _context.SaveChangesAsync();
 
@@ -114,75 +221,6 @@ namespace MathApi.Controllers
     private bool FormulaExists(long id)
     {
       return (_context.Formulas?.Any(e => e.Id == id)).GetValueOrDefault();
-    }
-
-    /// <summary>
-    /// POSTパラメータからFormulaオブジェクトを作成
-    /// </summary>
-    /// <param name="postParam">POSTパラメータ</param>
-    /// <returns>Formulaオブジェクト</returns>
-    /// <exception cref="InvalidDataException"></exception>
-    private async Task<Formula> CreateFormulaFromPostParam(FormulaDto postParam)
-    {
-      // 一文字目を取得
-      var firstSymbol = await _context.Symbols
-                                      .Include(s => s.Type)
-                                      .Include(s => s.ArityFormulaType)
-                                      .FirstAsync(s => s.Id == postParam.FirstSymbolId)
-                        ?? throw new InvalidDataException("first symbol is not found");
-
-      // 一文字目が量化記号のとき、束縛変数を取得
-      Formula? boundVariable = null;
-      if (firstSymbol.IsQuantifier)
-      {
-        var boundVarSymbl = await _context.Symbols
-                                          .Include(s => s.Type)
-                                          .Include(s => s.ArityFormulaType)
-                                          .FirstAsync(s => s.Id == postParam.BoundVariableId)
-                            ?? throw new InvalidDataException("bound variable is not found");
-        boundVariable = new Formula
-        {
-          FormulaStrings = new List<FormulaString> {
-            new() {
-              SerialNo = 0,
-              Symbol = boundVarSymbl,
-              SymbolId = boundVarSymbl.Id
-            }
-          }
-        };
-      }
-
-      // 引数の論理式を取得
-      var argFormulas = new List<Formula>();
-      if (postParam.ArgumentedFormulaIds.Any())
-      {
-        argFormulas = await _context.Formulas
-          .Include(f => f.FormulaStrings.OrderBy(fs => fs.SerialNo))
-          .ThenInclude(fs => fs.Symbol)
-          .ThenInclude(s => s.Type)
-          .Include(f => f.FormulaChains)
-          .Where(f => postParam.ArgumentedFormulaIds.Contains(f.Id))
-          .ToListAsync();
-      }
-
-      // 戻り値作成
-      var ret = Util.ProceedFormulaConstruction(
-        firstSymbol,
-        boundVariable,
-        argFormulas
-      );
-      ret.Meaning = postParam.Meaning;
-
-      _context.Entry(ret).State = EntityState.Added;
-      foreach (var fs in ret.FormulaStrings)
-      {
-        _context.Entry(fs).State = EntityState.Added;
-      }
-      foreach (var fc in ret.FormulaChains)
-      {
-        _context.Entry(fc).State = EntityState.Added;
-      }
-      return ret;
     }
   }
 }

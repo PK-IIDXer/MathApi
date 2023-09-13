@@ -22,9 +22,15 @@ namespace MathApi.Controllers
 
     // GET: api/Symbol
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Symbol>>> GetSymbols()
+    public async Task<ActionResult<IEnumerable<Symbol>>> GetSymbols([FromQuery] string? character, [FromQuery] Const.SymbolTypeEnum? type, [FromQuery] int? arity, [FromQuery] string? meaning)
     {
-      return await _context.Symbols.ToListAsync();
+      return await _context
+        .Symbols
+        .Where(s => character == null || character.Contains(s.Character))
+        .Where(s => !type.HasValue || s.TypeId == type)
+        .Where(s => !arity.HasValue || s.Arity == arity)
+        .Where(s => meaning == null || meaning.Contains(s.Meaning ?? ""))
+        .ToListAsync();
     }
 
     // GET: api/Symbol/5

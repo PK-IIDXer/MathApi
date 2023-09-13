@@ -15,7 +15,17 @@ public class Formula
   /// 論理式が項か命題か
   /// ※FormulaStrings.Symbol.SymbolTypeのインクルードが必要
   /// </summary>
-  public Const.FormulaTypeEnum? FormulaTypeId => FormulaStrings.Count == 0 ? null : FormulaStrings[0].Symbol.Type?.FormulaTypeId;
+  public Const.FormulaTypeEnum? FormulaTypeId
+  {
+    get
+    {
+      if (FormulaStrings[0].Symbol == null)
+        throw new ArgumentException("Include FormulaStrings.Symbol");
+      if (FormulaStrings[0].Symbol?.Type == null)
+        throw new ArgumentException("Include FormulaStrings.Symbol.Type");
+      return FormulaStrings.Count == 0 ? null : FormulaStrings[0].Symbol?.Type?.FormulaTypeId;
+    }
+  }
 
   private List<Symbol>? _FreeAndPropVariables = null;
   /// <summary>
@@ -33,6 +43,8 @@ public class Formula
       _FreeAndPropVariables = new List<Symbol>();
       foreach (var fs in FormulaStrings)
       {
+        if (fs.Symbol == null)
+          throw new ArgumentException("Include FormulaString.Symbol");
         if (fs.Symbol.TypeId != Const.SymbolTypeEnum.FreeVariable)
           continue;
         if (_FreeAndPropVariables.Any(s => s.Id == fs.SymbolId))
@@ -57,7 +69,9 @@ public class Formula
         return false;
       if (FormulaChains.Count != 0)
         return false;
-      return FormulaStrings[0].Symbol.TypeId == Const.SymbolTypeEnum.FreeVariable;
+      if (FormulaStrings[0].Symbol == null)
+        throw new ArgumentException("Include FormulaStrings.Symbol");
+      return FormulaStrings[0].Symbol?.TypeId == Const.SymbolTypeEnum.FreeVariable;
     }
   }
 
@@ -86,7 +100,8 @@ public class Formula
     if (!from.IsFreeVariable)
       throw new ArgumentException("from formula should be free variable");
 
-    var fromSymbol = from.FormulaStrings[0].Symbol;
+    var fromSymbol = from.FormulaStrings[0].Symbol
+      ?? throw new ArgumentException("Include FormulaStrings.Symbol");
 
     if (!FreeAndPropVariables.Any(s => s.Id == fromSymbol.Id))
       return this;

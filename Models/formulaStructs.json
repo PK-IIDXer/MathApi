@@ -70,5 +70,29 @@
         ]
       }
     ]
+  },
+  {
+    "meaning": "∀xφ",
+    "arguments": [
+      {
+        "serialNo": 0,
+        "labelId": 1
+      },
+      {
+        "serialNo": 1,
+        "labelId": 4
+      }
+    ],
+    "strings": [
+      {
+        "serialNo": 0,
+        "symbolId": 8,
+        "boundArgumentSerialNo": 1
+      },
+      {
+        "serialNo": 1,
+        "argumentSerialNo": 0
+      }
+    ]
   }
 ]

@@ -76,9 +76,9 @@ public class MathDbContext : DbContext
                      .HasPrincipalKey(f => new { f.Id })
                      .HasForeignKey(fc => new { fc.FormulaId });
         nestedBuilder.HasOne(fc => fc.FromFormulaString)
-                     .WithOne(fs => fs.FormulaChainAtFrom)
-                     .HasPrincipalKey<FormulaString>(fs => new { fs.FormulaId, fs.SerialNo })
-                     .HasForeignKey<FormulaChain>(fc => new { fc.FormulaId, fc.FromFormulaStringSerialNo });
+                     .WithMany(fs => fs.FormulaChainAtFroms)
+                     .HasPrincipalKey(fs => new { fs.FormulaId, fs.SerialNo })
+                     .HasForeignKey(fc => new { fc.FormulaId, fc.FromFormulaStringSerialNo });
         nestedBuilder.HasOne(fc => fc.ToFormulaString)
                      .WithOne(fs => fs.FormulaChainAtTo)
                      .HasPrincipalKey<FormulaString>(fs => new { fs.FormulaId, fs.SerialNo })

@@ -793,8 +793,7 @@ namespace MathApi.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_FormulaChains_FormulaId_FromFormulaStringSerialNo",
                 table: "FormulaChains",
-                columns: new[] { "FormulaId", "FromFormulaStringSerialNo" },
-                unique: true);
+                columns: new[] { "FormulaId", "FromFormulaStringSerialNo" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_FormulaChains_FormulaId_ToFormulaStringSerialNo",

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MathApi.Migrations
 {
     [DbContext(typeof(MathDbContext))]
-    [Migration("20230909074223_InitialCreate")]
+    [Migration("20230913222118_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -91,8 +91,7 @@ namespace MathApi.Migrations
 
                     b.HasKey("FormulaId", "SerialNo");
 
-                    b.HasIndex("FormulaId", "FromFormulaStringSerialNo")
-                        .IsUnique();
+                    b.HasIndex("FormulaId", "FromFormulaStringSerialNo");
 
                     b.HasIndex("FormulaId", "ToFormulaStringSerialNo")
                         .IsUnique();
@@ -741,8 +740,8 @@ namespace MathApi.Migrations
                         .IsRequired();
 
                     b.HasOne("MathApi.Models.FormulaString", "FromFormulaString")
-                        .WithOne("FormulaChainAtFrom")
-                        .HasForeignKey("MathApi.Models.FormulaChain", "FormulaId", "FromFormulaStringSerialNo")
+                        .WithMany("FormulaChainAtFroms")
+                        .HasForeignKey("FormulaId", "FromFormulaStringSerialNo")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1223,7 +1222,7 @@ namespace MathApi.Migrations
 
             modelBuilder.Entity("MathApi.Models.FormulaString", b =>
                 {
-                    b.Navigation("FormulaChainAtFrom");
+                    b.Navigation("FormulaChainAtFroms");
 
                     b.Navigation("FormulaChainAtTo");
                 });

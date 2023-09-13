@@ -8,9 +8,9 @@ public class FormulaString
   public Formula Formula { get; } = new();
   public long FormulaId { get; set; }
   public long SerialNo { get; set; }
-  public Symbol Symbol { get; set; } = new();
+  public Symbol? Symbol { get; set; }
   public long SymbolId { get; set; }
 
-  public FormulaChain? FormulaChainAtFrom { get; }
+  public List<FormulaChain> FormulaChainAtFroms { get; } = new();
   public FormulaChain? FormulaChainAtTo { get; }
 }
