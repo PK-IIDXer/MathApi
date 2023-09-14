@@ -785,6 +785,22 @@ namespace MathApi.Migrations
                     { 7, 2, true, "proposition quantifier" }
                 });
 
+            migrationBuilder.InsertData(
+                table: "Symbols",
+                columns: new[] { "Id", "Arity", "ArityFormulaTypeId", "Character", "Meaning", "TypeId" },
+                values: new object[,]
+                {
+                    { 1L, null, null, "□", "bound variable", 2 },
+                    { 2L, 2, 1, "=", "equals", 4 },
+                    { 3L, 0, 2, "⊥", "contradiction", 5 },
+                    { 4L, 1, 2, "￢", "not", 5 },
+                    { 5L, 2, 2, "∧", "and", 5 },
+                    { 6L, 2, 2, "∨", "or", 5 },
+                    { 7L, 2, 2, "⇒", "imply", 5 },
+                    { 8L, 1, 2, "∀", "forall", 7 },
+                    { 9L, 1, 2, "∃", "exists", 7 }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AxiomPropositions_FormulaId",
                 table: "AxiomPropositions",

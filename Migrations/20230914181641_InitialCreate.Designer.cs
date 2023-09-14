@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MathApi.Migrations
 {
     [DbContext(typeof(MathDbContext))]
-    [Migration("20230913222118_InitialCreate")]
+    [Migration("20230914181641_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -577,6 +577,87 @@ namespace MathApi.Migrations
                         .IsUnique();
 
                     b.ToTable("Symbols");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Character = "□",
+                            Meaning = "bound variable",
+                            TypeId = 2
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Arity = 2,
+                            ArityFormulaTypeId = 1,
+                            Character = "=",
+                            Meaning = "equals",
+                            TypeId = 4
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Arity = 0,
+                            ArityFormulaTypeId = 2,
+                            Character = "⊥",
+                            Meaning = "contradiction",
+                            TypeId = 5
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            Arity = 1,
+                            ArityFormulaTypeId = 2,
+                            Character = "￢",
+                            Meaning = "not",
+                            TypeId = 5
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            Arity = 2,
+                            ArityFormulaTypeId = 2,
+                            Character = "∧",
+                            Meaning = "and",
+                            TypeId = 5
+                        },
+                        new
+                        {
+                            Id = 6L,
+                            Arity = 2,
+                            ArityFormulaTypeId = 2,
+                            Character = "∨",
+                            Meaning = "or",
+                            TypeId = 5
+                        },
+                        new
+                        {
+                            Id = 7L,
+                            Arity = 2,
+                            ArityFormulaTypeId = 2,
+                            Character = "⇒",
+                            Meaning = "imply",
+                            TypeId = 5
+                        },
+                        new
+                        {
+                            Id = 8L,
+                            Arity = 1,
+                            ArityFormulaTypeId = 2,
+                            Character = "∀",
+                            Meaning = "forall",
+                            TypeId = 7
+                        },
+                        new
+                        {
+                            Id = 9L,
+                            Arity = 1,
+                            ArityFormulaTypeId = 2,
+                            Character = "∃",
+                            Meaning = "exists",
+                            TypeId = 7
+                        });
                 });
 
             modelBuilder.Entity("MathApi.Models.SymbolType", b =>

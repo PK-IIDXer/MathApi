@@ -34,13 +34,13 @@ public enum FormulaLabelTypeEnum : int {
 /// 基礎的な記号ID
 /// </summary>
 public enum BasicSymbolEnum : long {
-  BoundVariable = 0,
-  Equals = 1,
-  Contradiction = 2,
-  Denial = 3,
-  And = 4,
-  Or = 5,
-  Implication = 6,
-  Forall = 7,
-  Exists = 8
+  BoundVariable = 1,
+  Equals = 2,
+  Contradiction = 3,
+  Denial = 4,
+  And = 5,
+  Or = 6,
+  Implication = 7,
+  Forall = 8,
+  Exists = 9
 }

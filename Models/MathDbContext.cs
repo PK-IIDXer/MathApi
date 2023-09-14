@@ -472,5 +472,17 @@ public class MathDbContext : DbContext
       new { Id = Const.FormulaLabelTypeEnum.Proposition, Name = "Proposition" },
       new { Id = Const.FormulaLabelTypeEnum.FreeVariable, Name = "Free Variable" }
     );
+
+    modelBuilder.Entity<Symbol>().HasData(
+      new Symbol { Id = (long)Const.BasicSymbolEnum.BoundVariable, Character = "□", TypeId = Const.SymbolTypeEnum.BoundVariable, Arity = null, ArityFormulaTypeId = null, Meaning = "bound variable" },
+      new Symbol { Id = (long)Const.BasicSymbolEnum.Equals, Character = "=", TypeId = Const.SymbolTypeEnum.Predicate, Arity = 2, ArityFormulaTypeId = Const.FormulaTypeEnum.Term, Meaning = "equals" },
+      new Symbol { Id = (long)Const.BasicSymbolEnum.Contradiction, Character = "⊥", TypeId = Const.SymbolTypeEnum.Logic, Arity = 0, ArityFormulaTypeId = Const.FormulaTypeEnum.Proposition, Meaning = "contradiction" },
+      new Symbol { Id = (long)Const.BasicSymbolEnum.Denial, Character = "￢", TypeId = Const.SymbolTypeEnum.Logic, Arity = 1, ArityFormulaTypeId = Const.FormulaTypeEnum.Proposition, Meaning = "not" },
+      new Symbol { Id = (long)Const.BasicSymbolEnum.And, Character = "∧", TypeId = Const.SymbolTypeEnum.Logic, Arity = 2, ArityFormulaTypeId = Const.FormulaTypeEnum.Proposition, Meaning = "and" },
+      new Symbol { Id = (long)Const.BasicSymbolEnum.Or, Character = "∨", TypeId = Const.SymbolTypeEnum.Logic, Arity = 2, ArityFormulaTypeId = Const.FormulaTypeEnum.Proposition, Meaning = "or" },
+      new Symbol { Id = (long)Const.BasicSymbolEnum.Implication, Character = "⇒", TypeId = Const.SymbolTypeEnum.Logic, Arity = 2, ArityFormulaTypeId = Const.FormulaTypeEnum.Proposition, Meaning = "imply" },
+      new Symbol { Id = (long)Const.BasicSymbolEnum.Forall, Character = "∀", TypeId = Const.SymbolTypeEnum.PropositionQuantifier, Arity = 1, ArityFormulaTypeId = Const.FormulaTypeEnum.Proposition, Meaning = "forall" },
+      new Symbol { Id = (long)Const.BasicSymbolEnum.Exists, Character = "∃", TypeId = Const.SymbolTypeEnum.PropositionQuantifier, Arity = 1, ArityFormulaTypeId = Const.FormulaTypeEnum.Proposition, Meaning = "exists" }
+    );
   }
 }
