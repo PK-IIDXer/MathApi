@@ -22,13 +22,20 @@ namespace MathApi.Controllers
 
     // GET: api/FormulaLabel
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<FormulaLabel>>> GetFormulaLabels()
+    public async Task<ActionResult<IEnumerable<FormulaLabel>>> GetFormulaLabels(
+      [FromQuery] string? text,
+      [FromQuery] Const.FormulaLabelTypeEnum? typeId
+    )
     {
       if (_context.FormulaLabels == null)
       {
         return NotFound();
       }
-      return await _context.FormulaLabels.ToListAsync();
+      return await _context
+        .FormulaLabels
+        .Where(fl => text == null || text.Contains(fl.Text))
+        .Where(fl => !typeId.HasValue || fl.TypeId == typeId)
+        .ToListAsync();
     }
 
     // GET: api/FormulaLabel/5
