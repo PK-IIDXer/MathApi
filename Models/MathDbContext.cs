@@ -5,7 +5,7 @@ namespace MathApi.Models;
 public class MathDbContext : DbContext
 {
   // 接続文字列
-  readonly string connectionString = "server=192.168.33.12;user=math;password=math@123;database=mathematics";
+  readonly string connectionString = "server=192.168.0.11;user=math;password=123;database=mathematics";
   // MySQLのバージョン
   readonly MySqlServerVersion serverVersion = new (new Version(8, 0, 32));
   // DBコンテキストの設定

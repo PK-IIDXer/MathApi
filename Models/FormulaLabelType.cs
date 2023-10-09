@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace MathApi.Models;
 
 /// <summary>
@@ -17,5 +19,6 @@ public class FormulaLabelType
   /// </summary>
   public string Name { get; set; } = "";
   
+  [JsonIgnore]
   public List<FormulaLabel> FormulaLabels { get; } = new();
 }
