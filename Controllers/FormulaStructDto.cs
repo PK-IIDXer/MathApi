@@ -12,7 +12,7 @@ public class FormulaStructDto
   public class FormulaStructArgumentDto
   {
     public int SerialNo { get; set; }
-    public int LabelId { get; set; }
+    public int FormulaLabelId { get; set; }
   }
   public class FormulaStructStringDto
   {
@@ -40,7 +40,7 @@ public class FormulaStructDto
       {
         FormulaStructId = Id,
         SerialNo = a.SerialNo,
-        LabelId = a.LabelId
+        LabelId = a.FormulaLabelId
       }).ToList(),
       Strings = Strings.OrderBy(s => s.SerialNo).Select(s => new FormulaStructString
       {

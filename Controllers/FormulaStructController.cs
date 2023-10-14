@@ -90,6 +90,7 @@ namespace MathApi.Controllers
         return Problem("Entity set 'MathDbContext.FormulaStructs'  is null.");
       }
       var formulaStruct = dto.CreateModel();
+      // TODO: Strings, ArgumentsのSerialNo妥当性チェック(重複、抜け番等）をここにもってくる
       var symbols = await _context.Symbols.Where(s => formulaStruct.Strings.Select(st => st.SymbolId).Contains(s.Id)).ToListAsync();
       var labels = await _context.FormulaLabels.Where(l => formulaStruct.Arguments.Select(a => a.LabelId).Contains(l.Id)).ToListAsync();
 
@@ -174,7 +175,7 @@ namespace MathApi.Controllers
             {
               if (symbol.ArityFormulaTypeId == Const.FormulaTypeEnum.Term)
               {
-                return
+                var err =
                   dummy.TypeId
                 switch
                 {
@@ -182,20 +183,34 @@ namespace MathApi.Controllers
                     or Const.SymbolTypeEnum.Predicate
                     or Const.SymbolTypeEnum.PropositionQuantifier
                       => BadRequest($"ArityType mismatch (StringsSerialNo={str.SerialNo})"),
+                  Const.SymbolTypeEnum.FreeVariable
+                    or Const.SymbolTypeEnum.Function
+                    or Const.SymbolTypeEnum.TermQuantifier
+                      => null,
                   _ => throw new NotImplementedException(),
                 };
+
+                if (err != null) return err;
               }
 
               if (symbol.ArityFormulaTypeId == Const.FormulaTypeEnum.Proposition)
               {
-                return dummy.TypeId switch
+                var err =
+                  dummy.TypeId
+                switch
                 {
                   Const.SymbolTypeEnum.FreeVariable
                     or Const.SymbolTypeEnum.Function
                     or Const.SymbolTypeEnum.TermQuantifier
                       => BadRequest($"ArityType mismatch (StringsSerialNo={str.SerialNo})"),
+                  Const.SymbolTypeEnum.Logic
+                    or Const.SymbolTypeEnum.Predicate
+                    or Const.SymbolTypeEnum.PropositionQuantifier
+                      => null,
                   _ => throw new NotImplementedException(),
                 };
+
+                if (err != null) return err;
               }
               continue;
             }
