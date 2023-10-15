@@ -1,12 +1,14 @@
 namespace MathApi.Models;
 
 using MathApi.Commons;
+using System.Text.Json.Serialization;
 
 public class FormulaStruct
 {
   public long Id { get; set; }
   public string? Meaning { get; set; }
 
+  [JsonIgnore]
   public Const.FormulaLabelTypeEnum TypeId
   {
     get
@@ -52,10 +54,15 @@ public class FormulaStruct
   public List<FormulaStructArgument> Arguments { get; set; } = new();
   public List<FormulaStructString> Strings { get; set; } = new();
 
+  [JsonIgnore]
   public List<InferenceAssumption> InferenceAssumptions { get; } = new();
+  [JsonIgnore]
   public List<InferenceAssumptionDissolutableAssumption> InferenceAssumptionDissolutableAssumptions { get; } = new();
+  [JsonIgnore]
   public List<InferenceConclusion> InferenceConclusions { get; } = new();
+  [JsonIgnore]
   public List<ProofInference> ProofInferences { get; } = new();
+  [JsonIgnore]
   public List<ProofInferenceArgument> ProofInferenceArguments { get; } = new();
 
   public Formula Apply(List<Formula> args)

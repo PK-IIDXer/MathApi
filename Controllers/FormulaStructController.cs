@@ -22,13 +22,35 @@ namespace MathApi.Controllers
 
     // GET: api/FormulaStruct
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<FormulaStruct>>> GetFormulaStructs()
+    public async Task<ActionResult<IEnumerable<FormulaStruct>>> GetFormulaStructs([FromQuery] string? meaning)
     {
       if (_context.FormulaStructs == null)
       {
         return NotFound();
       }
-      return await _context.FormulaStructs.ToListAsync();
+      return await _context
+        .FormulaStructs
+        .IgnoreAutoIncludes()
+        .Include(fs => fs.Strings)
+        .ThenInclude(fss => fss.Symbol)
+        .Include(fs => fs.Strings)
+        .ThenInclude(fss => fss.BoundArgument)
+        #nullable disable
+        .ThenInclude(ba => ba.Label)
+        .Include(fs => fs.Strings)
+        .ThenInclude(fss => fss.Argument)
+        .ThenInclude(a => a.Label)
+        .Include(fs => fs.Strings)
+        .ThenInclude(fss => fss.Substitutions)
+        .ThenInclude(s => s.ArgumentFrom)
+        .ThenInclude(f => f.Label)
+        .Include(fs => fs.Strings)
+        .ThenInclude(fss => fss.Substitutions)
+        .ThenInclude(s => s.ArgumentTo)
+        .ThenInclude(t => t.Label)
+        #nullable restore
+        .Where(fs => meaning == null || meaning.Contains(fs.Meaning ?? ""))
+        .ToListAsync();
     }
 
     // GET: api/FormulaStruct/5
@@ -262,7 +284,12 @@ namespace MathApi.Controllers
       {
         return NotFound();
       }
-      var formulaStruct = await _context.FormulaStructs.FindAsync(id);
+      var formulaStruct = await _context
+        .FormulaStructs
+        .IgnoreAutoIncludes()
+        .Include(fs => fs.Arguments)
+        .Include(fs => fs.Strings)
+        .SingleAsync(fs => fs.Id == id);
       if (formulaStruct == null)
       {
         return NotFound();
