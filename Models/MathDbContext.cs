@@ -64,15 +64,15 @@ public class MathDbContext : DbContext
     );
     modelBuilder.Entity<Formula>(
       nestedBuilder => {
-        nestedBuilder.Navigation(f => f.FormulaStrings).AutoInclude();
-        nestedBuilder.Navigation(f => f.FormulaChains).AutoInclude();
+        nestedBuilder.Navigation(f => f.Strings).AutoInclude();
+        nestedBuilder.Navigation(f => f.Chains).AutoInclude();
       }
     );
     modelBuilder.Entity<FormulaChain>(
       nestedBuilder => {
         nestedBuilder.HasKey(fc => new { fc.FormulaId, fc.SerialNo});
         nestedBuilder.HasOne(fc => fc.Formula)
-                     .WithMany(f => f.FormulaChains)
+                     .WithMany(f => f.Chains)
                      .HasPrincipalKey(f => new { f.Id })
                      .HasForeignKey(fc => new { fc.FormulaId });
         nestedBuilder.HasOne(fc => fc.FromFormulaString)
@@ -102,7 +102,7 @@ public class MathDbContext : DbContext
       nestedBuilder => {
         nestedBuilder.HasKey(fs => new { fs.FormulaId, fs.SerialNo });
         nestedBuilder.HasOne(fs => fs.Formula)
-                     .WithMany(f => f.FormulaStrings)
+                     .WithMany(f => f.Strings)
                      .HasPrincipalKey(f => new { f.Id })
                      .HasForeignKey(fs => new { fs.FormulaId });
         nestedBuilder.HasOne(fs => fs.Symbol)

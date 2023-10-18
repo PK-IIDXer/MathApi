@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace MathApi.Models;
 
@@ -7,23 +8,24 @@ public class Formula
   public long Id { get; set; }
   public string? Meaning { get; set; }
 
-  public List<FormulaString> FormulaStrings { get; set; } = new();
-  public List<FormulaChain> FormulaChains { get; set; } = new();
+  public List<FormulaString> Strings { get; set; } = new();
+  public List<FormulaChain> Chains { get; set; } = new();
 
-  public long Length => FormulaStrings.Count;
+  public long Length => Strings.Count;
   /// <summary>
   /// 論理式が項か命題か
   /// ※FormulaStrings.Symbol.SymbolTypeのインクルードが必要
   /// </summary>
+  [JsonIgnore]
   public Const.FormulaTypeEnum? FormulaTypeId
   {
     get
     {
-      if (FormulaStrings[0].Symbol == null)
+      if (Strings[0].Symbol == null)
         throw new ArgumentException("Include FormulaStrings.Symbol");
-      if (FormulaStrings[0].Symbol?.Type == null)
+      if (Strings[0].Symbol?.Type == null)
         throw new ArgumentException("Include FormulaStrings.Symbol.Type");
-      return FormulaStrings.Count == 0 ? null : FormulaStrings[0].Symbol?.Type?.FormulaTypeId;
+      return Strings.Count == 0 ? null : Strings[0].Symbol?.Type?.FormulaTypeId;
     }
   }
 
@@ -41,7 +43,7 @@ public class Formula
         return _FreeAndPropVariables;
 
       _FreeAndPropVariables = new List<Symbol>();
-      foreach (var fs in FormulaStrings)
+      foreach (var fs in Strings)
       {
         if (fs.Symbol == null)
           throw new ArgumentException("Include FormulaString.Symbol");
@@ -65,13 +67,13 @@ public class Formula
   {
     get
     {
-      if (FormulaStrings.Count != 1)
+      if (Strings.Count != 1)
         return false;
-      if (FormulaChains.Count != 0)
+      if (Chains.Count != 0)
         return false;
-      if (FormulaStrings[0].Symbol == null)
+      if (Strings[0].Symbol == null)
         throw new ArgumentException("Include FormulaStrings.Symbol");
-      return FormulaStrings[0].Symbol?.TypeId == Const.SymbolTypeEnum.FreeVariable;
+      return Strings[0].Symbol?.TypeId == Const.SymbolTypeEnum.FreeVariable;
     }
   }
 
@@ -100,7 +102,7 @@ public class Formula
     if (!from.IsFreeVariable)
       throw new ArgumentException("from formula should be free variable");
 
-    var fromSymbol = from.FormulaStrings[0].Symbol
+    var fromSymbol = from.Strings[0].Symbol
       ?? throw new ArgumentException("Include FormulaStrings.Symbol");
 
     if (!FreeAndPropVariables.Any(s => s.Id == fromSymbol.Id))
@@ -118,8 +120,8 @@ public class Formula
     return new Formula
     {
       Meaning = $"created by substituting formula#{to.Id} for symbol#{fromSymbol.Id} in formula#{Id}",
-      FormulaStrings = fs,
-      FormulaChains = fc
+      Strings = fs,
+      Chains = fc
     };
   }
 
@@ -131,7 +133,7 @@ public class Formula
   private List<FormulaString> CreateFormulaStringOnSubstitution(Symbol from, Formula to)
   {
     var fs = new List<FormulaString>();
-    foreach (var s in FormulaStrings)
+    foreach (var s in Strings)
     {
       if (s.SymbolId != from.Id)
       {
@@ -142,7 +144,7 @@ public class Formula
         continue;
       }
 
-      fs.AddRange(to.FormulaStrings.Select(e => new FormulaString
+      fs.AddRange(to.Strings.Select(e => new FormulaString
       {
         SymbolId = e.SymbolId
       }).ToList());
@@ -165,14 +167,14 @@ public class Formula
   private List<FormulaChain> CreateFormulaChainOnSubstitution(Symbol from, Formula to)
   {
     var formulaLength = to.Length;
-    var fc = FormulaChains.Select(e => new FormulaChain
+    var fc = Chains.Select(e => new FormulaChain
     {
       FromFormulaStringSerialNo = e.FromFormulaStringSerialNo,
       ToFormulaStringSerialNo = e.ToFormulaStringSerialNo
     }).ToList();
 
     var replaceSymbolCount = 0;
-    foreach (var str in FormulaStrings.Where(e => e.SymbolId == from.Id))
+    foreach (var str in Strings.Where(e => e.SymbolId == from.Id))
     {
       replaceSymbolCount++;
 
@@ -204,9 +206,9 @@ public class Formula
       }
 
       // 置き換えた文字列の鎖の追加
-      var replaceSymbolIdx = FormulaStrings.IndexOf(str);
+      var replaceSymbolIdx = Strings.IndexOf(str);
       var serialNoDiff = replaceSymbolIdx + (replaceSymbolCount - 1) * formulaLength;
-      to.FormulaChains.ForEach(ch => {
+      to.Chains.ForEach(ch => {
         fc.Add(new FormulaChain
         {
           FromFormulaStringSerialNo = ch.FromFormulaStringSerialNo + serialNoDiff,
@@ -235,26 +237,26 @@ public class Formula
     if (Id == target.Id)
       return true;
 
-    if (FormulaStrings.Count != target.FormulaStrings.Count)
+    if (Strings.Count != target.Strings.Count)
       return false;
 
-    if (FormulaChains.Count != target.FormulaChains.Count)
+    if (Chains.Count != target.Chains.Count)
       return false;
 
-    for (var i = 0; i < FormulaStrings.Count; i++)
+    for (var i = 0; i < Strings.Count; i++)
     {
-      if (FormulaStrings[i].SymbolId != target.FormulaStrings[i].SymbolId)
+      if (Strings[i].SymbolId != target.Strings[i].SymbolId)
         return false;
     }
 
-    var sortedChains = FormulaChains.OrderBy(c => c.FromFormulaStringSerialNo)
+    var sortedChains = Chains.OrderBy(c => c.FromFormulaStringSerialNo)
                                     .ThenBy(c => c.ToFormulaStringSerialNo)
                                     .ToList();
-    var sortedTarget = target.FormulaChains
+    var sortedTarget = target.Chains
                              .OrderBy(c => c.FromFormulaStringSerialNo)
                              .ThenBy(c => c.ToFormulaStringSerialNo)
                              .ToList();
-    for (var i = 0; i < FormulaChains.Count; i++)
+    for (var i = 0; i < Chains.Count; i++)
     {
       if (sortedChains[i].FromFormulaStringSerialNo != sortedTarget[i].FromFormulaStringSerialNo
         || sortedChains[i].ToFormulaStringSerialNo != sortedTarget[i].ToFormulaStringSerialNo)

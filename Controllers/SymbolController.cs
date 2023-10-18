@@ -117,7 +117,7 @@ namespace MathApi.Controllers
         _context.Formulas.Add(new Formula
         {
           Meaning = symbol.Meaning,
-          FormulaStrings = new List<FormulaString>
+          Strings = new List<FormulaString>
           {
             new() {
               SerialNo = 0,

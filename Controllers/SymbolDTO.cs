@@ -6,7 +6,7 @@ public class SymbolDto
 {
   public long Id { get; set; }
   public string Character { get; set; } = "";
-  public Const.SymbolTypeEnum SymbolTypeId { get; set; }
+  public Const.SymbolTypeEnum TypeId { get; set; }
   public int? Arity { get; set; }
   public Const.FormulaTypeEnum? ArityFormulaTypeId { get; set; }
   public string? Meaning { get; set; }
@@ -17,9 +17,9 @@ public class SymbolDto
     {
       Id = Id,
       Character = Character,
-      TypeId = SymbolTypeId,
-      Arity = FindArity(SymbolTypeId, Arity),
-      ArityFormulaTypeId = FindArityFormulaTypeId(SymbolTypeId, ArityFormulaTypeId),
+      TypeId = TypeId,
+      Arity = FindArity(TypeId, Arity),
+      ArityFormulaTypeId = FindArityFormulaTypeId(TypeId, ArityFormulaTypeId),
       Meaning = Meaning
     };
   }

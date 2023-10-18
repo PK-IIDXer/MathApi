@@ -54,7 +54,7 @@ public static class Util
         throw new ArgumentException($"argument of {i}-th is not match to symbol.ArityFormulaType");
 
       // FormulaChainsの作成
-      foreach (var c in arguments[i].FormulaChains)
+      foreach (var c in arguments[i].Chains)
       {
         fc.Add(new FormulaChain
         {
@@ -64,12 +64,12 @@ public static class Util
       }
 
       // FormulaStringsの作成
-      foreach (var s in arguments[i].FormulaStrings.OrderBy(e => e.SerialNo))
+      foreach (var s in arguments[i].Strings.OrderBy(e => e.SerialNo))
       {
         var symbolId = s.SymbolId;
         // boudVariableが設定されているとき、ループ中の文字がboudVariableの場合、
         // その文字を□に置き換えて、先頭の文字(量化記号)と鎖で結ぶ
-        if (boundVariable?.FormulaStrings[0].SymbolId == s.SymbolId)
+        if (boundVariable?.Strings[0].SymbolId == s.SymbolId)
         {
           symbolId = (long)BasicSymbolEnum.BoundVariable;
           fc.Add(new FormulaChain
@@ -100,14 +100,14 @@ public static class Util
     var meanings = $"Created by symbol #{symbol.Id} applying formulas #"
       + string.Join(", #", arguments.Select(e => e.Id.ToString()));
     if (boundVariable != null)
-      meanings += $"(bound variable symbolId: #{boundVariable.FormulaStrings[0].SymbolId})";
+      meanings += $"(bound variable symbolId: #{boundVariable.Strings[0].SymbolId})";
     meanings += ".";
 
     return new Formula
     {
       Meaning = meanings,
-      FormulaStrings = fs,
-      FormulaChains = fc
+      Strings = fs,
+      Chains = fc
     };
   }
 }

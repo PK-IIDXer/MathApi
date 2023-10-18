@@ -28,13 +28,13 @@ public class FormulaDto
     {
       Id = Id,
       Meaning = Meaning,
-      FormulaStrings = Strings.OrderBy(s => s.SerialNo).Select(s => new FormulaString
+      Strings = Strings.OrderBy(s => s.SerialNo).Select(s => new FormulaString
       {
         FormulaId = Id,
         SerialNo = s.SerialNo,
         SymbolId = s.SymbolId
       }).ToList(),
-      FormulaChains = Chains.OrderBy(c => c.SerialNo).Select(c => new FormulaChain
+      Chains = Chains.OrderBy(c => c.SerialNo).Select(c => new FormulaChain
       {
         FormulaId = Id,
         SerialNo = c.SerialNo,

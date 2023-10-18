@@ -23,9 +23,16 @@ namespace MathApi.Controllers
 
     // GET: api/Formula
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Formula>>> GetFormulas()
+    public async Task<ActionResult<IEnumerable<Formula>>> GetFormulas([FromQuery] string? meaning)
     {
-      return await _context.Formulas.ToListAsync();
+      return await _context
+        .Formulas
+        .IgnoreAutoIncludes()
+        .Include(f => f.Strings)
+        .ThenInclude(fs => fs.Symbol)
+        .Include(f => f.Chains)
+        .Where(f => string.IsNullOrEmpty(meaning) || meaning.Contains(f.Meaning ?? ""))
+        .ToListAsync();
     }
 
     // GET: api/Formula/5
@@ -83,13 +90,13 @@ namespace MathApi.Controllers
       try
       {
         var formula = dto.CreateModel();
-        var symbols = await _context.Symbols.Where(s => formula.FormulaStrings.Select(st => st.SymbolId).Contains(s.Id)).ToListAsync();
+        var symbols = await _context.Symbols.Where(s => formula.Strings.Select(st => st.SymbolId).Contains(s.Id)).ToListAsync();
 
         // FormulaStringチェック
         var tmpSymbols = new List<Symbol>();
-        for (var i = formula.FormulaStrings.Count - 1; i >= 0; i--)
+        for (var i = formula.Strings.Count - 1; i >= 0; i--)
         {
-          var str = formula.FormulaStrings[i];
+          var str = formula.Strings[i];
           var symbol = symbols.Find(s => s.Id == str.SymbolId);
           if (symbol == null)
             return BadRequest($"Symbol#{str.SymbolId} is not found");
@@ -158,15 +165,15 @@ namespace MathApi.Controllers
         }
 
         // FormulaChainチェック
-        foreach (var chain in formula.FormulaChains)
+        foreach (var chain in formula.Chains)
         {
-          var fromStr = formula.FormulaStrings.Find(s => s.SerialNo == chain.FromFormulaStringSerialNo);
+          var fromStr = formula.Strings.Find(s => s.SerialNo == chain.FromFormulaStringSerialNo);
           if (fromStr == null)
             return BadRequest($"FormulaChain.FromFormulaStringSerialNo is not related with FormulaString");
           var fromSym = symbols.Find(s => s.Id == fromStr.SymbolId);
           if (fromSym == null)
             return BadRequest($"Symbol#{fromStr.SymbolId} is not found");
-          var toStr = formula.FormulaStrings.Find(s => s.SerialNo == chain.ToFormulaStringSerialNo);
+          var toStr = formula.Strings.Find(s => s.SerialNo == chain.ToFormulaStringSerialNo);
           if (toStr == null)
             return BadRequest($"FormulaChain.ToFormulaStringSerialNo is not related with FormulaString");
           var toSym = symbols.Find(s => s.Id == toStr.SymbolId);
@@ -179,13 +186,13 @@ namespace MathApi.Controllers
             return BadRequest($"Chain ToSymbol must be BoundVariable");
         }
 
-        foreach (var str in formula.FormulaStrings)
+        foreach (var str in formula.Strings)
         {
           var symbol = symbols.Find(s => s.Id == str.SymbolId);
           if (symbol == null)
             return BadRequest($"Symbol#{str.SymbolId} is not found");
 
-          var chain = formula.FormulaChains.Find(c => c.ToFormulaStringSerialNo == str.SerialNo);
+          var chain = formula.Chains.Find(c => c.ToFormulaStringSerialNo == str.SerialNo);
           if (symbol.TypeId == Const.SymbolTypeEnum.BoundVariable && chain == null)
             return BadRequest("There is a bound variable not relating FormulaChain");
         }
@@ -205,8 +212,12 @@ namespace MathApi.Controllers
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteFormula(long id)
     {
-      // TODO: 推論規則、公理、定理に使用されている場合、削除不可
-      var formula = await _context.Formulas.FindAsync(id);
+      var formula = await _context
+        .Formulas
+        .IgnoreAutoIncludes()
+        .Include(f => f.Strings)
+        .Include(f => f.Chains)
+        .SingleAsync(f => f.Id == id);
       if (formula == null)
       {
         return NotFound();
