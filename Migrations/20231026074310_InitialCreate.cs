@@ -447,8 +447,8 @@ namespace MathApi.Migrations
                     InferenceId = table.Column<long>(type: "bigint", nullable: false),
                     InferenceArgumentSerialNo = table.Column<int>(type: "int", nullable: false),
                     SerialNo = table.Column<int>(type: "int", nullable: false),
-                    ConstraintDestinationInferenceArgumentSerialNo = table.Column<int>(type: "int", nullable: false),
-                    IsConstraintPredissolvedAssumption = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    ConstraintDestinationInferenceArgumentSerialNo = table.Column<int>(type: "int", nullable: true),
+                    AssumptionSerialNoForConstraintToAllPredissolvedAssumption = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -457,14 +457,18 @@ namespace MathApi.Migrations
                         name: "FK_InferenceArgumentConstraints_InferenceArguments_InferenceId_~",
                         columns: x => new { x.InferenceId, x.ConstraintDestinationInferenceArgumentSerialNo },
                         principalTable: "InferenceArguments",
-                        principalColumns: new[] { "InferenceId", "SerialNo" },
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumns: new[] { "InferenceId", "SerialNo" });
                     table.ForeignKey(
                         name: "FK_InferenceArgumentConstraints_InferenceArguments_InferenceId~1",
                         columns: x => new { x.InferenceId, x.InferenceArgumentSerialNo },
                         principalTable: "InferenceArguments",
                         principalColumns: new[] { "InferenceId", "SerialNo" },
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_InferenceArgumentConstraints_InferenceAssumptions_InferenceI~",
+                        columns: x => new { x.InferenceId, x.AssumptionSerialNoForConstraintToAllPredissolvedAssumption },
+                        principalTable: "InferenceAssumptions",
+                        principalColumns: new[] { "InferenceId", "SerialNo" });
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -543,7 +547,7 @@ namespace MathApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_InferenceFormulaStructArgumentMappings", x => new { x.InferenceId, x.SerialNo });
+                    table.PrimaryKey("PK_InferenceFormulaStructArgumentMappings", x => new { x.InferenceId, x.SerialNo, x.FormulaStructId, x.FormulaStructArgumentSerialNo });
                     table.ForeignKey(
                         name: "FK_InferenceFormulaStructArgumentMappings_FormulaStructArgument~",
                         columns: x => new { x.FormulaStructId, x.FormulaStructArgumentSerialNo },
@@ -560,14 +564,12 @@ namespace MathApi.Migrations
                         name: "FK_InferenceFormulaStructArgumentMappings_InferenceAssumptionDi~",
                         columns: x => new { x.InferenceId, x.SerialNo },
                         principalTable: "InferenceAssumptionDissolutableAssumptions",
-                        principalColumns: new[] { "InferenceId", "FormulaStructArgumentMappingSerialNo" },
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumns: new[] { "InferenceId", "FormulaStructArgumentMappingSerialNo" });
                     table.ForeignKey(
                         name: "FK_InferenceFormulaStructArgumentMappings_InferenceAssumptions_~",
                         columns: x => new { x.InferenceId, x.SerialNo },
                         principalTable: "InferenceAssumptions",
-                        principalColumns: new[] { "InferenceId", "FormulaStructArgumentMappingSerialNo" },
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumns: new[] { "InferenceId", "FormulaStructArgumentMappingSerialNo" });
                     table.ForeignKey(
                         name: "FK_InferenceFormulaStructArgumentMappings_InferenceConclusions_~",
                         columns: x => new { x.InferenceId, x.SerialNo },
@@ -858,6 +860,11 @@ namespace MathApi.Migrations
                 columns: new[] { "FormulaStructId", "ArgumentToSerialNo" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_InferenceArgumentConstraints_InferenceId_AssumptionSerialNoF~",
+                table: "InferenceArgumentConstraints",
+                columns: new[] { "InferenceId", "AssumptionSerialNoForConstraintToAllPredissolvedAssumption" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_InferenceArgumentConstraints_InferenceId_ConstraintDestinati~",
                 table: "InferenceArgumentConstraints",
                 columns: new[] { "InferenceId", "ConstraintDestinationInferenceArgumentSerialNo" });
@@ -865,8 +872,7 @@ namespace MathApi.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_InferenceArguments_FormulaLabelId",
                 table: "InferenceArguments",
-                column: "FormulaLabelId",
-                unique: true);
+                column: "FormulaLabelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_InferenceAssumptionDissolutableAssumptions_FormulaStructId",

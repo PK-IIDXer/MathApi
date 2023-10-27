@@ -24,7 +24,7 @@ namespace MathApi.Controllers
     [HttpGet]
     public async Task<ActionResult<IEnumerable<FormulaLabel>>> GetFormulaLabels(
       [FromQuery] string? text,
-      [FromQuery] Const.FormulaLabelTypeEnum? typeId
+      [FromQuery] Const.FormulaLabelTypeEnum[]? typeId
     )
     {
       if (_context.FormulaLabels == null)
@@ -34,7 +34,7 @@ namespace MathApi.Controllers
       return await _context
         .FormulaLabels
         .Where(fl => text == null || text.Contains(fl.Text))
-        .Where(fl => !typeId.HasValue || fl.TypeId == typeId)
+        .Where(fl => typeId == null || typeId.Length == 0 || typeId.Contains(fl.TypeId))
         .ToListAsync();
     }
 

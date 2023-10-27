@@ -34,9 +34,10 @@ public class InferenceArgumentConstraint
   /// <summary>
   /// 制約先推論規則引数連番
   /// </summary>
-  public int ConstraintDestinationInferenceArgumentSerialNo { get; set; }
+  public int? ConstraintDestinationInferenceArgumentSerialNo { get; set; }
   /// <summary>
   /// 未解消の仮定に対する制約の有無
   /// </summary>
-  public bool IsConstraintPredissolvedAssumption { get; set; }
+  public int? AssumptionSerialNoForConstraintToAllPredissolvedAssumption { get; set; }
+  public InferenceAssumption? AssumptionForConstraintToAllPredissolvedAssumption { get; set; }
 }

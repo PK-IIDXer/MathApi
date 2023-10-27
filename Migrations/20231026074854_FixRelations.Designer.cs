@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MathApi.Migrations
 {
     [DbContext(typeof(MathDbContext))]
-    [Migration("20230914181641_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20231026074854_FixRelations")]
+    partial class FixRelations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -311,8 +311,7 @@ namespace MathApi.Migrations
 
                     b.HasKey("InferenceId", "SerialNo");
 
-                    b.HasIndex("FormulaLabelId")
-                        .IsUnique();
+                    b.HasIndex("FormulaLabelId");
 
                     b.ToTable("InferenceArguments");
                 });
@@ -328,13 +327,15 @@ namespace MathApi.Migrations
                     b.Property<int>("SerialNo")
                         .HasColumnType("int");
 
-                    b.Property<int>("ConstraintDestinationInferenceArgumentSerialNo")
+                    b.Property<int?>("AssumptionSerialNoForConstraintToAllPredissolvedAssumption")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsConstraintPredissolvedAssumption")
-                        .HasColumnType("tinyint(1)");
+                    b.Property<int?>("ConstraintDestinationInferenceArgumentSerialNo")
+                        .HasColumnType("int");
 
                     b.HasKey("InferenceId", "InferenceArgumentSerialNo", "SerialNo");
+
+                    b.HasIndex("InferenceId", "AssumptionSerialNoForConstraintToAllPredissolvedAssumption");
 
                     b.HasIndex("InferenceId", "ConstraintDestinationInferenceArgumentSerialNo");
 
@@ -415,16 +416,16 @@ namespace MathApi.Migrations
                     b.Property<int>("SerialNo")
                         .HasColumnType("int");
 
-                    b.Property<int>("FormulaStructArgumentSerialNo")
-                        .HasColumnType("int");
-
                     b.Property<long>("FormulaStructId")
                         .HasColumnType("bigint");
+
+                    b.Property<int>("FormulaStructArgumentSerialNo")
+                        .HasColumnType("int");
 
                     b.Property<int>("InferenceArgumentSerialNo")
                         .HasColumnType("int");
 
-                    b.HasKey("InferenceId", "SerialNo");
+                    b.HasKey("InferenceId", "SerialNo", "FormulaStructId", "FormulaStructArgumentSerialNo");
 
                     b.HasIndex("FormulaStructId", "FormulaStructArgumentSerialNo");
 
@@ -815,7 +816,7 @@ namespace MathApi.Migrations
             modelBuilder.Entity("MathApi.Models.FormulaChain", b =>
                 {
                     b.HasOne("MathApi.Models.Formula", "Formula")
-                        .WithMany("FormulaChains")
+                        .WithMany("Chains")
                         .HasForeignKey("FormulaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -853,7 +854,7 @@ namespace MathApi.Migrations
             modelBuilder.Entity("MathApi.Models.FormulaString", b =>
                 {
                     b.HasOne("MathApi.Models.Formula", "Formula")
-                        .WithMany("FormulaStrings")
+                        .WithMany("Strings")
                         .HasForeignKey("FormulaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -949,8 +950,8 @@ namespace MathApi.Migrations
             modelBuilder.Entity("MathApi.Models.InferenceArgument", b =>
                 {
                     b.HasOne("MathApi.Models.FormulaLabel", "FormulaLabel")
-                        .WithOne("InferenceArgument")
-                        .HasForeignKey("MathApi.Models.InferenceArgument", "FormulaLabelId")
+                        .WithMany("InferenceArguments")
+                        .HasForeignKey("FormulaLabelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -967,11 +968,13 @@ namespace MathApi.Migrations
 
             modelBuilder.Entity("MathApi.Models.InferenceArgumentConstraint", b =>
                 {
+                    b.HasOne("MathApi.Models.InferenceAssumption", "AssumptionForConstraintToAllPredissolvedAssumption")
+                        .WithMany("InferenceArgumentConstraintForConstraintToAllPredissolvedAssumptions")
+                        .HasForeignKey("InferenceId", "AssumptionSerialNoForConstraintToAllPredissolvedAssumption");
+
                     b.HasOne("MathApi.Models.InferenceArgument", "ConstraintDestinationInferenceArgument")
                         .WithMany("InferenceArgumentConstraintDestinations")
-                        .HasForeignKey("InferenceId", "ConstraintDestinationInferenceArgumentSerialNo")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("InferenceId", "ConstraintDestinationInferenceArgumentSerialNo");
 
                     b.HasOne("MathApi.Models.InferenceArgument", "InferenceArgument")
                         .WithMany("InferenceArgumentConstraints")
@@ -979,6 +982,8 @@ namespace MathApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_InferenceArgumentConstraints_InferenceArguments_InferenceId~1");
+
+                    b.Navigation("AssumptionForConstraintToAllPredissolvedAssumption");
 
                     b.Navigation("ConstraintDestinationInferenceArgument");
 
@@ -1065,16 +1070,12 @@ namespace MathApi.Migrations
                     b.HasOne("MathApi.Models.InferenceAssumption", "InferenceAssumption")
                         .WithMany("FormulaStructArgumentMappings")
                         .HasForeignKey("InferenceId", "SerialNo")
-                        .HasPrincipalKey("InferenceId", "FormulaStructArgumentMappingSerialNo")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasPrincipalKey("InferenceId", "FormulaStructArgumentMappingSerialNo");
 
                     b.HasOne("MathApi.Models.InferenceAssumptionDissolutableAssumption", "InferenceAssumptionDissolutableAssumption")
                         .WithMany("FormulaStructArgumentMappings")
                         .HasForeignKey("InferenceId", "SerialNo")
-                        .HasPrincipalKey("InferenceId", "FormulaStructArgumentMappingSerialNo")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasPrincipalKey("InferenceId", "FormulaStructArgumentMappingSerialNo");
 
                     b.HasOne("MathApi.Models.InferenceConclusion", "InferenceConclusion")
                         .WithMany("FormulaStructArgumentMappings")
@@ -1276,13 +1277,13 @@ namespace MathApi.Migrations
                 {
                     b.Navigation("AxiomPropositions");
 
-                    b.Navigation("FormulaChains");
-
-                    b.Navigation("FormulaStrings");
+                    b.Navigation("Chains");
 
                     b.Navigation("ProofInferenceArguments");
 
                     b.Navigation("ProofInferences");
+
+                    b.Navigation("Strings");
 
                     b.Navigation("TheoremAssumptions");
 
@@ -1293,7 +1294,7 @@ namespace MathApi.Migrations
                 {
                     b.Navigation("FormulaStructArguments");
 
-                    b.Navigation("InferenceArgument");
+                    b.Navigation("InferenceArguments");
                 });
 
             modelBuilder.Entity("MathApi.Models.FormulaLabelType", b =>
@@ -1379,6 +1380,8 @@ namespace MathApi.Migrations
                     b.Navigation("DissolutableAssumption");
 
                     b.Navigation("FormulaStructArgumentMappings");
+
+                    b.Navigation("InferenceArgumentConstraintForConstraintToAllPredissolvedAssumptions");
                 });
 
             modelBuilder.Entity("MathApi.Models.InferenceAssumptionDissolutableAssumption", b =>

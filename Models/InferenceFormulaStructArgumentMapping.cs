@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MathApi.Models;
 
-[PrimaryKey(nameof(InferenceId), nameof(SerialNo))]
+[PrimaryKey(nameof(InferenceId), nameof(SerialNo), nameof(FormulaStructId), nameof(FormulaStructArgumentSerialNo))]
 public class InferenceFormulaStructArgumentMapping
 {
   public Inference Inference { get; } = new();

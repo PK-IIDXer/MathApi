@@ -48,7 +48,9 @@ namespace MathApi.Controllers
     public async Task<ActionResult<Inference>> PostInference(InferenceDto inferenceDto)
     {
       var inference = inferenceDto.CreateModel();
-      SetMappingSerialNo(inference);
+      await SetMappingSerialNo(inference);
+      // debug
+      Console.WriteLine(ObjectDumper.Dump(inference));
       _context.Inferences.Add(inference);
       await _context.SaveChangesAsync();
 
@@ -75,7 +77,7 @@ namespace MathApi.Controllers
       return NoContent();
     }
 
-    private async void SetMappingSerialNo(Inference inference)
+    private async Task SetMappingSerialNo(Inference inference)
     {
       int serialNo = 0;
       var mappings = new List<InferenceFormulaStructArgumentMapping>();
@@ -131,10 +133,12 @@ namespace MathApi.Controllers
       // 結論
       foreach (var conclusion in inference.Conclusions)
       {
-        var formulaStructArgs = await _context.FormulaStructArguments
-                                              .Where(
-                                                fsa => fsa.FormulaStructId == conclusion.FormulaStructId
-                                              ).ToListAsync();
+        var formulaStructArgs = await _context
+          .FormulaStructArguments
+          .IgnoreAutoIncludes()
+          .Where(
+            fsa => fsa.FormulaStructId == conclusion.FormulaStructId
+          ).ToListAsync();
         foreach (var fsa in formulaStructArgs)
         {
           var infArgs = inference.Arguments.Where(a => a.FormulaLabelId == fsa.LabelId);

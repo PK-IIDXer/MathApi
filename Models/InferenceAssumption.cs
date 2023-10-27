@@ -29,4 +29,5 @@ public class InferenceAssumption
   public int FormulaStructArgumentMappingSerialNo { get; set;}
 
   public InferenceAssumptionDissolutableAssumption? DissolutableAssumption { get; set; }
+  public List<InferenceArgumentConstraint> InferenceArgumentConstraintForConstraintToAllPredissolvedAssumptions { get; } = new();
 }
