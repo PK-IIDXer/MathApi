@@ -10,5 +10,6 @@ public class FormulaLabel
   public Const.FormulaLabelTypeEnum TypeId { get; set; }
 
   public List<FormulaStructArgument> FormulaStructArguments { get; } = new();
+  [JsonIgnore]
   public List<InferenceArgument> InferenceArguments { get; } = new();
 }

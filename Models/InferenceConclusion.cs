@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace MathApi.Models;
 
@@ -8,6 +9,7 @@ namespace MathApi.Models;
 [PrimaryKey(nameof(InferenceId))]
 public class InferenceConclusion
 {
+  [JsonIgnore]
   public Inference Inference { get; set; } = new();
   /// <summary>
   /// 推論規則ID

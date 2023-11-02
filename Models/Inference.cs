@@ -20,7 +20,7 @@ public class Inference
 
   public List<InferenceArgument> Arguments { get; set; } = new();
   public List<InferenceAssumption> Assumptions { get; set; } = new();
-  public List<InferenceConclusion> Conclusions { get; set; } = new();
+  public InferenceConclusion? Conclusion { get; set; }
   public List<InferenceFormulaStructArgumentMapping> FormulaStructArgumentMappings { get; set; } = new();
 
   public List<ProofInference>? ProofInferences { get; }
@@ -101,21 +101,17 @@ public class Inference
       result.AssumptionFormulas.Add(assumption);
     }
 
-    foreach (var con in Conclusions)
+    var conArgs = new List<Formula>();
+    var conMappings = Conclusion.FormulaStructArgumentMappings
+                         .Where(fsam => fsam.FormulaStructId == Conclusion.FormulaStructId)
+                         .OrderBy(fsam => fsam.FormulaStructArgumentSerialNo);
+    foreach (var mapping in conMappings)
     {
-      var conArgs = new List<Formula>();
-      var conMappings = con.FormulaStructArgumentMappings
-                           .Where(fsam => fsam.FormulaStructId == con.FormulaStructId)
-                           .OrderBy(fsam => fsam.FormulaStructArgumentSerialNo);
-      foreach (var mapping in conMappings)
-      {
-        conArgs.Add(args[mapping.InferenceArgumentSerialNo]);
-      }
-      if (con.FormulaStruct == null)
-        throw new ArgumentException("Include Inference.Conclusions.FormulaStruct");
-
-      result.ConclusionFormulas.Add(con.FormulaStruct.Apply(conArgs));
+      conArgs.Add(args[mapping.InferenceArgumentSerialNo]);
     }
+    if (Conclusion.FormulaStruct == null)
+      throw new ArgumentException("Include Inference.Conclusions.FormulaStruct");
+    result.ConclusionFormulas.Add(Conclusion.FormulaStruct.Apply(conArgs));
 
     return result;
   }
@@ -169,21 +165,17 @@ public class Inference
       result.AssumptionFormulaStructs.Add(assumption);
     }
 
-    foreach (var con in Conclusions)
+    var conArgs = new List<FormulaStruct>();
+    var conMappings = Conclusion.FormulaStructArgumentMappings
+                         .Where(fsam => fsam.FormulaStructId == Conclusion.FormulaStructId)
+                         .OrderBy(fsam => fsam.FormulaStructArgumentSerialNo);
+    foreach (var mapping in conMappings)
     {
-      var conArgs = new List<FormulaStruct>();
-      var conMappings = con.FormulaStructArgumentMappings
-                           .Where(fsam => fsam.FormulaStructId == con.FormulaStructId)
-                           .OrderBy(fsam => fsam.FormulaStructArgumentSerialNo);
-      foreach (var mapping in conMappings)
-      {
-        conArgs.Add(args[mapping.InferenceArgumentSerialNo]);
-      }
-      if (con.FormulaStruct == null)
-        throw new ArgumentException("Include Inference.Conclusions.FormulaStruct");
-
-      result.ConclusionFormulaStructs.Add(con.FormulaStruct.Apply(conArgs));
+      conArgs.Add(args[mapping.InferenceArgumentSerialNo]);
     }
+    if (Conclusion.FormulaStruct == null)
+      throw new ArgumentException("Include Inference.Conclusions.FormulaStruct");
+    result.ConclusionFormulaStructs.Add(Conclusion.FormulaStruct.Apply(conArgs));
 
     return result;
   }

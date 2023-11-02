@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace MathApi.Models;
 
@@ -31,6 +32,8 @@ public class InferenceArgument
   public int FormulaLabelId { get; set; }
 
   public List<InferenceArgumentConstraint> InferenceArgumentConstraints { get; set; } = new();
+  [JsonIgnore]
   public List<InferenceArgumentConstraint> InferenceArgumentConstraintDestinations { get; } = new();
+  [JsonIgnore]
   public List<InferenceFormulaStructArgumentMapping> InferenceFormulaStructArgumentMappings { get; } = new();
 }

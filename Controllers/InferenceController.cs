@@ -86,11 +86,11 @@ namespace MathApi.Controllers
       // 仮定
       foreach (var assumption in inference.Assumptions)
       {
-        var formulaStructArgs = await _context.FormulaStructArguments
+        var asmFormulaStructArgs = await _context.FormulaStructArguments
                                               .Where(
                                                 fsa => fsa.FormulaStructId == assumption.FormulaStructId
                                               ).ToListAsync();
-        foreach (var fsa in formulaStructArgs)
+        foreach (var fsa in asmFormulaStructArgs)
         {
           var infArgs = inference.Arguments.Where(a => a.FormulaLabelId == fsa.LabelId);
           if (infArgs.Count() != 1)
@@ -131,30 +131,27 @@ namespace MathApi.Controllers
       }
 
       // 結論
-      foreach (var conclusion in inference.Conclusions)
+      var formulaStructArgs = await _context
+        .FormulaStructArguments
+        .IgnoreAutoIncludes()
+        .Where(
+          fsa => fsa.FormulaStructId == inference.Conclusion.FormulaStructId
+        ).ToListAsync();
+      foreach (var fsa in formulaStructArgs)
       {
-        var formulaStructArgs = await _context
-          .FormulaStructArguments
-          .IgnoreAutoIncludes()
-          .Where(
-            fsa => fsa.FormulaStructId == conclusion.FormulaStructId
-          ).ToListAsync();
-        foreach (var fsa in formulaStructArgs)
+        var infArgs = inference.Arguments.Where(a => a.FormulaLabelId == fsa.LabelId);
+        if (infArgs.Count() != 1)
+          throw new ArgumentException("invalid FormulaLabelId in inference.Arguments");
+        var infArg = infArgs.First();
+        mappings.Add(new InferenceFormulaStructArgumentMapping
         {
-          var infArgs = inference.Arguments.Where(a => a.FormulaLabelId == fsa.LabelId);
-          if (infArgs.Count() != 1)
-            throw new ArgumentException("invalid FormulaLabelId in inference.Arguments");
-          var infArg = infArgs.First();
-          mappings.Add(new InferenceFormulaStructArgumentMapping
-          {
-            SerialNo = serialNo,
-            FormulaStructId = fsa.FormulaStructId,
-            FormulaStructArgumentSerialNo = fsa.SerialNo,
-            InferenceArgumentSerialNo = infArg.SerialNo
-          });
-        }
-        conclusion.FormulaStructArgumentMappingSerialNo = serialNo++;
+          SerialNo = serialNo,
+          FormulaStructId = fsa.FormulaStructId,
+          FormulaStructArgumentSerialNo = fsa.SerialNo,
+          InferenceArgumentSerialNo = infArg.SerialNo
+        });
       }
+      inference.Conclusion.FormulaStructArgumentMappingSerialNo = serialNo++;
 
       inference.FormulaStructArgumentMappings = mappings;
     }

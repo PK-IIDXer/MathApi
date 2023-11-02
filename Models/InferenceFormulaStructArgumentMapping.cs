@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace MathApi.Models;
 
@@ -14,7 +15,10 @@ public class InferenceFormulaStructArgumentMapping
   public InferenceArgument? InferenceArgument { get; set; }
   public int InferenceArgumentSerialNo { get; set; }
 
+  [JsonIgnore]
   public InferenceAssumption? InferenceAssumption { get; }
+  [JsonIgnore]
   public InferenceAssumptionDissolutableAssumption? InferenceAssumptionDissolutableAssumption { get; }
+  [JsonIgnore]
   public InferenceConclusion? InferenceConclusion { get; }
 }

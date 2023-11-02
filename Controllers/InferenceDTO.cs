@@ -75,11 +75,11 @@ public class InferenceDto
           IsForce = a.DissolutableAssumption.IsForce
         }
       }).ToList(),
-      Conclusions = new List<InferenceConclusion> { new() {
+      Conclusion = new() {
         InferenceId = Id,
         FormulaStructId = Conclusion.FormulaStructId,
         AddAssumption = Conclusion.AddAssumption
-      }}
+      }
     };
   }
 }

@@ -318,7 +318,7 @@ namespace MathApi.Controllers
       };
       _context.ProofInferences.Add(proofInference);
 
-      if (inference.Conclusions[0].AddAssumption && !dto.ProofAssumptionSerialNo.HasValue)
+      if (inference.Conclusion.AddAssumption && !dto.ProofAssumptionSerialNo.HasValue)
       {
         var proofAssumption = new ProofAssumption
         {
@@ -405,7 +405,7 @@ namespace MathApi.Controllers
       };
       _context.ProofInferences.Add(proofInference);
 
-      if (inference.Conclusions[0].AddAssumption && !dto.ProofAssumptionSerialNo.HasValue)
+      if (inference.Conclusion.AddAssumption && !dto.ProofAssumptionSerialNo.HasValue)
       {
         var proofAssumption = new ProofAssumption
         {

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace MathApi.Models;
 
@@ -29,5 +30,6 @@ public class InferenceAssumption
   public int FormulaStructArgumentMappingSerialNo { get; set;}
 
   public InferenceAssumptionDissolutableAssumption? DissolutableAssumption { get; set; }
+  [JsonIgnore]
   public List<InferenceArgumentConstraint> InferenceArgumentConstraintForConstraintToAllPredissolvedAssumptions { get; } = new();
 }
