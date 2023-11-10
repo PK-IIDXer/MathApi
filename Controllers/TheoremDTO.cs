@@ -6,6 +6,7 @@ public class TheoremDto
 {
   public long Id { get; set; }
   public string Name { get; set; } = "";
+  public string Meaning { get; set; } = "";
   public List<TheoremPropositionDto>? Assumptions { get; set; }
   public TheoremPropositionDto? Conclusion { get; set; }
   public InferenceDto? Inference { get; set; }
@@ -15,6 +16,7 @@ public class TheoremDto
     {
       Id = Id,
       Name = Name,
+      Meaning = Meaning,
       IsProved = false
     };
 
