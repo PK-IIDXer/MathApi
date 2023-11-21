@@ -22,9 +22,18 @@ namespace MathApi.Controllers
 
     // GET: api/Theorem
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Theorem>>> GetTheorems()
+    public async Task<ActionResult<IEnumerable<Theorem>>> GetTheorems([FromQuery] string? name, [FromQuery] string? meaning)
     {
-      return await _context.Theorems.ToListAsync();
+      return await _context
+        .Theorems
+        .IgnoreAutoIncludes()
+        .Include(t => t.Assumptions)
+        .Include(t => t.Conclusions)
+        .Include(t => t.Inference)
+        .Include(t => t.Proofs)
+        .Where(t => name == null || t.Name.Contains(name))
+        .Where(t => meaning == null || t.Meaning.Contains(meaning))
+        .ToListAsync();
     }
 
     // GET: api/Theorem/5
