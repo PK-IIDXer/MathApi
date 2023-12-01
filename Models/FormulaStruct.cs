@@ -257,7 +257,8 @@ public class FormulaStruct
 
             // 代入テーブル作成
             var newSbs = new List<FormulaStructStringSubstitution>();
-            var newSbsSerialNo = 0;
+            newSbs.AddRange(argStr.Substitutions);
+            var newSbsSerialNo = newSbs.Count;
             foreach (var sbs in str.Substitutions)
             {
               foreach (var argSbs in argStr.Substitutions)
@@ -286,7 +287,9 @@ public class FormulaStruct
                     FormulaStructStringSerialNo = serialNo,
                     SerialNo = newSbsSerialNo++,
                     ArgumentFromSerialNo = argNewFsaFrom.SerialNo,
-                    ArgumentToSerialNo = newFsaTo.SerialNo
+                    ArgumentFrom = argNewFsaFrom,
+                    ArgumentToSerialNo = newFsaTo.SerialNo,
+                    ArgumentTo = newFsaTo,
                   });
                 }
                 else if (newFsaFrom.LabelId == argNewFsaFrom.LabelId)
@@ -296,7 +299,9 @@ public class FormulaStruct
                     FormulaStructStringSerialNo = serialNo,
                     SerialNo = newSbsSerialNo++,
                     ArgumentFromSerialNo = argNewFsaFrom.SerialNo,
+                    ArgumentFrom = argNewFsaFrom,
                     ArgumentToSerialNo = argNewFsaTo.SerialNo,
+                    ArgumentTo = argNewFsaTo,
                   });
                 }
                 else
@@ -306,14 +311,18 @@ public class FormulaStruct
                     FormulaStructStringSerialNo = serialNo,
                     SerialNo = newSbsSerialNo++,
                     ArgumentFromSerialNo = argNewFsaFrom.SerialNo,
+                    ArgumentFrom = argNewFsaFrom,
                     ArgumentToSerialNo = argNewFsaTo.SerialNo,
+                    ArgumentTo = argNewFsaTo,
                   });
                   newSbs.Add(new FormulaStructStringSubstitution
                   {
                     FormulaStructStringSerialNo = serialNo,
                     SerialNo = newSbsSerialNo++,
                     ArgumentFromSerialNo = newFsaFrom.SerialNo,
+                    ArgumentFrom = newFsaFrom,
                     ArgumentToSerialNo = newFsaTo.SerialNo,
+                    ArgumentTo = newFsaTo,
                   });
                 }
               }
