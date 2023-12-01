@@ -9,7 +9,7 @@ public class FormulaStructArgument
   public FormulaStruct FormulaStruct { get; set; } = new();
   public long FormulaStructId { get; set; }
   public int SerialNo { get; set; }
-  public FormulaLabel? Label { get; }
+  public FormulaLabel? Label { set; get; }
   public int LabelId { get; set; }
 
   [JsonIgnore]

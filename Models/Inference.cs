@@ -139,6 +139,7 @@ public class Inference
 
       if (asmp.DissolutableAssumption == null)
       {
+        result.AssumptionFormulaStructs ??= new List<InferenceStructResult.AssumptionStructResult>();
         result.AssumptionFormulaStructs.Add(assumption);
         continue;
       }
@@ -175,6 +176,7 @@ public class Inference
     }
     if (Conclusion.FormulaStruct == null)
       throw new ArgumentException("Include Inference.Conclusions.FormulaStruct");
+    result.ConclusionFormulaStructs ??= new List<FormulaStruct>();
     result.ConclusionFormulaStructs.Add(Conclusion.FormulaStruct.Apply(conArgs));
 
     return result;

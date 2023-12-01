@@ -32,7 +32,72 @@ namespace MathApi.Controllers
     [HttpGet("{id}")]
     public async Task<ActionResult<Inference>> GetInference(long id)
     {
-      var inference = await _context.Inferences.FindAsync(id);
+      var inference = await _context
+        .Inferences
+        .IgnoreAutoIncludes()
+        .Include(i => i.Arguments)
+        .ThenInclude(ia => ia.FormulaLabel)
+        .Include(i => i.Assumptions)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Arguments)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.Assumptions)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Strings)
+        .ThenInclude(fss => fss.Symbol)
+        .Include(i => i.Assumptions)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Strings)
+        .ThenInclude(fss => fss.BoundArgument)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.Assumptions)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Strings)
+        .ThenInclude(fss => fss.Argument)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.Assumptions)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Strings)
+        .ThenInclude(fss => fss.Substitutions)
+        .ThenInclude(fsss => fsss.ArgumentFrom)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.Assumptions)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Strings)
+        .ThenInclude(fss => fss.Substitutions)
+        .ThenInclude(fsss => fsss.ArgumentTo)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.Conclusion)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Arguments)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.Conclusion)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Strings)
+        .ThenInclude(fss => fss.Symbol)
+        .Include(i => i.Conclusion)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Strings)
+        .ThenInclude(fss => fss.BoundArgument)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.Conclusion)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Strings)
+        .ThenInclude(fss => fss.Argument)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.Conclusion)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Strings)
+        .ThenInclude(fss => fss.Substitutions)
+        .ThenInclude(fsss => fsss.ArgumentFrom)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.Conclusion)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Strings)
+        .ThenInclude(fss => fss.Substitutions)
+        .ThenInclude(fsss => fsss.ArgumentTo)
+        .ThenInclude(fsa => fsa.Label)
+        .SingleOrDefaultAsync(i => i.Id == id);
 
       if (inference == null)
       {
@@ -49,8 +114,6 @@ namespace MathApi.Controllers
     {
       var inference = inferenceDto.CreateModel();
       await SetMappingSerialNo(inference);
-      // debug
-      Console.WriteLine(ObjectDumper.Dump(inference));
       _context.Inferences.Add(inference);
       await _context.SaveChangesAsync();
 

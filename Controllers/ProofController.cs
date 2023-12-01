@@ -1,3 +1,4 @@
+using System.Xml.Schema;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,6 +41,54 @@ namespace MathApi.Controllers
       }
 
       return proof;
+    }
+
+    [HttpPost("preview/formula")]
+    public async Task<ActionResult<Inference.InferenceResult>> PostApplyInference(ProofDto dto) {
+      var theorem = await _context
+        .Theorems
+        .IgnoreAutoIncludes()
+        .Include(t => t.Inference)
+        .SingleOrDefaultAsync(t => t.Id == dto.TheoremId);
+      if (theorem == null)
+        return NotFound($"Theorem#{dto.TheoremId} is not found");
+
+      var isStruct = theorem.Inference != null;
+      if (isStruct) {
+        return BadRequest("Can't deal formula struct. Try 'preview/struct'");
+      }
+
+      var inference = await GetInference(dto.InferenceId);
+      if (inference == null)
+        return NotFound($"Inference#{dto.InferenceId} is not found");
+
+      var inferenceArguments = await CreateProofInferenceArguments(dto);
+      var formulas = inferenceArguments.Select(ia => ia.Formula ?? throw new Exception("想定外")).ToList();
+      return inference.Apply(formulas);
+    }
+
+    [HttpPost("preview/struct")]
+    public async Task<ActionResult<Inference.InferenceStructResult>> PostApplyInferenceStruct(ProofDto dto) {
+      var theorem = await _context
+        .Theorems
+        .IgnoreAutoIncludes()
+        .Include(t => t.Inference)
+        .SingleOrDefaultAsync(t => t.Id == dto.TheoremId);
+      if (theorem == null)
+        return NotFound($"Theorem#{dto.TheoremId} is not found");
+
+      var isStruct = theorem.Inference != null;
+      if (!isStruct) {
+        return BadRequest("Can't deal formula. Try 'preview/formula'");
+      }
+
+      var inference = await GetInference(dto.InferenceId);
+      if (inference == null)
+        return NotFound($"Inference#{dto.InferenceId} is not found");
+
+      var inferenceArguments = await CreateProofInferenceArguments(dto);
+      var formulaStructs = inferenceArguments.Select(ia => ia.FormulaStruct ?? throw new Exception("想定外")).ToList();
+      return inference.Apply(formulaStructs);
     }
 
     // POST: api/Proof
@@ -148,6 +197,99 @@ namespace MathApi.Controllers
       return CreatedAtAction("GetProof", new { theoremId = proof.TheoremId, serialNo = proof.SerialNo }, proof);
     }
 
+    private async Task<Inference?> GetInference(long inferenceId) {
+      #nullable disable
+      return await _context
+        .Inferences
+        .IgnoreAutoIncludes()
+        .Include(i => i.Arguments)
+        .ThenInclude(ia => ia.FormulaLabel)
+        .Include(i => i.Assumptions)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Arguments)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.Assumptions)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Strings)
+        .ThenInclude(fss => fss.Symbol)
+        .Include(i => i.Assumptions)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Strings)
+        .ThenInclude(fss => fss.BoundArgument)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.Assumptions)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Strings)
+        .ThenInclude(fss => fss.Argument)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.Assumptions)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Strings)
+        .ThenInclude(fss => fss.Substitutions)
+        .ThenInclude(fsss => fsss.ArgumentFrom)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.Assumptions)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Strings)
+        .ThenInclude(fss => fss.Substitutions)
+        .ThenInclude(fsss => fsss.ArgumentTo)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.Assumptions)
+        .ThenInclude(a => a.FormulaStructArgumentMappings)
+        .ThenInclude(m => m.FormulaStructArgument)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.Assumptions)
+        .ThenInclude(a => a.FormulaStructArgumentMappings)
+        .ThenInclude(m => m.InferenceArgument)
+        .ThenInclude(ia => ia.FormulaLabel)
+        .Include(i => i.Conclusion)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Arguments)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.Conclusion)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Strings)
+        .ThenInclude(fss => fss.Symbol)
+        .Include(i => i.Conclusion)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Strings)
+        .ThenInclude(fss => fss.BoundArgument)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.Conclusion)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Strings)
+        .ThenInclude(fss => fss.Argument)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.Conclusion)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Strings)
+        .ThenInclude(fss => fss.Substitutions)
+        .ThenInclude(fsss => fsss.ArgumentFrom)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.Conclusion)
+        .ThenInclude(ic => ic.FormulaStruct)
+        .ThenInclude(fs => fs.Strings)
+        .ThenInclude(fss => fss.Substitutions)
+        .ThenInclude(fsss => fsss.ArgumentTo)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.Conclusion)
+        .ThenInclude(a => a.FormulaStructArgumentMappings)
+        .ThenInclude(m => m.FormulaStructArgument)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.Conclusion)
+        .ThenInclude(a => a.FormulaStructArgumentMappings)
+        .ThenInclude(m => m.InferenceArgument)
+        .ThenInclude(ia => ia.FormulaLabel)
+        .Include(i => i.FormulaStructArgumentMappings)
+        .ThenInclude(m => m.FormulaStructArgument)
+        .ThenInclude(fsa => fsa.Label)
+        .Include(i => i.FormulaStructArgumentMappings)
+        .ThenInclude(m => m.InferenceArgument)
+        .ThenInclude(ia => ia.FormulaLabel)
+        .SingleOrDefaultAsync(i => i.Id == inferenceId);
+      #nullable restore
+    }
+
     // DELETE: api/Proof/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteProof(long id)
@@ -189,8 +331,14 @@ namespace MathApi.Controllers
         };
       }
 
-      var formulas = await _context.Formulas.Where(f => dto.InferenceArguments.Select(d => d.FormulaId).Contains(f.Id)).ToListAsync();
-      var formulaStructs = await _context.FormulaStructs.Where(fs => dto.InferenceArguments.Select(d => d.FormulaStructId).Contains(fs.Id)).ToListAsync();
+      var formulas = await _context
+        .Formulas
+        .Where(f => dto.InferenceArguments.Select(d => d.FormulaId).Contains(f.Id))
+        .ToListAsync();
+      var formulaStructs = await _context
+        .FormulaStructs
+        .Where(fs => dto.InferenceArguments.Select(d => d.FormulaStructId).Contains(fs.Id))
+        .ToListAsync();
 
       var inferenceArguments = new List<ProofInferenceArgument>();
       // 連番チェック用変数

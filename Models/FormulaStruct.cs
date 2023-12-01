@@ -183,6 +183,7 @@ public class FormulaStruct
           ret.Add(new FormulaStructArgument
             {
               SerialNo = serialNo++,
+              Label = argArg.Label,
               LabelId = argArg.LabelId
             }
           );
@@ -203,8 +204,6 @@ public class FormulaStruct
       {
         if (str.Symbol == null)
           throw new ArgumentException("Include FormulaStructString.String");
-        if (str.BoundArgument == null)
-          throw new ArgumentException("Include FormulaStructString.BoundArgument, or invalid FormulaString data");
 
         ret.Add(new FormulaStructString
         {
@@ -238,91 +237,108 @@ public class FormulaStruct
           throw new ArgumentException("Argument type mismatch");
         foreach (var argStr in arg.Strings)
         {
-          var argArg = newFormulaStructArguments.Find(fsa => fsa.LabelId == argStr.Argument?.LabelId)
-            ?? throw new ArgumentException("想定外");
+          // 代入するFormulaStructStringのargStrがSymbolの場合
+          if (argStr.SymbolId.HasValue) {
+            var boundArgArg = newFormulaStructArguments.Find(fsa => fsa.LabelId == argStr.BoundArgument?.LabelId);
+            var newFss = new FormulaStructString() {
+              SerialNo = serialNo++,
+              Symbol = argStr.Symbol,
+              SymbolId = argStr.SymbolId,
+              BoundArgument = boundArgArg,
+              BoundArgumentSerialNo = boundArgArg?.SerialNo
+            };
+            ret.Add(newFss);
+          }
 
-          // 代入テーブル作成
-          var newSbs = new List<FormulaStructStringSubstitution>();
-          var newSbsSerialNo = 0;
-          foreach (var sbs in str.Substitutions)
-          {
-            foreach (var argSbs in argStr.Substitutions)
+          // 代入するFormulaStructStringのargStrがArgumentの場合
+          if (argStr.ArgumentSerialNo.HasValue) {
+            var argArg = newFormulaStructArguments.Find(fsa => fsa.LabelId == argStr.Argument?.LabelId)
+              ?? throw new ArgumentException("想定外");
+
+            // 代入テーブル作成
+            var newSbs = new List<FormulaStructStringSubstitution>();
+            var newSbsSerialNo = 0;
+            foreach (var sbs in str.Substitutions)
             {
-              if (sbs.ArgumentFrom == null)
-                throw new ArgumentException("Include FormulaStructSubstitution.ArgumentFrom");
-              var newFsaFrom = newFormulaStructArguments.Find(fsa => fsa.LabelId == sbs.ArgumentFrom.LabelId)
-                ?? throw new ArgumentException("想定外");
-              if (sbs.ArgumentTo == null)
-                throw new ArgumentException("Include FormulaStructSubstitution.ArgumentFrom");
-              var newFsaTo = newFormulaStructArguments.Find(fsa => fsa.LabelId == sbs.ArgumentTo.LabelId)
-                ?? throw new ArgumentException("想定外");
-              if (argSbs.ArgumentFrom == null)
-                throw new ArgumentException("Include FormulaStructSubstitution.ArgumentFrom");
-              var argNewFsaFrom = newFormulaStructArguments.Find(fsa => fsa.LabelId == argSbs.ArgumentFrom.LabelId)
-                ?? throw new ArgumentException("想定外");
-              if (argSbs.ArgumentTo == null)
-                throw new ArgumentException("Include FormulaStructSubstitution.ArgumentFrom");
-              var argNewFsaTo = newFormulaStructArguments.Find(fsa => fsa.LabelId == argSbs.ArgumentTo.LabelId)
-                ?? throw new ArgumentException("想定外");
+              foreach (var argSbs in argStr.Substitutions)
+              {
+                if (sbs.ArgumentFrom == null)
+                  throw new ArgumentException("Include FormulaStructSubstitution.ArgumentFrom");
+                var newFsaFrom = newFormulaStructArguments.Find(fsa => fsa.LabelId == sbs.ArgumentFrom.LabelId)
+                  ?? throw new ArgumentException("想定外");
+                if (sbs.ArgumentTo == null)
+                  throw new ArgumentException("Include FormulaStructSubstitution.ArgumentFrom");
+                var newFsaTo = newFormulaStructArguments.Find(fsa => fsa.LabelId == sbs.ArgumentTo.LabelId)
+                  ?? throw new ArgumentException("想定外");
+                if (argSbs.ArgumentFrom == null)
+                  throw new ArgumentException("Include FormulaStructSubstitution.ArgumentFrom");
+                var argNewFsaFrom = newFormulaStructArguments.Find(fsa => fsa.LabelId == argSbs.ArgumentFrom.LabelId)
+                  ?? throw new ArgumentException("想定外");
+                if (argSbs.ArgumentTo == null)
+                  throw new ArgumentException("Include FormulaStructSubstitution.ArgumentFrom");
+                var argNewFsaTo = newFormulaStructArguments.Find(fsa => fsa.LabelId == argSbs.ArgumentTo.LabelId)
+                  ?? throw new ArgumentException("想定外");
 
-              if (newFsaFrom.LabelId == argNewFsaTo.LabelId)
-              {
-                newSbs.Add(new FormulaStructStringSubstitution
+                if (newFsaFrom.LabelId == argNewFsaTo.LabelId)
                 {
-                  FormulaStructStringSerialNo = serialNo,
-                  SerialNo = newSbsSerialNo++,
-                  ArgumentFromSerialNo = argNewFsaFrom.SerialNo,
-                  ArgumentToSerialNo = newFsaTo.SerialNo
-                });
-              }
-              else if (newFsaFrom.LabelId == argNewFsaFrom.LabelId)
-              {
-                newSbs.Add(new FormulaStructStringSubstitution
+                  newSbs.Add(new FormulaStructStringSubstitution
+                  {
+                    FormulaStructStringSerialNo = serialNo,
+                    SerialNo = newSbsSerialNo++,
+                    ArgumentFromSerialNo = argNewFsaFrom.SerialNo,
+                    ArgumentToSerialNo = newFsaTo.SerialNo
+                  });
+                }
+                else if (newFsaFrom.LabelId == argNewFsaFrom.LabelId)
                 {
-                  FormulaStructStringSerialNo = serialNo,
-                  SerialNo = newSbsSerialNo++,
-                  ArgumentFromSerialNo = argNewFsaFrom.SerialNo,
-                  ArgumentToSerialNo = argNewFsaTo.SerialNo,
-                });
-              }
-              else
-              {
-                newSbs.Add(new FormulaStructStringSubstitution
+                  newSbs.Add(new FormulaStructStringSubstitution
+                  {
+                    FormulaStructStringSerialNo = serialNo,
+                    SerialNo = newSbsSerialNo++,
+                    ArgumentFromSerialNo = argNewFsaFrom.SerialNo,
+                    ArgumentToSerialNo = argNewFsaTo.SerialNo,
+                  });
+                }
+                else
                 {
-                  FormulaStructStringSerialNo = serialNo,
-                  SerialNo = newSbsSerialNo++,
-                  ArgumentFromSerialNo = argNewFsaFrom.SerialNo,
-                  ArgumentToSerialNo = argNewFsaTo.SerialNo,
-                });
-                newSbs.Add(new FormulaStructStringSubstitution
-                {
-                  FormulaStructStringSerialNo = serialNo,
-                  SerialNo = newSbsSerialNo++,
-                  ArgumentFromSerialNo = newFsaFrom.SerialNo,
-                  ArgumentToSerialNo = newFsaTo.SerialNo,
-                });
+                  newSbs.Add(new FormulaStructStringSubstitution
+                  {
+                    FormulaStructStringSerialNo = serialNo,
+                    SerialNo = newSbsSerialNo++,
+                    ArgumentFromSerialNo = argNewFsaFrom.SerialNo,
+                    ArgumentToSerialNo = argNewFsaTo.SerialNo,
+                  });
+                  newSbs.Add(new FormulaStructStringSubstitution
+                  {
+                    FormulaStructStringSerialNo = serialNo,
+                    SerialNo = newSbsSerialNo++,
+                    ArgumentFromSerialNo = newFsaFrom.SerialNo,
+                    ArgumentToSerialNo = newFsaTo.SerialNo,
+                  });
+                }
               }
             }
-          }
 
-          var newFss = new FormulaStructString
-          {
-            SerialNo = serialNo++,
-            ArgumentSerialNo = argArg.SerialNo,
-            Substitutions = newSbs
-          };
-          var froms = new List<int>();
-          foreach (var s in newSbs)
-          {
-            if (s.ArgumentFrom != null && s.ArgumentFrom.Label == null)
-              throw new ArgumentException("Include FormulaStructStringSubstitution.ArgumentFrom.Label");
-            if (froms.Any(f => f == s.ArgumentFrom?.Label?.Id))
-              throw new ArgumentException("Substitution \"from\" variable is duplicated");
-            else
-              froms.Add(s.ArgumentFromSerialNo);
-            s.FormulaStructString = newFss;
+            var newFss = new FormulaStructString
+            {
+              SerialNo = serialNo++,
+              Argument = argArg,
+              ArgumentSerialNo = argArg.SerialNo,
+              Substitutions = newSbs
+            };
+            var froms = new List<int>();
+            foreach (var s in newSbs)
+            {
+              if (s.ArgumentFrom != null && s.ArgumentFrom.Label == null)
+                throw new ArgumentException("Include FormulaStructStringSubstitution.ArgumentFrom.Label");
+              if (froms.Any(f => f == s.ArgumentFrom?.Label?.Id))
+                throw new ArgumentException("Substitution \"from\" variable is duplicated");
+              else
+                froms.Add(s.ArgumentFromSerialNo);
+              s.FormulaStructString = newFss;
+            }
+            ret.Add(newFss);
           }
-          ret.Add(newFss);
         }
       }
     }
